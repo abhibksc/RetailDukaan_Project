@@ -1,0 +1,9 @@
+/* Add this CSS to your global stylesheet or a Tailwind CSS custom file */
+.slick-dots li button:before {
+    color: #9ca3af; /* Gray color for inactive dots */
+  }
+  
+  .slick-dots li.slick-active button:before {
+    color: #111827; /* Black color for active dots */
+  }
+  

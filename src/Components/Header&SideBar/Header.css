@@ -1,0 +1,102 @@
+/* Header.css */
+
+header {
+    position: fixed;
+    z-index: 20;
+    background-color: #38a169; /* Tailwind green-500 */
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Tailwind shadow-sm */
+    color: white;
+  }
+  
+  .header-container {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .menu-button {
+    color: gray;
+    margin-left: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  .menu-button:hover {
+    color: #4a5568; /* Tailwind gray-600 */
+  }
+  
+  .search-input {
+    border-radius: 8px;
+    width: 400px;
+    padding: 8px;
+    outline: none;
+    border: 1px solid #e2e8f0; /* Tailwind gray-200 */
+  }
+  
+  .search-input:focus {
+    ring: 2px solid #63b3ed; /* Tailwind blue-500 */
+  }
+  
+  .location-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .location-info {
+    position: absolute;
+    top: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    width: 320px;
+    padding: 16px;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .location-info.show {
+    display: block;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #f7fafc; /* Tailwind gray-100 */
+    display: none;
+    width: 240px;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dropdown-menu.show {
+    display: block;
+  }
+  
+  .dropdown-item {
+    margin: 8px 0;
+    cursor: pointer;
+  }
+  
+  .dropdown-item:hover {
+    color: #3182ce; /* Tailwind blue-500 */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .header-container {
+      flex-direction: column;
+    }
+    
+    .search-input {
+      width: 100%;
+    }
+    
+    .dropdown-menu {
+      width: 100%;
+    }
+  }
+  
