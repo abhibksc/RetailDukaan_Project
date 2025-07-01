@@ -20,15 +20,12 @@ const AssignDeliveryExecutive = () => {
   useEffect(() => {
     const fetchPincodes = async () => {
       const response = await getAllNotAssignedOrder();
-      console.log(response);
 
       if (
         response.data.message === "All NotAssignedOrder Retrive Successfully!!"
       ) {
-        console.log(response.data.data);
         setNotAssignedOrder(response.data.data);
         setFilterNotAssignedOrder(response.data.data);
-        toast.success(response.data.message);
       } else {
         toast.error(response.data.message);
       }

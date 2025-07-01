@@ -1,5 +1,188 @@
 import axios from 'axios';
 import baseurl from './customURl';
+import { toast } from 'react-toastify';
+
+
+  const Merchant_token = localStorage.getItem('Merchanttoken') || null;
+  const User_token = localStorage.getItem('token') || null;
+
+
+
+// ************************** user Refferal ****************************
+
+
+
+
+export const getUserReferralDetails = async () => {
+
+
+    if(!User_token){
+toast.warn("token is missing!!!");
+        return;
+    }
+
+   
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getUserReferralDetails`, {
+            headers: {
+                Authorization: `Bearer ${User_token}`
+            }
+        });
+        if(response){
+            return response;
+        }
+
+    } catch (error) {
+          ('Error fetching tables', error);
+        return error.response;
+    }
+
+    
+};
+
+
+
+export const GetUser_RefferalWallet = async () => {
+
+
+    if(!User_token){
+toast.warn("token is missing!!!");
+        return;
+    }
+
+   
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getUserReferralBalance`, {
+            headers: {
+                Authorization: `Bearer ${User_token}`
+            }
+        });
+                  return response;
+
+    } catch (error) {
+        throw error
+    }
+
+    
+};
+
+
+
+
+export const Admin_getReferralMilestones = async () => {
+
+
+    if(!Merchant_token){
+toast.warn("token is missing!!!");
+        return;
+    }
+
+   
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/admingetReferralMilestones`, {
+            headers: {
+                Authorization: `Bearer ${Merchant_token}`
+            }
+        });
+                  return response;
+
+    } catch (error) {
+        throw error
+    }
+
+    
+};
+
+
+
+
+export const getReferralMilestones = async () => {
+
+
+    if(!User_token){
+toast.warn("token is missing!!!");
+        return;
+    }
+
+   
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getReferralMilestones`, {
+            headers: {
+                Authorization: `Bearer ${User_token}`
+            }
+        });
+                  return response;
+
+    } catch (error) {
+        throw error
+    }
+
+    
+};
+
+
+export const getReferralDetails = async () => {
+
+
+    if(!User_token){
+toast.warn("token is missing!!!");
+        return;
+    }
+
+   
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getReferralDetails`, {
+            headers: {
+                Authorization: `Bearer ${User_token}`
+            }
+        });
+                  return response;
+
+    } catch (error) {
+        throw error
+    }
+
+    
+};
+
+
+export const getReferralTransactions = async () => {
+
+
+    if(!User_token){
+toast.warn("token is missing!!!");
+        return;
+    }
+
+   
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getReferralTransactions`, {
+            headers: {
+                Authorization: `Bearer ${User_token}`
+            }
+        });
+                  return response;
+
+    } catch (error) {
+        throw error
+    }
+
+    
+};
+
+
+
+
+
+
+
+
 
 
 
@@ -30,7 +213,7 @@ export const GetLogo = async () => {
 export const GetAllroles = async () => {
     const token = localStorage.getItem('superadmintoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -45,7 +228,7 @@ export const GetAllroles = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -62,7 +245,7 @@ export const GetAllroles = async () => {
 export const GetUserData = async () => {
     const token = localStorage.getItem('token');
     // const token = JSON.parse(response);
-    console.log(token);
+      (token);
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -77,7 +260,7 @@ export const GetUserData = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -102,7 +285,7 @@ export const showroles = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response.data;
         }
 
@@ -246,30 +429,100 @@ export const ImportCustomerDetails = async (login) => {
         }
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+          ('Error fetching tables', error);
         return error.response;
     }
 
     
 };
 
-// Show_Users_MainCategory
 
-export const Show_Users_MainCategory = async () => {
+
+
+export const Show_Users_Groups_for_Creating_Offer = async () => {
 
    
 
     try {
-        const response = await axios.get(`${baseurl}/api/all_maincategories`, {
+        const response = await axios.get(`${baseurl}/api/Show_Users_Groups_for_Creating_Offer`, {
            
         });
 
-        if(response){
-            return response.data;
-        }
+                return response;
+
 
     } catch (error) {
-        return error.response;
+        throw error;
+    }
+
+    
+};
+
+
+
+export const fetchParticular_grouid_data = async (id) => {
+  const token = localStorage.getItem('Merchanttoken');
+
+  try {
+    const response = await axios.get(`${baseurl}/api/admin/fetchParticular_grouid_data/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+export const AllUseFullCategories = async () => {
+  const token = localStorage.getItem('Merchanttoken');
+   
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/AllUseFullCategories`, {
+
+              headers: {
+        Authorization: `Bearer ${token}`,
+      },
+           
+        });
+
+
+          (response);
+        
+
+        return response;
+
+    } catch (error) {
+        throw error;
+    }
+
+    
+};
+
+
+
+
+
+// Show_Users_MainCategory
+
+export const Show_Users_MainCategory = async ({id,pincode}) => {
+
+   
+
+    try {
+        const response = await axios.get(`${baseurl}/api/all_maincategories/${id}/${pincode}`, {
+           
+        });
+
+        return response;
+
+    } catch (error) {
+        throw error;
     }
 
     
@@ -311,20 +564,21 @@ export const Show_Users_Sub_SubCategory = async () => {
 
 // getsubCategoryItem
 
-export const getAllItem = async ({id,type}) => {
-    console.log(id,type);
+export const getAllItem = async ({id,type,pincode}) => {
+      (id,type);
     
     try {
-        const response = await axios.get(`${baseurl}/api/getItems/${id}/${type}`);
+        const response = await axios.get(`${baseurl}/api/getItems/${id}/${type}/${pincode}`);
 
         if(response){
-            console.log(response);
+              (response);
             return response.data;
         }
 
     } catch (error) {
-        console.error('Error fetching tables', error);
-        return error.response;
+
+        
+        return error?.response;
     }
 };
 
@@ -332,47 +586,38 @@ export const getAllItem = async ({id,type}) => {
 // GetVariantDetails
 
 export const GetVariantDetails = async (Variantid,Varient_type,purchase_item_id,stock_id ,area_pin) => {
-    console.log(Variantid);
-    console.log(Varient_type);
-    console.log(purchase_item_id);
-    console.log(stock_id);
-    console.log(area_pin);
+      (Variantid);
+      (Varient_type);
+      (purchase_item_id);
+      (stock_id);
+      (area_pin);
 
 
     
     
     try {
         const response = await axios.get(`${baseurl}/api/getVariantsDetails/${Variantid}/${Varient_type}/${purchase_item_id}/${stock_id}/${area_pin}`); 
-
-        if(response){
-            console.log(response);
-            return response;
-        }
-
+           return response;
     } catch (error) {
-        console.error('Error fetching tables', error);
-        return error.response;
+        throw error
     }
 };
 
 
 // getdesktopUIMainBanner
 
-export const getdesktopUIMainBanner = async () => {
+export const getdesktopUIMainBanner = async (pincode) => {
 
 
     try {
-        const response = await axios.get(`${baseurl}/api/getDesktopMainBannersInCustomerUI`, {
+        const response = await axios.get(`${baseurl}/api/getDesktopMainBannersInCustomerUI/${pincode}`, {
           
         });
 
-        if(response){
-            console.log(response);
-            return response;
-        }
+           return response;
 
     } catch (error) {
-        return error.response;
+           throw error;
     }
 };
 
@@ -386,7 +631,7 @@ export const getMainBannerUptoOfferItems = async (bannerId) => {
         const response = await axios.get(`${baseurl}/api/getMainBannerUptoOfferItems/${bannerId}`);
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -405,7 +650,7 @@ export const getFeaturedBannerUptoOfferItems = async (ImageId) => {
         const response = await axios.get(`${baseurl}/api/getFeaturedBannerUptoOfferItems/${ImageId}`);
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -430,7 +675,7 @@ export const getUptoOfferItems = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -438,6 +683,145 @@ export const getUptoOfferItems = async () => {
         return error.response;
     }
 };
+
+
+
+// Get Group Category
+
+export const ShowGroupCategories = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/all_Groupcategories`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if(response){
+              (response);
+            return response.data;
+        }
+
+    } catch (error) {
+          ('Error fetching tables', error);
+    }
+};
+
+
+
+
+
+
+
+
+// Refferals *****************************************************************************************
+
+
+export const getRefferal_Configuraion = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/getRefferal_Configuraion`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if(response){
+              (response);
+            return response.data;
+        }
+
+    } catch (error) {
+          ('Error fetching tables', error);
+    }
+};
+
+//Admin Side SignUp Offer *****************************************************************************************
+
+
+
+export const getSingupAllOffers = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/getSingupAllOffers`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if(response){
+              (response);
+            return response.data;
+        }
+
+    } catch (error) {
+          ('Error fetching tables', error);
+    }
+};
+
+
+export const Get_Singup_Edited_Data = async (EditData) => {
+    const token = localStorage.getItem('Merchanttoken');
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/Get_Singup_Edited_Data/${EditData}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if(response){
+              (response);
+            return response.data;
+        }
+
+    } catch (error) {
+         return error.response;
+    }
+};
+
+
+// User Side SignUp Offer *****************************************************************************************
+
+
+
+export const GetUserSingUpOffer = async (AreaPin) => {
+
+    try {
+        const response = await axios.get(`${baseurl}/api/GetUserSingUpOffer/${AreaPin}`);
+
+           return response;
+    } catch (error) {
+        throw error;
+
+    }
+};
+
+
+
 
 
 
@@ -461,12 +845,12 @@ export const ShowMainCategory = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response.data;
         }
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+          ('Error fetching tables', error);
     }
 };
 
@@ -475,7 +859,7 @@ export const ShowMainCategory = async () => {
 
 export const ShowSubCategory = async () => {
     const token = localStorage.getItem('Merchanttoken');
-    console.log(token);
+      (token);
     
 
     if (!token) {
@@ -491,7 +875,7 @@ export const ShowSubCategory = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response.data;
         }
 
@@ -506,7 +890,7 @@ export const ShowSubCategory = async () => {
 
 export const GetMerchantDetails = async () => {
     const token = localStorage.getItem('Merchanttoken');
-    console.log(token);
+      (token);
     
 
     if (!token) {
@@ -522,7 +906,7 @@ export const GetMerchantDetails = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response.data;
         }
 
@@ -551,7 +935,7 @@ export const Show_Sub_SubCategory = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response.data;
         }
 
@@ -566,9 +950,9 @@ export const Show_Sub_SubCategory = async () => {
 export const GetUserAddresses = async () => {
     const response = localStorage.getItem('token');
     const token = JSON.parse(response);
-    console.log(token);
+      (token);
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -583,7 +967,7 @@ export const GetUserAddresses = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -597,7 +981,7 @@ export const GetUserAddresses = async () => {
 export const GetItemDetails = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -612,7 +996,7 @@ export const GetItemDetails = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -625,7 +1009,7 @@ export const GetItemDetails = async () => {
 export const GetUsersDetails = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -640,7 +1024,7 @@ export const GetUsersDetails = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -653,7 +1037,7 @@ export const GetUsersDetails = async () => {
 export const getAllOrders = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -668,7 +1052,7 @@ export const getAllOrders = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -676,6 +1060,34 @@ export const getAllOrders = async () => {
         console.error('Error fetching tables', error);
     }
 };
+
+
+export const Admin_all_referrals = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+
+      ("chala");
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/Admin_all_referrals`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+       return response;
+
+    } catch (error) {
+        throw error
+    }
+};
+
+
+
 
 // GetAllConfirmPayments
 
@@ -696,7 +1108,7 @@ export const GetAllConfirmPayments = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -710,7 +1122,7 @@ export const GetAllConfirmPayments = async () => {
 export const GetPaymentDetailResponse = async (orderId) => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -723,11 +1135,11 @@ export const GetPaymentDetailResponse = async (orderId) => {
                 Authorization: `Bearer ${token}`
             }
         });
-        console.log(response);
+          (response);
         
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -743,7 +1155,7 @@ export const GetPaymentDetailResponse = async (orderId) => {
 export const AllDeliveryExecutive_retrive = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -758,7 +1170,7 @@ export const AllDeliveryExecutive_retrive = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -772,7 +1184,7 @@ export const AllDeliveryExecutive_retrive = async () => {
 export const OrderItem = async (item) => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -787,7 +1199,7 @@ export const OrderItem = async (item) => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -801,7 +1213,7 @@ export const OrderItem = async (item) => {
 export const order_DeliveryData = async (item) => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -816,7 +1228,7 @@ export const order_DeliveryData = async (item) => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -830,7 +1242,7 @@ export const order_DeliveryData = async (item) => {
 export const order_Confirm_Payment_details = async (item) => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -845,7 +1257,7 @@ export const order_Confirm_Payment_details = async (item) => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -858,7 +1270,7 @@ export const order_Confirm_Payment_details = async (item) => {
 export const GetdeliveryCargesOnDistance = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -873,7 +1285,7 @@ export const GetdeliveryCargesOnDistance = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -886,7 +1298,7 @@ export const GetdeliveryCargesOnDistance = async () => {
 export const GetdeliveryCargesOnValue = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -901,7 +1313,7 @@ export const GetdeliveryCargesOnValue = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -933,7 +1345,6 @@ export const GetwareHouses = async () => {
         }
 
     } catch (error) {
-        console.error('Error fetching tables', error);
         return error.response;
     }
 };
@@ -945,7 +1356,7 @@ export const GetwareHouses = async () => {
 export const getAllPincode = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -960,7 +1371,7 @@ export const getAllPincode = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -978,7 +1389,7 @@ export const getAllPincode = async () => {
 export const VerifyPinCode = async ($pincode) => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -993,7 +1404,7 @@ export const VerifyPinCode = async ($pincode) => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1007,7 +1418,7 @@ export const VerifyPinCode = async ($pincode) => {
 export const getAllSupplier = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1022,7 +1433,7 @@ export const getAllSupplier = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1125,7 +1536,7 @@ export const getAllPurchase = async () => {
 export const getAllPurchaseItems = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1140,7 +1551,7 @@ export const getAllPurchaseItems = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1156,7 +1567,7 @@ export const getAllPurchaseItems = async () => {
 export const getAllStockItem = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1171,7 +1582,7 @@ export const getAllStockItem = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1186,7 +1597,7 @@ export const getAllStockItem = async () => {
 export const getAllLooseVariantsRegarding = async (variantId) => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1201,13 +1612,45 @@ export const getAllLooseVariantsRegarding = async (variantId) => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
     } catch (error) {
         console.error('Error fetching tables', error);
         return error.response;
+    }
+};
+
+
+
+// getAll__Unique_purchased_packet_item
+
+export const getAll__Unique_purchased_packet_item = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+
+      ("chala");
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/getAll__Unique_purchased_packet_item`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+          (response);
+        
+
+         return response;
+
+    } catch (error) {
+          (error);
+
+        throw error
     }
 };
 
@@ -1220,7 +1663,7 @@ export const getAllLooseVariantsRegarding = async (variantId) => {
 export const getAllPacketStock = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1233,16 +1676,48 @@ export const getAllPacketStock = async () => {
                 Authorization: `Bearer ${token}`
             }
         });
+          (response);
+        
 
-        if(response){
-            console.log(response);
-            return response;
-        }
+         return response;
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+          (error);
+
+        throw error
     }
 };
+
+// get_Warehouse_Stock
+
+
+
+export const get_Warehouse_Stock = async (stock_type , warehouse_unique_id) => {
+    const token = localStorage.getItem('Merchanttoken');
+
+      ("chala");
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/get_Warehouse_Stock/${stock_type}/${warehouse_unique_id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+           return response;
+
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+
 
 
 
@@ -1281,7 +1756,7 @@ export const getAllLooseStock = async () => {
 export const getAllLooseVarient = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1296,7 +1771,7 @@ export const getAllLooseVarient = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1310,7 +1785,7 @@ export const getAllLooseVarient = async () => {
 export const getAllLooseVarientForCreatingOFFER = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1325,7 +1800,7 @@ export const getAllLooseVarientForCreatingOFFER = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1338,7 +1813,7 @@ export const getAllLooseVarientForCreatingOFFER = async () => {
 export const LooseVariants_for_CreateSingupAllOffers = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1353,7 +1828,7 @@ export const LooseVariants_for_CreateSingupAllOffers = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1362,11 +1837,37 @@ export const LooseVariants_for_CreateSingupAllOffers = async () => {
     }
 };
 
+// GetItemVariants_for_creating_SingUpOffer
+
+export const GetItemVariants_for_creating_SingUpOffer = async (Created_for_warehouse) => {
+    const token = localStorage.getItem('Merchanttoken');
+
+      ("chala");
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/GetItemVariants_for_creating_SingUpOffer/${Created_for_warehouse}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response;
+
+    } catch (error) {
+        throw error
+    }
+};
+
 
 export const getAllPacketVarientForCreatingOFFER = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1381,7 +1882,7 @@ export const getAllPacketVarientForCreatingOFFER = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1394,7 +1895,7 @@ export const getAllPacketVarientForCreatingOFFER = async () => {
 export const getAllpacketVariants_CreatingFor_SignupOffer = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1409,7 +1910,7 @@ export const getAllpacketVariants_CreatingFor_SignupOffer = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1425,7 +1926,7 @@ export const getAllpacketVariants_CreatingFor_SignupOffer = async () => {
 export const getAllPacketVarient = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1439,13 +1940,42 @@ export const getAllPacketVarient = async () => {
             }
         });
 
-        if(response){
-            console.log(response);
-            return response;
-        }
+               return response;
+    } catch (error) {
+
+        throw error;
+    }
+};
+
+
+
+
+  // getAllLooseStock
+
+export const fetchWarehousesPincode = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+      ("Chala");
+    
+
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/getwarehousesPincode`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+                return response;
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+          ('Error fetching tables', error);
+
+        throw error;
     }
 };
 
@@ -1455,7 +1985,7 @@ export const getAllPacketVarient = async () => {
 export const getAllDiscounts = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1470,7 +2000,7 @@ export const getAllDiscounts = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1484,7 +2014,7 @@ export const getAllDiscounts = async () => {
 export const getAllGST = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1499,7 +2029,7 @@ export const getAllGST = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1514,7 +2044,7 @@ export const getAllGST = async () => {
 export const GetAllCreatedItems = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1529,7 +2059,7 @@ export const GetAllCreatedItems = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1576,7 +2106,7 @@ export const GetAllCreatedItemsforCreatingpacketVarients = async () => {
 export const GetAllCreatedItemsForCreatingVarients = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1591,7 +2121,7 @@ export const GetAllCreatedItemsForCreatingVarients = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1608,7 +2138,7 @@ export const GetAllCreatedItemsForCreatingVarients = async () => {
 export const GetAllCreatedDeliveryExecutive = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1623,7 +2153,7 @@ export const GetAllCreatedDeliveryExecutive = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1637,7 +2167,7 @@ export const GetAllCreatedDeliveryExecutive = async () => {
 export const GetAllOffers = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1652,7 +2182,7 @@ export const GetAllOffers = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1669,7 +2199,7 @@ export const GetAllOffers = async () => {
 export const GetDesktopMainBanners = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1684,7 +2214,7 @@ export const GetDesktopMainBanners = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1700,7 +2230,7 @@ export const GetDesktopMainBanners = async () => {
 export const GetDesktopFeaturedBanners = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1715,7 +2245,7 @@ export const GetDesktopFeaturedBanners = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1729,7 +2259,7 @@ export const GetDesktopFeaturedBanners = async () => {
 export const GetDesktopFeaturedZoneImageResponse = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1744,7 +2274,7 @@ export const GetDesktopFeaturedZoneImageResponse = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1759,7 +2289,7 @@ export const GetDesktopFeaturedZoneImageResponse = async () => {
 export const GetOfferZone = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1774,7 +2304,7 @@ export const GetOfferZone = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1790,7 +2320,7 @@ export const GetOfferZone = async () => {
 export const getActiveFeaturedZone = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1805,7 +2335,7 @@ export const getActiveFeaturedZone = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1819,19 +2349,16 @@ export const getActiveFeaturedZone = async () => {
 // getDesktopFeaturedBannersInCustomerUI
 
 
-export const getDesktopFeaturedBannersInCustomerUI = async () => {
+export const getDesktopFeaturedBannersInCustomerUI = async (pincode) => {
 
 
     try {
-        const response = await axios.get(`${baseurl}/api/getDesktopFeaturedBannersInCustomerUI`);
+        const response = await axios.get(`${baseurl}/api/getDesktopFeaturedBannersInCustomerUI/${pincode}`);
 
-        if(response){
-            console.log(response);
-            return response;
-        }
+             return response;
 
     } catch (error) {
-        return error.response;
+            throw error;
     }
 };
 
@@ -1842,7 +2369,7 @@ export const getDesktopFeaturedBannersInCustomerUI = async () => {
 export const getDesktopHomeManagementCategory = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1857,7 +2384,7 @@ export const getDesktopHomeManagementCategory = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1875,7 +2402,7 @@ export const getDesktopHomeManagementCategory = async () => {
 export const GetAllVarients = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1890,7 +2417,7 @@ export const GetAllVarients = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1904,10 +2431,10 @@ export const GetAllVarients = async () => {
 export const getAllAddress = async () => {
     const token = localStorage.getItem('token');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
-        return console.error('No Sanctum token found');
+        return   ('No Sanctum token found');
         
     }
 
@@ -1923,7 +2450,8 @@ export const getAllAddress = async () => {
         }
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+        
+          ('Error fetching tables', error);
 
         return error.response;
     }
@@ -1932,22 +2460,22 @@ export const getAllAddress = async () => {
 // getAllCartItems
 
 
-export const getAllCartItems = async () => {
+export const getAllCartItems = async (AreaPin) => {
     const token = localStorage.getItem('token');
 
 
     if (!token) {
-        return console.error('No Sanctum token found');
+        return   ('No Sanctum token found');
         
     }
 
     try {
-        const response = await axios.get(`${baseurl}/api/getAllCartItems`, {
+        const response = await axios.get(`${baseurl}/api/getAllCartItems/${AreaPin}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        console.log(response);
+          (response);
         
 
         if(response){
@@ -1955,7 +2483,7 @@ export const getAllCartItems = async () => {
         }
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+          ('Error fetching tables', error);
         return error.response;
     }
 };
@@ -1965,7 +2493,7 @@ export const getAllCartItems = async () => {
 export const getAllActivePincodes = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -1980,7 +2508,7 @@ export const getAllActivePincodes = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -1994,7 +2522,7 @@ export const getAllActivePincodes = async () => {
 export const getAllDeliveyDates = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -2009,7 +2537,7 @@ export const getAllDeliveyDates = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -2024,7 +2552,7 @@ export const getAllDeliveyDates = async () => {
 export const getAllNotAssignedOrder = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -2039,7 +2567,7 @@ export const getAllNotAssignedOrder = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -2053,7 +2581,7 @@ export const getAllNotAssignedOrder = async () => {
 export const getCancelledRequest = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -2068,12 +2596,12 @@ export const getCancelledRequest = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+          ('Error fetching tables', error);
     }
 };
 
@@ -2082,7 +2610,7 @@ export const getCancelledRequest = async () => {
 export const getOnDeliveryExecutive = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -2097,7 +2625,7 @@ export const getOnDeliveryExecutive = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -2112,7 +2640,7 @@ export const getOnDeliveryExecutive = async () => {
 export const GetExecutivesOrderHistory = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -2127,7 +2655,7 @@ export const GetExecutivesOrderHistory = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -2141,8 +2669,6 @@ export const GetExecutivesOrderHistory = async () => {
 export const checkPincodeAvailability = async (pincode) => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
-
 
     try {
         const response = await axios.get(`${baseurl}/api/checkPincodeAvailability/${pincode}`, {
@@ -2151,13 +2677,12 @@ export const checkPincodeAvailability = async (pincode) => {
             }
         });
 
-        if(response){
-            console.log(response);
-            return response;
-        }
+                    return response;
+
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+            return error.response;
+
     }
 };
 
@@ -2168,7 +2693,7 @@ export const checkPincodeAvailability = async (pincode) => {
 export const getAvailableDeliveryExecutives = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -2183,7 +2708,7 @@ export const getAvailableDeliveryExecutives = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -2199,7 +2724,7 @@ export const getAvailableDeliveryExecutives = async () => {
 export const getUserOrders = async () => {
     const token = localStorage.getItem('token');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -2214,7 +2739,7 @@ export const getUserOrders = async () => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
@@ -2229,7 +2754,7 @@ export const getUserOrders = async () => {
 export const getOrderDetail = async (orderId) => {
     const token = localStorage.getItem('token');
 
-    console.log("chala");
+      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
@@ -2244,12 +2769,13 @@ export const getOrderDetail = async (orderId) => {
         });
 
         if(response){
-            console.log(response);
+              (response);
             return response;
         }
 
     } catch (error) {
-        console.error('Error fetching tables', error);
+            return error.response;
+
     }
 };
 
@@ -2259,19 +2785,229 @@ export const getOrderDetail = async (orderId) => {
 
 // getDesktopHomeManagementCategoryInCustomerUI
 
-export const getDesktopHomeManagementCategoryInCustomerUI = async () => {
+export const getDesktopHomeManagementCategoryInCustomerUI = async (pincode) => {
  
 
     try {
-        const response = await axios.get(`${baseurl}/api/getDesktopHomeManagementCategoryInCustomerUI`);
+        const response = await axios.get(`${baseurl}/api/getDesktopHomeManagementCategoryInCustomerUI/${pincode}`);
+           return response;
 
-        if(response){
-            console.log(response);
-            return response;
-        }
+    } catch (error) {
+                throw error;
+    }
+};
+
+// dsfd
+
+// getDesktopHomeManagementGroupInCustomerUI
+
+export const getDesktopHomeManagementGroupInCustomerUI = async (pincode) => {
+       (pincode);
+    
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getDesktopHomeManagementGroupInCustomerUI/${pincode}`);
+
+                  return response;
+
+
+    } catch (error) {
+        throw error;
+
+    }
+};
+
+
+// getMegaUIGroupInCustomerUI
+
+export const getMegaUIGroupInCustomerUI = async (pincode) => {
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getMegaUIGroupInCustomerUI/${pincode}`);
+           (response);
+        
+
+        return response.data; // Return only the useful data
 
     } catch (error) {
 
-        return error.response;
+       throw error; // Let the thunk handle it using rejectWithValue
     }
 };
+
+
+
+// getDesktopHomeManagementCategoryListingsInCustomerUI
+
+export const getDesktopHomeManagementCategoryListingsInCustomerUI = async (GroupId) => {
+
+      (GroupId);
+    
+
+    
+    
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getDesktopHomeManagementCategoryListingsInCustomerUI/${GroupId}`);
+      
+        
+
+                 return response;
+
+
+    } catch (error) {
+
+          throw error;
+    }
+};
+
+
+
+// ************************* users all categories.. ********************
+
+
+
+// getDesktopHomeManagementCategoryInCustomerUI
+
+export const AllGroups = async (pincode) => {
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/AllGroups`);
+           return response;
+
+    } catch (error) {
+                throw error;
+    }
+};
+
+
+
+export const AllCategory = async (pincode) => {
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/AllCategory`);
+           return response;
+
+    } catch (error) {
+                throw error;
+    }
+};
+
+
+
+export const AllSubCategory = async (pincode) => {
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/AllSubCategory`);
+           return response;
+
+    } catch (error) {
+                throw error;
+    }
+};
+
+
+
+export const AllSubSubCategory = async (pincode) => {
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/AllSubSubCategory`);
+           return response;
+
+    } catch (error) {
+                throw error;
+    }
+};
+
+
+
+
+export const AllItems = async (pincode) => {
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/AllItems`);
+           return response;
+
+    } catch (error) {
+                throw error;
+    }
+};
+
+
+
+export const AllPacketVariant = async (pincode) => {
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/AllPacketVariant`);
+           return response;
+
+    } catch (error) {
+                throw error;
+    }
+};
+
+
+
+export const AllLooseVariant = async (pincode) => {
+ 
+
+    try {
+        const response = await axios.get(`${baseurl}/api/AllLooseVariant`);
+           return response;
+
+    } catch (error) {
+                throw error;
+    }
+};
+
+
+
+
+
+
+
+export const checkMultiplePincodes = async (pincodes) => {
+  const token = localStorage.getItem("Merchanttoken");
+
+  let pinStr = "";
+
+  if (Array.isArray(pincodes)) {
+    pinStr = pincodes.join(",");
+  } else if (typeof pincodes === "object" && pincodes?.pincodes) {
+    pinStr = pincodes.pincodes;
+  } else {
+    pinStr = String(pincodes);
+  }
+
+  pinStr = pinStr.trim();
+
+  if (!pinStr) return;
+
+  try {
+    const response = await axios.post(
+      `${baseurl}/api/admin/checkMultiplePincodes`,
+      { pincodes: pinStr },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+

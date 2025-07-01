@@ -1,12 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import useCartActions from "./useCartActions";
 import { useDispatch, useSelector } from "react-redux";
 import { GetVariantDetails } from "../CrudOperations/GetOperation";
 import { activePages } from "../ReduxStore/Slices/auth";
+import baseurl from "../CrudOperations/customURl";
+import usePincodeEffect from "../UseFullHooks/usePincodeEffect";
+import { toast } from "react-toastify";
+import LoadingModal from "../LoadingModal";
+import PincodeChecker from "./PincodeChecker";
 
 const Container = styled.div`
+  min-height: 100vh;
   display: flex;
   justify-content: flex-start; /* Adjust alignment */
   gap: 10px;
@@ -124,8 +130,8 @@ const Button = styled.button`
 `;
 
 const AddButton = styled.div`
-background: white;
-  border : 1px solid #ddd;
+  background: white;
+  border: 1px solid #ddd;
   border-radius: 6px;
   cursor: pointer;
   width: 100%;
@@ -133,10 +139,11 @@ background: white;
   font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
-
 `;
 
-const ImageGallery = () => {
+const Single_Product_page = () => {
+  const [loading, setLoading] = useState(false);
+
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -159,50 +166,78 @@ const ImageGallery = () => {
   });
   const reduxcartItems = useSelector((state) => state.cartReducer.cartItems);
   const Customer_userId = useSelector((state) => state.auth.Customer_userId);
-  const area_pin = useSelector((state) => state.auth.AreaPin);
-
 
   const navigate = useNavigate();
 
   const { addItemToCart, increaseQuantity, decreaseQuantity } =
     useCartActions();
 
+  const { triggerPincodeEffect } = usePincodeEffect();
+
+  const {
+    item_id,
+    VariantId,
+    Varient_type,
+    purchase_item_id,
+    stock_id,
+    area_pin,
+  } = useParams();
+
   useEffect(() => {
+    setLoading(true);
     const fetchVariantDetails = async () => {
-      if (location.state?.Variantid) {
+      console.log(VariantId);
+
+      if (VariantId) {
+        if (area_pin) {
+          const result = await triggerPincodeEffect(area_pin);
+
+          if (result.status !== "success") {
+            toast.error(result.message);
+            toast.error("Not Deliverable Area");
+          }
+        } else {
+          toast.error("please Enter Pincode");
+        }
+
         try {
           const response = await GetVariantDetails(
-            location.state.Variantid,
-            location.state.Varient_type,
-            location.state.purchase_item_id,
-            location.state.stock_id,
+            VariantId,
+            Varient_type,
+            purchase_item_id,
+            stock_id,
             area_pin
           );
 
-          console.log(response);
-
           if (response && response.data?.Images) {
-            console.log(response);
-
             setProductDetails(response.data);
             setImages({
               Images: response.data.Images,
               type: response.data.varient_type,
             });
+
+            // const baseurl = "https://yourdomain.com"; // replace with actual base URL
+
             const ImageData =
               response.data.varient_type === "loose"
-                ? `https://retaildukan.wipenex.com/public/images/${response.data.Images[0]?.image_path}`
-                : `https://retaildukan.wipenex.com/public/${response.data.Images[0]?.image_path}`;
+                ? `${baseurl}/images/${response.data.Images[0]?.image_path}`
+                : `${baseurl}/${response.data.Images[0]?.image_path}`;
 
             setSelectedImage(ImageData);
           }
         } catch (error) {
-          console.error("Error fetching variant details:", error);
+          toast.error(error?.response?.data?.message || error?.response?.data?.error )
+        } finally {
+          setLoading(false);
         }
       }
     };
+
     fetchVariantDetails();
-  }, [location]);
+
+    // setLoading(false)
+  }, [VariantId, Varient_type, purchase_item_id, stock_id, area_pin]);
+
 
   useEffect(() => {
     if (product?.images?.length) {
@@ -248,6 +283,13 @@ const ImageGallery = () => {
     return item ? item.quantity : 0; // Return quantity or default to 0
   };
 
+  if (loading)
+    return (
+      <div className="min-h-screen">
+        <LoadingModal />
+      </div>
+    );
+
   return (
     <Container>
       <ImageThings>
@@ -256,8 +298,8 @@ const ImageGallery = () => {
           {images.Images.map((img, index) => {
             const imagePath =
               images.type === "loose"
-                ? `https://retaildukan.wipenex.com/public/images/${img.image_path}`
-                : `https://retaildukan.wipenex.com/public/${img.image_path}`;
+                ? `${baseurl}/images/${img.image_path}`
+                : `${baseurl}/${img.image_path}`;
             return (
               <Thumbnail
                 key={index}
@@ -279,71 +321,103 @@ const ImageGallery = () => {
               {selectedImage && <PreviewImage src={selectedImage} />}
             </PreviewContainer>
 
-            <div className="flex w-full  items-center gap-4">
-              <div className="w-full">
-                {isInCart(productDetails.sku_id) ? (
-                  <Button onClick={() => navigate("/viewCart")}>
-                    Go To Cart
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      localStorage.getItem("token")
-                        ? addItemToCart(
+            {(productDetails.is_Deliverable && productDetails.is_available_in_stock) ? (
+              <div className="flex w-full  items-center gap-4">
+                <div className="w-full">
+                  {isInCart(productDetails.sku_id) ? (
+                    <Button onClick={() => navigate("/viewCart")}>
+                      Go To Cart
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        localStorage.getItem("token")
+                          ? addItemToCart(
+                              productDetails.sku_id,
+                              productDetails.PurchaseItemDetails.id,
+                              productDetails.varient_type,
+                              productDetails.stock_Details.stock_type,
+                              productDetails.stock_Details.id
+                            )
+                          : dispatch(activePages({ login: true }));
+                      }}
+                    >
+                      Add
+                    </Button>
+                  )}
+                </div>
+
+                <div className="w-full">
+                  {isInCart(productDetails.sku_id) ? (
+                    <AddButton className="flex flex-1 items-center justify-between ">
+                      <button
+                        className="p-3 text-white text-[12px] bg-gray-500   "
+                        onClick={() =>
+                          decreaseQuantity(
                             productDetails.sku_id,
                             productDetails.PurchaseItemDetails.id,
-                            productDetails.varient_type,
-                            productDetails.stock_Details.stock_type,
-                            productDetails.stock_Details.id
+                            productDetails.varient_type ||
+                              productDetails.Varient_type
                           )
-                        : dispatch(activePages({ login: true }));
-                    }}
-                  >
-                    Add 
-                  </Button>
-                )}
+                        }
+                      >
+                        -
+                      </button>
+                      <span className="px-4  bg-white text-black">
+                        {getQuantityByVariantId(productDetails.sku_id)} Item
+                      </span>
+
+                      {console.log(productDetails)}
+                      <button
+                        className="p-3 text-white text-[12px] bg-gray-500   "
+                        onClick={() =>
+                          increaseQuantity(
+                            productDetails.sku_id,
+                            productDetails.PurchaseItemDetails.id,
+                            productDetails.varient_type ||
+                              productDetails.Varient_type
+                          )
+                        }
+                      >
+                        +
+                      </button>
+                    </AddButton>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </div>
+            ) :
+
+            (!productDetails.is_Deliverable) ?
+
+
+               <div className="flex w-full  items-center gap-4">
+                <div className="w-full">
+                  <Button onClick={() => navigate("/viewCart")}>go to cart</Button>
+                </div>
               </div>
 
-              <div className="w-full">
-                {isInCart(productDetails.sku_id) ? (
-                  <AddButton className="flex flex-1 items-center justify-between ">
-                    <button
-                      className="p-3 text-white text-[12px] bg-gray-500   "
-                      onClick={() =>
-                        decreaseQuantity(
-                          productDetails.sku_id,
-                          productDetails.PurchaseItemDetails.id,
-                          productDetails.varient_type ||
-                            productDetails.Varient_type
-                        )
-                      }
-                    >
-                      -
-                    </button>
-                    <span className="px-4  bg-white text-black">
-                      {getQuantityByVariantId(productDetails.sku_id)} Item
-                    </span>
 
-                    {console.log(productDetails)}
-                    <button
-                      className="p-3 text-white text-[12px] bg-gray-500   "
-                      onClick={() =>
-                        increaseQuantity(
-                          productDetails.sku_id,
-                          productDetails.PurchaseItemDetails.id,
-                          productDetails.varient_type ||
-                            productDetails.Varient_type
-                        )
-                      }
-                    >
-                      +
-                    </button>
-                  </AddButton>
-                ) : (
-                  ""
-                )}
+              :
+
+               (!productDetails.is_available_in_stock) ?
+
+                 <div className="flex w-full  items-center gap-4">
+                <div className="w-full">
+                  <Button >Out Of Stock</Button>
+                </div>
               </div>
-            </div>
+
+               :
+
+               <div className="flex w-full  items-center gap-4">
+                <div className="w-full">
+                  <Button >Checking..</Button>
+                </div>
+              </div>
+
+            }
           </div>
 
           {/* Magnified Image (appears on the right, tracks cursor) */}
@@ -402,60 +476,20 @@ const ImageGallery = () => {
                 )}
               </Discount>
               <h2 className="text-gray-500">(inclusive of all taxes)</h2>
+
+              <PincodeChecker
+                productDetails={productDetails}
+                area_pin={area_pin}
+                onPincodeChange={(newPin) => {
+                  // You can re-run your pincode checking hook/API here
+                  console.log("New pin to check:", newPin);
+                  // For example: usePincodeEffect(newPin);
+                }}
+              />
             </div>
           </div>
 
-          {/* Delivery & Quantity */}
-          <div className="flex flex-col gap-4">
-            {/* Delivery */}
-            {/* <div className="flex flex-row justify-between items-center">
-              <div className="text-sm font-semibold text-gray-500">
-                Delivery
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="relative flex items-center">
-                  <input
-                    type="text"
-                    placeholder="Enter Pincode"
-                    className="border px-2 py-1 text-sm pr-14" // Add padding to avoid text overlap
-                  />
-                  <div className="absolute right-2  p-1 rounded">
-                    <button className="text-blue-500 text-sm">Change</button>
-                  </div>
-                </div>
-
-                <p className="text-[12px] text-gray-500">
-                  Delivery by Tomorrow, Saturday
-                </p>
-              </div>
-              <p className="text-sm text-gray-500">
-                Schedule delivery at your convenience
-              </p>
-            </div> */}
-
-            {/* Quantity */}
-
-            {/* <div className="flex flex-row items-center gap-5">
-              <h3 className="text-sm font-semibold text-gray-500">Quantity</h3>
-              <div className="flex flex-row gap-3">
-                <span className="border px-3 py-1 rounded cursor-pointer">
-                  500g
-                </span>
-                <span className="border px-3 py-1 rounded cursor-pointer">
-                  1kg
-                </span>
-                <span className="border px-3 py-1 rounded cursor-pointer">
-                  2kg
-                </span>
-              </div>
-            </div> */}
-
-            {/* Seller */}
-            {/* <div className="flex flex-row justify-between items-center">
-              <h3 className="text-sm font-semibold text-gray-500">Seller</h3>
-              <p className="text-sm">Sell Name</p>
-            </div> */}
-          </div>
+       
 
           {/* Specifications */}
           <div className="mt-4 pe-3 border  ">
@@ -481,4 +515,4 @@ const ImageGallery = () => {
   );
 };
 
-export default ImageGallery;
+export default Single_Product_page;

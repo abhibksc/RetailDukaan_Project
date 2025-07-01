@@ -24,7 +24,12 @@ const UserOrder = () => {
     setLoading(true);
     const fetchOrders = async () => {
       const response = await getUserOrders();
-      if (response && response.data.message === `Successfully retrived Customer Orders`) {
+      console.log(response);
+
+      if (
+        response &&
+        response.data.message === `Successfully retrived Customer Orders`
+      ) {
         setOrders(response.data.Data);
       }
       setLoading(false);
@@ -67,7 +72,7 @@ const UserOrder = () => {
       <LoadingModal />
     </div>
   ) : (
-    <div className="xl:flex mx-20">
+    <div className="xl:flex mx-20 ">
       {/* Sidebar for filters */}
       <OrderBar setOrderFilter={setOrderFilter} />
 
@@ -91,9 +96,7 @@ const UserOrder = () => {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse border-gray-300">
             <thead className="bg-gray-100">
-              <tr>
-                {/* Table header */}
-              </tr>
+              <tr>{/* Table header */}</tr>
             </thead>
 
             <tbody>
@@ -136,8 +139,7 @@ const UserOrder = () => {
                         <td className="border-b p-3 bg-white text-sm text-gray-800 font-semibold text-center">
                           {order.order_status.order_status === "cancelled"
                             ? "Order Cancelled"
-                            : order.order_status.delivery_status ===
-                              "delivered"
+                            : order.order_status.delivery_status === "delivered"
                             ? "Order Delivered"
                             : `Scheduled at ${formatTime(
                                 order.Expected_Delivery.expected_DeliveryTime
@@ -156,7 +158,13 @@ const UserOrder = () => {
                       <td className="border-b bg-white p-7 flex gap-3 text-sm text-gray-800">
                         <div className="flex gap-4 items-center">
                           <img
-                            src={order.Items[0].image}
+                            src={
+                              order.Items.offer_items.length > 0
+                                ? order.Items.offer_items[0].offer_image_path
+                                : order.Items.selected_items.length > 0
+                                ? order.Items.selected_items[0].image
+                                : ""
+                            }
                             alt="Item"
                             className="w-16 h-16 object-cover rounded-sm"
                           />

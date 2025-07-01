@@ -7,15 +7,12 @@ import ViewSpecification from "./ViewVariant/ViewSpecification";
 import { useNavigate } from "react-router-dom";
 //
 
-const VariantTable = ({Variants , updationData , BrandList , onDelete}) => {
-
-    const navigate = useNavigate();
-
-
+const VariantTable = ({ Variants, updationData, BrandList, onUpdate , onDelete }) => {
+  console.log(Variants);
+  
+  const navigate = useNavigate();
 
   const [PacketVarients, setPacketVarient] = useState([]);
-
-
 
   // Packet_Specification_View
 
@@ -28,28 +25,28 @@ const VariantTable = ({Variants , updationData , BrandList , onDelete}) => {
 
   const [ImageView, setImageView] = useState([]);
 
+  useEffect(()=>{
+
+setPacketVarient(Variants)
+  },[Variants])
+
+  // const deleteVariant = (index) => {
+  //   setPacketVarient((prev) => prev.filter((_, i) => i !== index));
+  //   toast.success("Variant deleted successfully");
+  // };
+
+  const handleDeletevarient = async (          { type, id }) => {
+    console.log(type);
+    console.log(id);
+    
+
+
+                    if(type === "withDB_id"){
 
 
 
 
-
-
-
-  const deleteVariant = (index) => {
-    setPacketVarient((prev) => prev.filter((_, i) => i !== index));
-    toast.success("Variant deleted successfully");
-  };
-
-
-
-
-
-
-  const handleDeletevarient = async (id) => {
-    const previousLooseVarientList = [...PacketVarients];
-    const updatedList = PacketVarients.filter((p) => p.id !== id);
-    setPacketVarient(updatedList);
-
+                      
     try {
       const response = await DeletePacketVarient(id);
 
@@ -61,16 +58,57 @@ const VariantTable = ({Variants , updationData , BrandList , onDelete}) => {
         toast.error(`Status: ${response.data.message}`);
       }
     } catch (error) {
-      toast.error("Error deleting Brand.");
+      toast.log("Error deleting Brand.");
     }
+
+
+
+
+                    }
+
+                    else{
+
+                      console.log("ye  chala");
+
+                       // For unsaved (loose) variants
+    // setPacketVarient((prev) => prev.filter((_, i) => i !== id));
+
+
+    onDelete(id)
+                           
+
+    //                     const previousLooseVarientList = [...PacketVarients];
+    // const updatedList = PacketVarients.filter((p) => p !== id);
+    // setPacketVarient(updatedList);
+
+
+    //                   console.log(previousLooseVarientList[0]);
+    //                   console.log(PacketVarients);
+
+
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
   };
 
+  // editVarient
 
-    // editVarient
-
-    const editVarient = (index) => {
-        onDelete(index)
-      };
+  const editVarient = ({type, id}) => {
+    console.log(type);
+    console.log(id);
+    
+    onUpdate(type,id);
+  };
 
   return (
     <div>
@@ -85,12 +123,12 @@ const VariantTable = ({Variants , updationData , BrandList , onDelete}) => {
             <th className="p-2 text-left">Image</th>
             <th className="p-2 text-left">Specification</th>
             <th className="p-2 text-left">Limit/Order</th>
-            {!updationData && <th className="p-2 text-left">Edit</th>}
-            {updationData && <th className="p-2 text-left">Delete</th>}
+            { <th className="p-2 text-left">Edit</th>}
+            { <th className="p-2 text-left">Delete</th>}
           </tr>
         </thead>
         <tbody>
-          {Variants.map((variant, index) => (
+          {PacketVarients.map((variant, index) => (
             <tr key={index} className="border-b">
               <td className="p-2">{variant.variantName}</td>
 
@@ -109,9 +147,9 @@ const VariantTable = ({Variants , updationData , BrandList , onDelete}) => {
                 <BiAlignRight
                   onClick={() => {
                     setImageView(
-                      variant.ImageBucket
-                        ? variant.ImageBucket
-                        : variant.PacketImages
+                      variant?.ImageBucket
+                        ? variant?.ImageBucket
+                        : variant?.PacketImages
                     );
                     setViewImageModal(true);
                   }}
@@ -133,10 +171,19 @@ const VariantTable = ({Variants , updationData , BrandList , onDelete}) => {
 
               <td className="p-2">{variant.limit_per_order}</td>
 
-              {!updationData && (
+              {updationData ? (
                 <td className="p-2 cursor-pointer">
                   <button
-                    onClick={() => editVarient(index)}
+                    onClick={() => editVarient({ type: "withDB_id", id : index })}
+                    className="bg-gray-500 hover:bg-gray-600 text-white p-1 rounded"
+                  >
+                    Edit
+                  </button>
+                </td>
+              ) : (
+                <td className="p-2 cursor-pointer">
+                  <button
+                    onClick={() => editVarient({ type: "withIndex_id", id : index })}
                     className="bg-gray-500 hover:bg-gray-600 text-white p-1 rounded"
                   >
                     Edit
@@ -144,22 +191,46 @@ const VariantTable = ({Variants , updationData , BrandList , onDelete}) => {
                 </td>
               )}
 
-              {updationData && (
+              {updationData ? (
                 <td className="p-2 cursor-pointer">
                   <button
-                    onClick={() => handleDeletevarient(variant.id)}
+                    onClick={() => handleDeletevarient(
+                      
+                      { type: "withDB_id", id : variant.id }
+
+
+
+                    )}
                     className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
                   >
                     Delete
                   </button>
                 </td>
-              )}
+              )
+              
+              :
+
+              (
+
+
+                <td className="p-2 cursor-pointer">
+                  <button
+                    onClick={() => handleDeletevarient(       { type: "withIndex_id", id : index })}
+                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                  >
+                    Delete
+                  </button>
+                </td>
+              )
+              
+              
+              
+              
+              }
             </tr>
           ))}
         </tbody>
       </table>
-
-     
 
       {viewSpecificationModal && (
         <ViewSpecification

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Select from "react-select";
 import { toast } from "react-toastify";
 import {
   GetAllCreatedItems,
@@ -7,18 +8,51 @@ import {
   GetAllOffers,
   getAllPacketStock,
   getAllPacketVarientForCreatingOFFER,
+  Show_Users_Groups_for_Creating_Offer,
   Show_Users_MainCategory,
   Show_Users_Sub_SubCategory,
   Show_users_SubCategory,
 } from "../../CrudOperations/GetOperation";
 import { CreateOffer } from "../../CrudOperations/PostOperation";
-import * as Tone from 'tone';
+import * as Tone from "tone";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import baseurl from "../../CrudOperations/customURl";
 
 const AddOffers = () => {
   const [item_id, setItem_Id] = useState("");
   const [looseVariantId, setLooseVariantId] = useState("");
   const [PacketVariantId, setPacketVariantId] = useState("");
+
+  const user_AllGroup = useSelector(
+    (state) => state.GroupCategorySlice_reducer.user_AllGroup
+  );
+  const user_AllCategory = useSelector(
+    (state) => state.GroupCategorySlice_reducer.user_AllCategory
+  );
+  const user_AllSubCategory = useSelector(
+    (state) => state.GroupCategorySlice_reducer.user_AllSubCategory
+  );
+  const user_AllSubSubCategory = useSelector(
+    (state) => state.GroupCategorySlice_reducer.user_AllSubSubCategory
+  );
+  const user_AllItems = useSelector(
+    (state) => state.GroupCategorySlice_reducer.user_AllItems
+  );
+  const user_AllLooseVariant = useSelector(
+    (state) => state.GroupCategorySlice_reducer.user_AllLooseVariant
+  );
+  const user_AllPacketVariant = useSelector(
+    (state) => state.GroupCategorySlice_reducer.user_AllPacketVariant
+  );
+
+  console.log(user_AllGroup);
+  console.log(user_AllCategory);
+  console.log(user_AllSubCategory);
+  console.log(user_AllSubSubCategory);
+  console.log(user_AllItems);
+  console.log(user_AllLooseVariant);
+  console.log(user_AllPacketVariant);
 
 
   const [quantity, setQuantity] = useState("");
@@ -27,11 +61,12 @@ const AddOffers = () => {
   const [purchase_item_id, setPurchase_item_id] = useState("");
   const [category_id, setCategoryId] = useState("");
 
+  const [group_id, setGroupId] = useState("");
+
   const [PostedDate, setPostedDate] = useState("");
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
 
   const [offerName, setOfferName] = useState("");
   const [OfferPercentValue, setOfferPercentValue] = useState("");
@@ -44,7 +79,6 @@ const AddOffers = () => {
   const [Status, setStatus] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const Navigate = useNavigate();
-
 
   //   const [category_id, setCategoryId] = useState("");
   const [subCategory_id, setSubCategoryId] = useState("");
@@ -65,59 +99,22 @@ const AddOffers = () => {
   const [LooseVariantList, setLooseVarientList] = useState([]);
   const [PacketVariantList, setPacketVarientList] = useState([]);
 
-
   const [OfferList, setOfferList] = useState([]);
+  const [groupList, setGroupList] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [allOffer,items, Category, Sub_Category, Sub_subCategory , looseVariant, packetVarient] =
-          await Promise.all([
-            GetAllOffers(),
-            GetAllCreatedItems(),
-            Show_Users_MainCategory(),
-            Show_users_SubCategory(),
-            Show_Users_Sub_SubCategory(),
-            getAllLooseVarientForCreatingOFFER(),
-            getAllPacketVarientForCreatingOFFER()
-          ]);
-        console.log(looseVariant);
-        console.log(packetVarient);
-
-
-
-
-        if (allOffer.data.message === "All Offer retrieved successfully!"){
-            setOfferList(items.data.data);
-        }
-        if (items.data.message === "All Items retrieved successfully!"){
-            setItemList(items.data.data);
-        }
-
-        if(looseVariant.data.message === "LooseVarientForCreatingOFFER retrieved successfully!"){
-          setLooseVarientList(looseVariant.data.data);
-
-
-        }
-
-
-        if(packetVarient.data.message === "PacketVarientForCreatingOFFER retrieved successfully!"){
-
-          setPacketVarientList(packetVarient.data.data);
-
-
-
-        }
-
-
-
+        const [allOffer] = await Promise.all([GetAllOffers()]);
+        console.log(allOffer);
         
-        if (Category?.data) setCategoryList(Category.data);
-        if (Sub_Category?.data) setSubCategoryList(Sub_Category.data);
-        if (Sub_subCategory?.data) setSub_SubCategoryList(Sub_subCategory.data);
+
+        if (allOffer.data.message === "All Offer retrieved successfully!") {
+          // setOfferList(items.data.data);
+        }
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.log("Error fetching data: ", error);
         toast.error("Failed to fetch categories");
       } finally {
         setLoading(false);
@@ -131,62 +128,41 @@ const AddOffers = () => {
 
     // const filterUnit = FilterUnitList.find((ele)=>ele.id === )
     const formDataa = {
-        PostedDate,
-        offerName,
-        OfferPercentValue,
-        category_id ,
-        subCategory_id ,
-        sub_subCategory_id ,
-        item_id ,
-        startDate,
-        endDate,
-        Status,
-        looseVariantId,
-        PacketVariantId
+      PostedDate,
+      offerName,
+      OfferPercentValue,
+      category_id,
+      subCategory_id,
+      sub_subCategory_id,
+      item_id,
+      startDate,
+      endDate,
+      Status,
+      looseVariantId,
+      PacketVariantId,
+      group_id,
     };
     console.log(formDataa);
-     const response = await CreateOffer({ formDataa });
-     console.log(response);
-      if (response && response.data.message === "Offer saved successfully!") {
+    const response = await CreateOffer({ formDataa });
+    console.log(response);
+    if (response && response.data.message === "Offer saved successfully!") {
+      const Merchanttoken = localStorage.getItem("Merchanttoken");
 
+      // Navigate(`/admin/${Merchanttoken}/ManageOffer`);
 
+      setCategoryId(""),
+        setSubCategoryId(""),
+        setSub_SubCategoryId(""),
+        setItem_Id(""),
+        setLooseVariantId("");
+      setPacketVariantId("");
 
-        const Merchanttoken = localStorage.getItem("Merchanttoken");
+      toast.success(response.data.message);
+      const synth = new Tone.Synth().toDestination();
+      await Tone.start(); // Required to unlock audio context in modern browsers
+      synth.triggerAttackRelease("C4", "8n"); // Plays a "C4" note for a short duration
+    }
 
-
-
-
-        // Navigate(`/admin/${Merchanttoken}/ManageOffer`);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        setCategoryId("") ,
-        setSubCategoryId("") ,
-        setSub_SubCategoryId("") ,
-        setItem_Id("") ,
-
-        setLooseVariantId("")
-        setPacketVariantId("")
-
-        toast.success(response.data.message)
-        const synth = new Tone.Synth().toDestination();
-        await Tone.start(); // Required to unlock audio context in modern browsers
-        synth.triggerAttackRelease("C4", "8n"); // Plays a "C4" note for a short duration
-       
-      }
-    
     // closeModal();
   };
 
@@ -241,6 +217,44 @@ const AddOffers = () => {
     (subSubCat) => subSubCat.sub_category_id === Number(subCategory_id)
   );
 
+  const options = groupList.map((option) => ({
+    value: option.GroupId,
+    label: (
+      <div className="flex items-center gap-2">
+        <img
+          src={option.GroupImage}
+          alt={option.GroupName}
+          className="h-5 w-5 rounded-full"
+        />
+        <span>{option.GroupName}</span>
+      </div>
+    ),
+  }));
+
+  const handleChange = (selectedOption) => {
+    setGroupId(selectedOption?.value);
+  };
+
+  const toSelectOptions = (list, labelKey, valueKey, imageKey) => {
+    return list.map((item) => ({
+      value: item[valueKey],
+      label: (
+        <div className="flex items-center gap-2">
+          {imageKey && item[imageKey] && (
+            <img
+              src={item[imageKey]}
+              alt={item[labelKey]}
+              className="h-5 w-5 rounded-full"
+            />
+          )}
+          <span>{item[labelKey]}</span>
+        </div>
+      ),
+    }));
+  };
+
+
+  
 
   return (
     <div className="p-6 bg-white rounded shadow-md">
@@ -255,7 +269,7 @@ const AddOffers = () => {
       {/* Add Item Form */}
       <div className="grid grid-cols-4 gap-5 border-b-2 p-2  pb-5">
         {/* date Input */}
-        <div>
+        <div className="flex items-center gap-2">
           <label className="block font-medium">Date</label>
           <input
             type="date"
@@ -267,7 +281,7 @@ const AddOffers = () => {
         </div>
 
         {/* offerName Input */}
-        <div>
+        <div className="flex items-center gap-2">
           <label className="block font-medium">Offer Name</label>
           <input
             type="text"
@@ -279,7 +293,7 @@ const AddOffers = () => {
         </div>
 
         {/* Value Input */}
-        <div>
+        <div className="flex items-center gap-2">
           <label className="block font-medium">Offer Value %</label>
           <input
             type="number"
@@ -290,130 +304,94 @@ const AddOffers = () => {
           />
         </div>
 
+        {/* Group Dropdown */}
+        <Select
+          options={toSelectOptions(
+            user_AllGroup,
+            "name",
+            "id",
+    "images"
+          )}
+          onChange={(selected) => setGroupId(selected?.value)}
+          className="w-full"
+          placeholder="Select Group"
+        />
+
         {/* Category Dropdown */}
-        <div className="mb-2">
-          <label className="block text-gray-700">Category</label>
-          <select
-            value={category_id}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="border border-gray-300 p-1 w-full rounded-md"
-          >
-            <option value="">Select Category</option>
-            {CategoryList.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          options={toSelectOptions(user_AllCategory, "name", "id", "image_url")}
+          onChange={(selected) => setCategoryId(selected?.value)}
+          className="w-full"
+          placeholder="Select Category"
+        />
 
         {/* SubCategory Dropdown */}
-        <div className="mb-2">
-          <label className="block text-gray-700">Sub Category</label>
-          <select
-            value={subCategory_id}
-            onChange={(e) => setSubCategoryId(e.target.value)}
-            className="border border-gray-300 p-1 w-full rounded-md"
-            // disabled={!category_id}
-          >
-            <option value="">Select SubCategory</option>
-            {SubCategoryList.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          options={toSelectOptions(
+            user_AllSubCategory,
+            "name",
+            "id",
+            "image_url"
+          )}
+          onChange={(selected) => setSubCategoryId(selected?.value)}
+          className="w-full"
+          placeholder="Select SubCategory"
+        />
 
         {/* Sub-SubCategory Dropdown */}
-        <div className="mb-2">
-          <label className="block text-gray-700">Sub SubCategory</label>
-          <select
-            value={sub_subCategory_id}
-            onChange={(e) => setSub_SubCategoryId(e.target.value)}
-            className="border border-gray-300 p-1 w-full rounded-md"
-          >
-            <option value="">Select Sub SubCategory</option>
-            {Sub_SubCategoryList.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          options={toSelectOptions(
+            user_AllSubSubCategory,
+            "name",
+            "id",
+            "image_url"
+          )}
+          onChange={(selected) => setSub_SubCategoryId(selected?.value)}
+          className="w-full"
+          placeholder="Select Sub SubCategory"
+        />
 
         {/* ItemList Dropdown */}
-        <div className="mb-2">
-  <label className="block text-gray-700 text-sm font-medium">Item</label>
-  <select
-    value={item_id}
-    onChange={(e) => setItem_Id(e.target.value)}
-    className="border border-gray-300 p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-  >
-    <option value="">Select Item</option>
-    {ItemList.map((option) => (
-      <option key={option.id} value={option.id}>
-        {option.ItemName}
-      </option>
-    ))}
-  </select>
-</div>
-
-
-
-
+        <Select
+          options={toSelectOptions(
+            user_AllItems,
+            "ItemName",
+            "id",
+            "image_url"
+          )}
+          onChange={(selected) => setItem_Id(selected?.value)}
+          className="w-full"
+          placeholder="Select Item"
+        />
 
         {/* LooseVariant Dropdown */}
-        <div className="mb-2">
-  <label className="block text-gray-700 text-sm font-medium">Loose Varient</label>
-  <select
-    value={looseVariantId}
-    onChange={(e) => setLooseVariantId(e.target.value)}
-    className="border border-gray-300 p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-  >
-    <option value="">Select Item</option>
-    {LooseVariantList.map((option) => (
-      <option key={option.id} value={option.id}>
-        {option.variantName}
-      </option>
-    ))}
-  </select>
-</div>
-
+        <Select
+          options={toSelectOptions(
+            user_AllLooseVariant,
+            "variantName",
+            "id",
+            "image_url"
+          )}
+          onChange={(selected) => setLooseVariantId(selected?.value)}
+          className="w-full"
+          placeholder="Select Loose Variant"
+        />
 
         {/* PacketVariant Dropdown */}
-        <div className="mb-2">
-  <label className="block text-gray-700 text-sm font-medium">Packet Varient</label>
-  <select
-    value={PacketVariantId}
-    onChange={(e) => setPacketVariantId(e.target.value)}
-    className="border border-gray-300 p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-  >
-    <option value="">Select Item</option>
-    {PacketVariantList.map((option) => (
-      <option key={option.id} value={option.id}>
-        {option.variantName}
-      </option>
-    ))}
-  </select>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <Select
+          options={toSelectOptions(
+            user_AllPacketVariant,
+            "variantName",
+            "id",
+            "image_url"
+          )}
+          onChange={(selected) => setPacketVariantId(selected?.value)}
+          className="w-full"
+          placeholder="Select Packet Variant"
+        />
 
         {/* Start date Input */}
-        <div>
+        <div className="flex items-center gap-2">
           <label className="block font-medium">Start Date</label>
           <input
             type="date"
@@ -425,7 +403,7 @@ const AddOffers = () => {
         </div>
 
         {/* endDate Input */}
-        <div>
+        <div className="flex items-center gap-2">
           <label className="block font-medium">End Date</label>
           <input
             type="date"

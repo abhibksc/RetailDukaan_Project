@@ -1,5 +1,5 @@
 import React, { use, useEffect, useState } from "react";
-import AddressPopUp from "../ViewCart/AddressPopUp";
+import AddressPopUp from "../ViewCart/MainPart/AddressPopUp";
 import { getAllAddress } from "../CrudOperations/GetOperation";
 import { useLocation } from "react-router-dom";
 

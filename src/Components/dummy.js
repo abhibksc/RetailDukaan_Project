@@ -2,7 +2,7 @@ public function deletePurchaseItem($id)
 {
     // Begin a transaction
     DB::beginTransaction();
-
+00000as00 0 0000
     try {
         $purchaseItem = DB::table('purchases_items')
             ->join('si_units', 'purchases_items.unit_Id', '=', 'si_units.id')

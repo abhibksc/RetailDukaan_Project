@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { GetAllCreatedDeliveryExecutive, GetAllCreatedItems, GetExecutivesOrderHistory } from "../../../CrudOperations/GetOperation";
-import { CreteDeliveryExecutive } from "../../../CrudOperations/PostOperation";
-import { ChangeDeliveryExecutiveStatus } from "../../../CrudOperations/Update&Edit";
-import { deleteStoredItem } from "../../../CrudOperations/DeleteOperation";
-import PaginationExample from "../../Stocks/Purchase/PaginationExample";
+import PaginationExample from "../../../PaginationExample";
 import ExecutiveSearchBar from "../ExecutiveSearchBar";
 import { FaListAlt } from "react-icons/fa";
 import ExeOrders from "./ExeOrders";

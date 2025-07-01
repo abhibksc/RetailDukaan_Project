@@ -9,6 +9,7 @@ import {
   Show_users_SubCategory,
 } from "../CrudOperations/GetOperation";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 const MegaMenu = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -19,6 +20,7 @@ const MegaMenu = () => {
   const [subsubCategories, setSubsubCategories] = useState([]);
   const [selectedSubMenu, setSelectedSubMenu] = useState([]);
   const [selectedSubSubMenu, setSelectedSubSubMenu] = useState([]);
+    const AreaPin = useSelector((state) => state.auth.AreaPin);
 
   // Fetch categories, subcategories, and sub-subcategories
   useEffect(() => {
@@ -102,7 +104,7 @@ const MegaMenu = () => {
     return categories.map((category) => (
       <li
         key={category.id}
-        className="  z-10 group py-2"
+        className="   z-10 group py-2"
         onMouseEnter={() => toggleDropdown(category.id)}
         onMouseLeave={() => toggleDropdown(null)} // Close sub-submenu on mouse leave
       >
@@ -130,17 +132,17 @@ const MegaMenu = () => {
 
         {/* Submenu */}
         {dropdownOpen === category.id && selectedSubMenu.length > 0 && (
-          <ul className="absolute text-gray-700 pt-2 bg-white lg:w-52 w-[25rem]">
+          <ul className="absolute text-[12px] text-gray-700 pt-2 bg-white lg:w-52 w-[25rem]">
             {selectedSubMenu.map((sub) => (
               <li
                 key={sub.id}
-                className="relative px-3 bg-gray-100 shadow-lg w-56 py-1 text-[14px]"
+                className="relative px-3 bg-gray-100 shadow-lg w-56 py-1 "
                 onMouseEnter={() => toggleSubmenu(sub.id)}
                 onMouseLeave={() => setSubDropdownOpen(null)} // Close sub-submenu on mouse leave
               >
                 <Link
                   className="text-gray-900 hover:text-blue-500 py-2 px-4 flex"
-                  to={`/grocery/${category.name}/${sub.name}`}
+                  to={`/grocery/${category.name}/${sub.name}/${AreaPin}`}
                   state={{
                     // Category_id: category.id,
                     // Category_name: category.name,
@@ -162,7 +164,7 @@ const MegaMenu = () => {
                       <li className="px-3 py-2">
                         <Link
                           className="text-gray-900 hover:text-blue-500 flex justify-between"
-                          to={`/grocery/${category.name}/${sub.name}`}
+                          to={`/grocery/${category.name}/${sub.name}/${AreaPin}`}
                           state={
                             {
                               // Category_id: category.id,
@@ -176,7 +178,7 @@ const MegaMenu = () => {
                         </Link>
                         <Link
                             className="block text-gray-900 hover:text-blue-500"
-                            to={`/grocery/${category.name}/${sub.name}`}
+                            to={`/grocery/${category.name}/${sub.name}/${AreaPin}`}
                             state={{
                               id: sub.id,
                               type: "SubCategory",
@@ -193,7 +195,7 @@ const MegaMenu = () => {
                         <li key={subSub.id} className="px-3 py-2">
                           <Link
                             className="text-gray-900 hover:text-blue-500 flex justify-between"
-                            to={`/grocery/${category.name}/${sub.name}/${subSub.name}`}
+                            to={`/grocery/${category.name}/${sub.name}/${subSub.name}/${AreaPin}`}
                             state={{
                               // Category_id: category.id,
                               // Category_name: category.name,
@@ -221,7 +223,7 @@ const MegaMenu = () => {
   };
 
   return (
-    <div className="bg-white pt-16 shadow-md flex-grow w-full  ">
+    <div className="bg-white pt-16  shadow-md flex-grow w-full  ">
       <ul className="lg:flex  justify-around mx-20">{renderMenuItems()}</ul>
     </div>
   );

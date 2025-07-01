@@ -23,7 +23,7 @@ const useAddressActions = () => {
 
 
         const response = await getAllAddress();
-            console.log(response);
+              (response);
 
 
             if(response && response?.data){
@@ -46,9 +46,9 @@ const useAddressActions = () => {
     //   );
 
 
-    //   console.log(items);
+    //     (items);
 
-    //   console.log(filterItem);
+    //     (filterItem);
       
 
       
@@ -62,11 +62,11 @@ const useAddressActions = () => {
 
   
     //     if (filterItem) {
-    //         console.log(Customer_userId);
-    //         console.log(variantId);
+    //           (Customer_userId);
+    //           (variantId);
   
     //         const response = await getAllAddress();
-    //         console.log(response);
+    //           (response);
   
     //         if (
     //           response &&
@@ -78,23 +78,23 @@ const useAddressActions = () => {
     //         }
     //         if (response && response.data.message == "address not found") {
     //           toast.warn("Please Set Address");
-    //           console.log(response);
+    //             (response);
   
     //           navigate("/profile/addresses");
     //         }
   
     //         if (response && response.data.message == "Out Of Stock") {
     //           toast.warn("Out Of Stock");
-    //           console.log(response);
+    //             (response);
     //         }
 
     //         if (response && response.data.message) {
     //           toast.error(response.data.message);
-    //           console.log(response);
+    //             (response);
     //         }
     //     }
 
-        console.log(Customer_userId);
+          (Customer_userId);
         
     } 
 
@@ -113,8 +113,8 @@ const useAddressActions = () => {
       return;
     }
 
-    console.log(reduxcartItems);
-    console.log(variantId);
+      (reduxcartItems);
+      (variantId);
     
 
     const filterItem = reduxcartItems.data.find(
@@ -125,7 +125,7 @@ const useAddressActions = () => {
       toast.warn("Item not found");
       return;
     }
-    console.log(reduxcartItems);
+      (reduxcartItems);
     dispatch(increaseCart({ variant_sku_id: filterItem.variant_sku_id }));
 
     try {
@@ -137,7 +137,7 @@ const useAddressActions = () => {
         Varient_type,
       });
 
-      console.log(response);
+        (response);
       
 
       if (response?.data.message === "Insufficient stock to increase item quantity") {
@@ -167,7 +167,7 @@ const useAddressActions = () => {
     const login = localStorage.getItem("token");
 
     if (!login) {
-      console.log("User not logged in");
+        ("User not logged in");
       return;
     }
 
@@ -176,7 +176,7 @@ const useAddressActions = () => {
     );
 
     if (!filterItem) {
-      console.log("Item not found");
+        ("Item not found");
       return;
     }
 

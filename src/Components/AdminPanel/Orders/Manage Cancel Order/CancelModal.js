@@ -55,123 +55,115 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
           Items List
         </h2>
         {/* Items List Container with Scroll */}
-        {Itemslist && Itemslist.length > 0 ? (
-          <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-2 scrollbar-hide">
-            {Itemslist.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md"
-              >
-                {console.log(item)}
-                {/* Item Image */}
-                <img
-                  src={item.image}
-                  alt={item.ItemName}
-                  className="w-20 h-20 object-cover rounded-md shadow"
-                />
+{Itemslist && Itemslist.length > 0 ? (
+  <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-2 scrollbar-hide">
+    {Itemslist.map((item, index) => (
+      <div
+        key={index}
+        className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md"
+      >
+        {/* Item Image */}
+        <img
+          src={item.image}
+          alt={item.ItemName}
+          className="w-20 h-20 object-cover rounded-md shadow"
+        />
 
-                <div className="flex justify-between w-full">
-                  {console.log(item)}
-
-                  <div className="text-right">
-                    <div className="flex gap-2">
-                      <p className="text-sm text-gray-500">Total Price:</p>
-                      <p className=" font-medium text-gray-800">
-                        {/* ₹{item.total_price} */}₹{"102"}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <p className="text-sm text-gray-500">Discount:</p>
-                      <p className=" font-medium text-gray-800">
-                        ₹{"10"}
-                        {/* ₹{item.totalDiscount} */}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* <div className="font-semibold mt-5">
-                    {item.Status}
-                </div> */}
-
-                  <div className="mt-5 ">
-                    {/* Debugging to check the exact value */}
-                    {item.Status != "returned" &&
-                      item.Status != "return rejected" && (
-                        <div
-                          className={`flex space-x-10 ${
-                            cancellation_status !== "Approved" &&
-                            "cursor-not-allowed"
-                          }`}
-                        >
-                          <button
-                            className={`p-2  shadow-lg rounded-sm text-green-500 border hover:text-green-700 hover:shadow-md hover:rounded-md ${
-                              cancellation_status !== "Approved" &&
-                              "cursor-not-allowed"
-                            } `}
-                            onClick={() =>
-                              handleAcceptClick(item.ItemCancellationID)
-                            }
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-5 h-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          </button>
-
-                          <button
-                            className={`text-red-500 p-2 rounded-sm shadow-lg ${
-                              cancellation_status !== "Approved" &&
-                              "cursor-not-allowed"
-                            } hover:text-red-700 hover:shadow-md hover:rounded-md`}
-                            // onClick={() =>
-                            // cancellation_status === 'Approved' &&   handle_Reject_Click(item.order_id)
-                            // }
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-5 h-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      )}
-                    {item.Status == "returned" && (
-                      <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white cursor-not-allowed bg-green-400">
-                        Returned
-                      </div>
-                    )}
-                    {item.Status == "return rejected" && (
-                      <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white bg-red-400">
-                        Rejected
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+        {/* Item Details and Actions */}
+        <div className="flex justify-between w-full">
+          {/* Left Side - Item Info */}
+          <div>
+            <p className="text-sm font-medium text-gray-800">{item.ItemName}</p>
+            <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+            <p className="text-sm text-gray-500 capitalize">Type: {item.stockType}</p>
           </div>
-        ) : (
-          <p className="text-gray-700 text-center">No items found.</p>
-        )}
+
+          {/* Right Side - Price, Discount, Status/Action */}
+          <div className="text-right">
+            <div className="flex gap-2">
+              <p className="text-sm text-gray-500">Total Price:</p>
+              <p className="font-medium text-gray-800">₹{item.total_price}</p>
+            </div>
+            <div className="flex gap-2">
+              <p className="text-sm text-gray-500">Discount:</p>
+              <p className="font-medium text-gray-800">₹{item.totalDiscount}</p>
+            </div>
+{console.log(item)
+}
+            {/* Status Handling */}
+            <div className="mt-4">
+              {item.Status === "received" ? (
+             <div>
+                 <div className="px-2 w-20  py-1 rounded-md shadow-md text-white bg-green-400 cursor-not-allowed">
+                  Returned
+                </div>
+             </div>
+              ) : item.Status === "rejected" ? (
+                <div className="px-2 py-1 rounded-md shadow-md text-white bg-red-400">
+                  Rejected
+                </div>
+              ) : (
+                <div
+                  className={`flex gap-4 justify-end ${
+                    cancellation_status !== "Approved" && "cursor-not-allowed"
+                  }`}
+                >
+                  {/* Accept Button */}
+                  <button
+                    className={`p-2 text-green-500 border rounded-sm shadow-lg hover:text-green-700 hover:shadow-md hover:rounded-md ${
+                      cancellation_status !== "Approved" && "cursor-not-allowed"
+                    }`}
+                    onClick={() => handleAcceptClick(item.ItemCancellationID)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Reject Button */}
+                  <button
+                    className={`p-2 text-red-500 rounded-sm shadow-lg hover:text-red-700 hover:shadow-md hover:rounded-md ${
+                      cancellation_status !== "Approved" && "cursor-not-allowed"
+                    }`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+) : (
+  <p className="text-gray-700 text-center">No items found.</p>
+)}
+
 
         {/* Action Buttons */}
         <div className="flex justify-between gap-4 mt-4">
@@ -189,15 +181,28 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
 
 export const CancelItemConfirmation = ({
   close,
-  orderId,
   ItemDataa,
-  submission,
 }) => {
-  console.log(ItemDataa.approved_quantity);
+
 
   const [decreasingQuantity, setDecreasingQuantity] = useState(
-    ItemDataa.approved_quantity
+
+    ItemDataa?.order_Item_type === "Selected_Item" ?  ItemDataa.approved_quantity : 1
+
   );
+
+
+  const [cancellation_type , setCancellation_type ] = useState( ItemDataa?.order_Item_type === "Selected_Item" ?  "Selected_Item" : "SingUp_Offer_Item"
+);
+
+
+
+
+  
+
+
+
+
   const [check, setCheck] = useState(false);
   const [selectedReason, setSelectedReason] = useState("");
   const [customReason, setCustomReason] = useState(""); // State for custom reason input
@@ -234,7 +239,20 @@ export const CancelItemConfirmation = ({
       return;
     }
 
-    const currentQuantity = ItemDataa.quantity;
+
+
+    if(cancellation_type === "SingUp_Offer_Item" && decreasingQuantity > 0){
+
+    setDecreasingQuantity(0); // Amount decreased
+    toast.info(`Quantity decreased to ${1}`);
+
+
+
+    }
+    else if(cancellation_type === "Selected_Item"){
+
+
+        const currentQuantity = ItemDataa.quantity;
     if (decreasingQuantity <= 0) {
       toast.error("Cannot decrease quantity below 0.");
       return;
@@ -245,6 +263,14 @@ export const CancelItemConfirmation = ({
 
     setDecreasingQuantity(newQuantity); // Amount decreased
     toast.info(`Quantity decreased to ${newQuantity}`);
+
+
+
+
+
+    }
+
+  
   };
 
   const IncreaseQuantity = async (orderItemId) => {
@@ -272,7 +298,106 @@ export const CancelItemConfirmation = ({
       return;
     }
 
-    const toDecreaseQuantity = ItemDataa.approved_quantity - decreasingQuantity;
+
+      if(cancellation_type === "SingUp_Offer_Item"){
+
+
+
+
+
+
+          const toDecreaseQuantity = 1;
+
+    if (toDecreaseQuantity === 0) {
+      toast.error("toDecreaseQuantity Quantity is 0 , it must me more than 0");
+      return;
+    }
+
+    let reason = selectedReason || customReason;
+
+    if (customReason) {
+      reason = customReason;
+    } else {
+      reason = selectedReason;
+    }
+
+    if (!reason) {
+      toast.warn("Select any Reason!!");
+      return;
+    }
+
+    const message = `DECREASE QUANTITY BY ${toDecreaseQuantity}`;
+    console.log(message);
+
+    const cancellation_type = "Item";
+
+    console.log(toDecreaseQuantity);
+
+    const response = await DecreaseOrderItemQuantity(
+      cancellation_type,
+      reason,
+      message,
+      toDecreaseQuantity,
+      ItemDataa.Order_itemId
+    );
+    console.log(response);
+
+    if (
+      response &&
+      response.data.message === "cancellation successfully processed"
+
+
+    ) {
+      toast.success(response.data.message);
+
+      navigate("/");
+    }
+    else if (response && response.data.message == "Order cancelled and refund initiated"){
+
+      toast.success(response.data.message);
+
+      navigate("/");
+
+
+
+      } 
+    
+    
+    else if (response && response.data.error) {
+      toast.error(response.data.error);
+      close();
+    } else if (response && response.data.message) {
+      toast.error(response.data.message);
+      close();
+    } else {
+      toast.error("Something Went Wrong!!!");
+      close();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      }
+        else if(cancellation_type === "Selected_Item"){
+
+
+
+
+
+            const toDecreaseQuantity = ItemDataa.approved_quantity - decreasingQuantity;
     console.log(toDecreaseQuantity);
 
     if (toDecreaseQuantity === 0) {
@@ -340,6 +465,31 @@ export const CancelItemConfirmation = ({
       toast.error("Something Went Wrong!!!");
       close();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+  
+
+
+
+
+
+
+
+
+
   };
 
   const handleSelectReason = (e) => {
@@ -378,9 +528,11 @@ export const CancelItemConfirmation = ({
           <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-2">
             <div className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md">
               {/* Item Image */}
+              {console.log(windowWidth)
+              }
               <img
-                src={ItemDataa.image}
-                alt={ItemDataa.ItemName}
+                src={ItemDataa?.image || ItemDataa.offer_image_path }
+                alt={ItemDataa?.ItemName || ItemDataa?.offer_name }
                 className={`  ${
                   windowWidth < 200
                     ? "w-10 h-10 "
@@ -400,7 +552,7 @@ export const CancelItemConfirmation = ({
                     ? "w-15 h-15"
                     : windowWidth < 1000
                     ? "w-16 h-16"
-                    : ""
+                    : "w-28 h-28"
                 }  rounded-sm `}
               />
 
@@ -422,7 +574,7 @@ export const CancelItemConfirmation = ({
                   }    font-semibold text-gray-700`}
                 >
                   {" "}
-                  {truncateText(ItemDataa.ItemName, 2)}
+                  {ItemDataa?.order_Item_type === "SingUp_Offer_Item" ? truncateText(ItemDataa?.offer_name, 2)   :     truncateText(ItemDataa?.ItemName, 2)   }
                 </p>
                 <p
                   className={`${
@@ -439,7 +591,7 @@ export const CancelItemConfirmation = ({
                       : " "
                   }    font-semibold text-gray-700`}
                 >
-                  Status: {ItemDataa.status}
+                  Status: {ItemDataa?.status || ItemDataa?.Status}
                 </p>
                 <div className="flex gap-2 mt-2">
                   <p
@@ -474,7 +626,7 @@ export const CancelItemConfirmation = ({
                         : " "
                     }     font-semibold text-green-500`}
                   >
-                    ₹{ItemDataa.total_price}
+                    ₹{ ItemDataa?.order_Item_type === "SingUp_Offer_Item" ?  ItemDataa?.offer_mrp - ItemDataa?.offer_discount      : ItemDataa?.total_price }
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -510,34 +662,52 @@ export const CancelItemConfirmation = ({
                         : " "
                     }    font-semibold text-gray-700`}
                   >
-                    ₹{ItemDataa.totalDiscount}
+                    ₹{  ItemDataa?.order_Item_type === "SingUp_Offer_Item"  ?   ItemDataa?.offer_discount  :         ItemDataa.totalDiscount}
                   </p>
                 </div>
 
-                {ItemDataa.quantity != ItemDataa.approved_quantity && (
+                {
+                
+                
+        ItemDataa?.order_Item_type === "SingUp_Offer_Item" ?   
+        
+          <div className=" text-sm text-start text-gray-900 mt-2">
+                    Earlier you have been cancelled{" "}
+                    {0} quantity
+                    *.
+                  </div>
+        
+        
+        
+        
+        :      ItemDataa.quantity != ItemDataa.approved_quantity && (
                   <div className=" text-sm text-start text-gray-900 mt-2">
                     Earlier you have been cancelled{" "}
                     {ItemDataa.quantity - ItemDataa.approved_quantity} quantity
                     *.
                   </div>
-                )}
+                )  
+                
+                
+                
+                }
               </div>
 
               {/* Quantity Controls */}
               <div className="flex items-center justify-between bg-gray-200 rounded ml-2">
                 <button
                   className="px-3 py-1 bg-blue-500 text-white rounded-l hover:bg-blue-600"
-                  onClick={() => decreaseQuantity(ItemDataa.Order_itemId)}
+                  onClick={() => decreaseQuantity(ItemDataa?.Order_itemId || ItemDataa?.order_Item_type )}
                 >
                   -
                 </button>
                 <span className="px-4">{Math.round(decreasingQuantity)}</span>
-                <button
+            {    <button
                   className="px-3 py-1 bg-blue-500 text-white rounded-l hover:bg-blue-600"
                   onClick={() => IncreaseQuantity(ItemDataa.Order_itemId)}
                 >
                   +
-                </button>
+                </button>}
               </div>
             </div>
           </div>

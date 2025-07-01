@@ -16,16 +16,24 @@ import Orders from './Orders/Orders';
 import GiftCard from './GiftCard/GiftCard';
 import UserOrder from './Orders/UserOrder';
 import OrderDetail from './Orders/OrderDetails/OrderDetail';
+import ReferralBasePage from '../UserReferral/ReferralBasePage';
+import Sidebar from '../Header&SideBar/Sidebar';
 
 const UserProfile = () => {
   return (
-    <div className="flex">
-      <div className="w-full p-4">
+    <div className="flex bg-gray-200 pt-24 justify-center gap-3  min-h-full w-full"
+    
+      style={{ minHeight: "calc(100vh - 90px)" }} // replace 80px with your actual footer height
+    >
+                <Sidebar />
+      <div className=" ">
+        
         <Routes>
           <Route path="/" element={<Profile />} />
           <Route path="addresses" element={<Addresses />} />
           {/* <Route path="/orders" element={<UserOrder />} /> */}
 
+    
           <Route path="pancard" element={<PANCardInfo />} />
           <Route path="giftcards" element={<GiftCard  />} /> 
           <Route path="savedupi" element={<SavedUPI  />} /> 

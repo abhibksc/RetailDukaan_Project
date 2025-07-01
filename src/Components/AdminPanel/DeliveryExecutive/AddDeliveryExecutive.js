@@ -6,20 +6,14 @@ import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
   GetAllCreatedDeliveryExecutive,
   GetAllCreatedItems,
-  Show_Users_MainCategory,
-  Show_Users_Sub_SubCategory,
-  Show_users_SubCategory,
 } from "../../CrudOperations/GetOperation";
 import {
   CreteDeliveryExecutive,
-  CreteItems,
 } from "../../CrudOperations/PostOperation";
 import {
   ChangeDeliveryExecutiveStatus,
-  ChangeItemStatus,
 } from "../../CrudOperations/Update&Edit";
 import { deleteStoredItem } from "../../CrudOperations/DeleteOperation";
-import PaginationExample from "../Stocks/Purchase/PaginationExample";
 
 const AddDeliveryExecutive = () => {
   const [currentPage, setCurrentPage] = useState(0); // Initial page is 0
@@ -156,18 +150,17 @@ const AddDeliveryExecutive = () => {
             setPassword(""),
             setAddress("");
         }
-      } else if (response.data.message == "Email Already Exists") {
-        toast.warn(response.data.message);
-        setLoading(false);
-      } else if (response.data.message == "Phone Number Already Exists") {
-        toast.warn(response.data.message);
-        setLoading(false);
-      } else if (response.data.message) {
-        console.log("Chalaaaaaaaaaa");
-        toast.warn(response.data.message);
+      } else{
+
+             toast.error(response?.data?.message)
+      toast.error(response?.data?.error)
       }
+
+      
+      
+      
+  
     } catch (error) {
-      // console.error("Error submitting data:", error);
       toast.error("Failed to add item");
     } finally {
       setLoading(false);

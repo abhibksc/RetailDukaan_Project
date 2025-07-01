@@ -1,16 +1,43 @@
-# Ignore node_modules directory
+# Dependency directories
 node_modules/
 
-# Ignore environment variable files
-.env
+# Parcel cache (can exceed 100MB easily)
+.parcel-cache/
 
-# Ignore log files
-*.log
-
-# Ignore build directories
+# Build outputs
 dist/
 build/
 
-# Ignore OS-specific files
+# Environment files
+.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
 .DS_Store
 Thumbs.db
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+
+# Lint and coverage
+.eslintcache
+coverage/
+
+# Production/static cache
+.cache/
+.next/
+out/
+
+# Others
+*.tgz
+*.zip
+*.tar
+*.gz
+*.mdb  # Including rogue large database files like data.mdb

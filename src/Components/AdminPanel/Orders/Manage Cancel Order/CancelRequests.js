@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 import { VscCalendar } from "react-icons/vsc";
 
 import { toast } from "react-toastify";
-import PaginationExample from "../../Stocks/Purchase/PaginationExample";
+import PaginationExample from "../../../PaginationExample";
 import LoadingModal from "../../../LoadingModal";
 import { AssignDelivery_Executive__ } from "../../../CrudOperations/PostOperation";
 import { AllDeliveryExecutive_retrive, getAllOrders, getCancelledRequest, GetItemDetails, order_Confirm_Payment_details, order_DeliveryData, OrderItem } from "../../../CrudOperations/GetOperation";
@@ -563,7 +563,7 @@ const CancelRequests = () => {
       console.log(currentDate);
 
       const response = await performAcceptCancel_OrderAction({
-        message:    initiatedby === 'Delivery Exe' ? "DELIVERY EXECUTIVE REQUEST APPROVED" :  initiatedby === 'Customer' ? "CUSTOMER REQUEST APPROVED" : "",
+        message:    initiatedby === 'Delivery Exe' ? "DELIVERY EXECUTIVE REQUEST APPROVED" :  initiatedby === 'Customer' ? "CUSTOMER REQUEST APPROVED" : initiatedby === 'Merchant' ? "MERCHANT REQUEST APPROVED" : "",
         cancellationStatus: "Processed",
         cancellationId,
         order_id,
@@ -1001,6 +1001,8 @@ const CancelRequests = () => {
               
                                       <td className="border-b border-gray-200">
                                         {/* Debugging to check the exact value */}
+                                        {console.log(item)
+                                        }
                                         {item.cancellation_status != "Approved" &&
                                           item.cancellation_status != "Rejected" && (
                                             <div className="flex space-x-10">

@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { MdOutlineLocationOn } from "react-icons/md";
 import { FaLocationCrosshairs } from "react-icons/fa6";
-import { activePages, updateAreaPin } from "../../ReduxStore/Slices/auth";
-import { Mobilemenu } from "../../ReduxStore/Slices/toggleSlice";
+import {  setLat_Long_Location, updateAreaPin } from "../../ReduxStore/Slices/auth";
 import { checkPincodeAvailability } from "../../CrudOperations/GetOperation";
 import { toast } from "react-toastify";
 import useWindowSize from "../../useWindowSize";
+import { fetchHomeData } from "../../ReduxStore/Slices/homeSlice";
 
 const NavPincode = () => {
   const [loading, setLoading] = useState(false);
 
+  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+
   // setLoading
 
-  const mobilebarToggle = useSelector((state) => state.toggle.mobileMenuToggle);
-  const email = useSelector((state) => state.auth.email);
   const AreaPin = useSelector((state) => state.auth.AreaPin);
   const [isVibrating, setIsVibrating] = useState(false);
 
@@ -56,97 +57,101 @@ const NavPincode = () => {
       }, [pincode]);
 
 
-  const verifyPincode = async (pincode) => {
-    setLoading(true);
-    // Replace with your actual Postman Pincode API endpoint
-    const apiEndpoint = `https://api.postalpincode.in/pincode/${pincode}`;
-    console.log(apiEndpoint);
-
-    try {
-      const response = await fetch(apiEndpoint);
-      const data = await response.json();
-      if (data[0].Status === "Success") {
-
-
-         const AvailabilityResponse = await checkPincodeAvailability(pincode);
-                  console.log(AvailabilityResponse);
-                  
-        
-                  if(AvailabilityResponse && AvailabilityResponse.data.message === "Available"){
-        
-                    dispatch(updateAreaPin({ pincode: pincode }));
-                    setIsValid(true);
-                    setPincodeInfo(data[0].PostOffice);
-        
-                  }
-                  else if(AvailabilityResponse && AvailabilityResponse.data.message === "Not Available"){
-              
-        
-                    triggerVibration()
-                    setIsValid(false);
-                    setPincodeInfo(null);
-                    setPincode(AreaPin)
-                    toast.warn("Sorry, delivery services are unavailable in your location.");
-        
-                  }
-                  else{
-        
-                    triggerVibration()
-                    setIsValid(false);
-                    setPincodeInfo(null);
-                  }
+        async function getLatLongFromPincode(pincode) {
+          const apiKey = "2b803d74b243492a860e3659937ab0a4"; // Replace with your actual API key
+          const url = `https://api.opencagedata.com/geocode/v1/json?q=${pincode}&key=${apiKey}`;
+      
+          try {
+            const response = await fetch(url);
+            const data = await response.json();
+            console.log(data);
+            
+      
+            if (data.results.length > 0) {
+      
+              const { lat, lng } = data.results[0].geometry;
+              return { latitude: lat, longitude: lng };
+            } else {
+              toast.error("No results found for this pincode.");
+      
+              return null;
+            }
+          } catch (error) {
+            toast.error("Error fetching coordinates:", error);
+            return null;
+          }
+        }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      } else {
-        toast.warn("wrong pincode");
-        triggerVibration();
-        setPincode(AreaPin);
-        setIsValid(false);
-        setPincodeInfo(null);
-      }
-    } catch (error) {
-      console.error("Error verifying pincode:", error);
-      setIsValid(false);
-      setPincodeInfo(null);
-    }
-
-    setLoading(false);
-  };
+   const verifyPincode = async (pincode) => {
+     setLoading(true);
+     // Replace with your actual Postman Pincode API endpoint
+     const apiEndpoint = `https://api.postalpincode.in/pincode/${pincode}`;
+ 
+     try {
+       const response = await fetch(apiEndpoint);
+       const data = await response.json();
+       console.log(data);
+       
+ 
+       if (data[0].Status ==="Success") {
+         const getLat_Long = await getLatLongFromPincode(pincode);
+       console.log(getLat_Long);
+ 
+ 
+         if (getLat_Long.latitude && getLat_Long.longitude) {
+       console.log(getLat_Long);
+ 
+           await fetchAddressFromCoords(
+             getLat_Long.latitude,
+             getLat_Long.longitude
+           );
+         } else {
+           toast.error("Lat Long Data Not Found!!");
+         }
+ 
+       } else {
+         toast.warn("wrong pincode");
+         triggerVibration();
+           setLoading(false);
+ 
+         setIsValid(false);
+         setPincodeInfo(null);
+       }
+     } catch (error) {
+       setIsValid(false);
+       setPincodeInfo(null);
+     }
+     finally{
+           setLoading(false);
+ 
+     }
+ 
+     // setLoading(false);
+   };
 
   // Handle Current location
 
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        console.log({
+          ({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
       });
     } else {
-      console.log("Geolocation is not available in your browser.");
+        ("Geolocation is not available in your browser.");
     }
   }, []);
 
   const handleChange = (event) => {
     const { value } = event.target;
+
     setPincode(value);
     if (value.length === 6) {
+      console.log(value);
+      
       verifyPincode(value);
     } else {
       setIsValid(null);
@@ -156,11 +161,11 @@ const NavPincode = () => {
 
   const handleCurrentLocation = () => {
     setLoading(true);
-    console.log("Fetching current location...");
+      ("Fetching current location...");
 
     // Check if geolocation is supported
     if (!navigator.geolocation) {
-      console.error("Geolocation is not supported by this browser.");
+        ("Geolocation is not supported by this browser.");
       alert("Geolocation is not supported by your browser.");
       return;
     }
@@ -168,7 +173,7 @@ const NavPincode = () => {
     // Success callback
     const onSuccess = async (position) => {
       const { latitude, longitude } = position.coords;
-      console.log("Latitude:", latitude, "Longitude:", longitude);
+        ("Latitude:", latitude, "Longitude:", longitude);
 
       fetchAddressFromCoords(latitude, longitude);
     };
@@ -183,7 +188,7 @@ const NavPincode = () => {
       };
 
       const message = errorMessages[error.code] || errorMessages.default;
-      console.error(message);
+
       alert(message);
     };
 
@@ -214,84 +219,57 @@ const NavPincode = () => {
       }
 
       const data = await response.json();
-      console.log("Data received from API:", data);
 
       // Example: Check pincode availability
-       if (data.address && data.address.postcode) {
-           setPincode(data.address.postcode)
-           const pincodeResponse = await checkPincodeAvailability(data.address.postcode);
-           console.log("Response from checkPincodeAvailability:", pincodeResponse);
-   
-   
-   
-   
-   
-   
-   
-             
-   
-             if(pincodeResponse && pincodeResponse.data.message === "Available"){
-   
-               dispatch(updateAreaPin({ pincode: data.address.postcode }));
-               setIsValid(true);
-               setPincodeInfo(data.address);
-               setLoading(false);
-   
-   
-   
-   
-             }
-             else if(pincodeResponse && pincodeResponse.data.message === "Not Available"){
-               toast.warn("Sorry, delivery services are unavailable in your location.");
-   
-   
-               setIsValid(false);
-               setLoading(false);
-               triggerVibration()
-   
-   
-   
-               setPincodeInfo(null);
-               setPincode(AreaPin)
-   
-             }
-             else{
-   
-               triggerVibration()
-               setIsValid(false);
-               setPincodeInfo(null);
-   
-   
-               setLoading(false);
-               setPincode("")
-               
-               toast.warn("Pincode not found or incorrect pincode.");
-   
-             }
-   
-   
-    
-       } 
-      
-      
-      
-      
-      
-      
-      
-      
-      else {
+      if (data.address && data.address.postcode) {
+        const pincodeResponse = await checkPincodeAvailability(
+          data.address.postcode
+        );
+
+        console.log(pincodeResponse);
+        
+
+        if (pincodeResponse?.data?.message === "Available") {
+          dispatch(updateAreaPin({ pincode: data.address.postcode }));
+          dispatch(
+            setLat_Long_Location({ Latitude: latitude, Longitude: longitude })
+          );
+
+            dispatch(fetchHomeData(data.address.postcode)); // where '110001' is the pincode
+
+          setIsValid(true);
+          setPincodeInfo(data.address);
+          setLoading(false);
+          navigate("/")
+
+          window.location.reload();
+
+         
+          
+        } else
+        {
+          toast.warn(pincodeResponse?.data?.message || pincodeResponse?.data?.error );
+          setIsValid(false);
+          setLoading(false);
+          triggerVibration();
+        }
+      } else {
         toast.warn("Pincode not found or incorrect pincode.");
         setLoading(false);
       }
     } catch (error) {
-      console.error("Error fetching location data:", error);
+      console.log(error);
+      
       alert("An error occurred while fetching location data.");
+    }
+    finally{
+          setLoading(false);
+
     }
   };
 
   return AreaPin && (
-    <li className="relative z-20 group mt-1 py-4  hidden xl:block">
+    <li className="relative z-20 group mt-1 py-4 text-[12px]  hidden xl:block">
       {AreaPin ? (
         <div>
           <div

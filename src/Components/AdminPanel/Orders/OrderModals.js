@@ -4,7 +4,7 @@ import ExpandableText from "./ExpandableText";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import React, { useEffect } from "react";
-import PaginationExample from "../Stocks/Purchase/PaginationExample";
+import PaginationExample from "../../PaginationExample";
 import { AllDeliveryExecutive_retrive } from "../../CrudOperations/GetOperation";
 
 export const CustomerModal = ({ close, customer }) => {
@@ -307,17 +307,29 @@ import { useNavigate } from "react-router-dom";
 
 export const ItemModal = ({ close, ItemsData, submission }) => {
   const { item: Itemslist, orderId, Total_Bill } = ItemsData || {};
+  console.log(Itemslist);
+  
 
   // State to track editable quantities
   const [editableItems, setEditableItems] = useState(
-    Itemslist?.map((item) => ({ ...item, isEditing: false })) || []
+    Itemslist?.selected_items.map((item) => ({ ...item, isEditing: false })) ||  []
+  );
+
+
+    const [editableOfferItems, setEditableOfferItems] = useState(
+    Itemslist?.offer_items.map((item) => ({ ...item, isOfferEditing: false })) ||  []
   );
 
   // Handle edit mode toggle
-  const toggleEditMode = (index) => {
-    const updatedItems = [...editableItems];
-    updatedItems[index].isEditing = !updatedItems[index].isEditing;
-    setEditableItems(updatedItems);
+  const toggleEditMode = (item) => {
+    // const updatedItems = [...editableItems];
+    // updatedItems[index].isEditing = !updatedItems[index].isEditing;
+    // setEditableItems(updatedItems);
+
+    console.log(item);
+    
+
+    toast.warn("Functionality Comming Soon....")
   };
 
   // Handle quantity change
@@ -333,80 +345,65 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
     submission();
   };
 
-  return (
-    <div
-      className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
-      onClick={close}
-    >
-      <div
-        className="bg-gradient-to-br from-green-100 to-white p-6 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Modal Title */}
-        <h2 className="text-2xl font-bold mb-4 text-green-800 text-center">
-          Items List
-        </h2>
 
-        {/* Items Table */}
-        {editableItems && editableItems.length > 0 ? (
-          <div className="overflow-x-auto max-h-[60vh] mb-6">
-            <table className="min-w-full border-collapse border border-gray-300 text-sm lg:text-base">
-              <thead className="bg-green-100 sticky top-0">
-                <tr>
-                  <th className="border border-gray-300 px-2 py-2 text-left">
-                    Image
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-left">
-                    Item Name
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-right">
-                    Total Price
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-right">
-                    Discount
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-right">
-                    Quantity
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-right">
-                    Approved Q.
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-center">
-                    Status
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-center">
-                    Edit
-                  </th>
+
+
+ return (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    onClick={close}
+  >
+    <div
+      className="bg-gradient-to-br from-green-50 to-white p-6 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto mx-4"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Title */}
+      <h2 className="text-3xl font-bold mb-6 text-center text-green-700 border-b pb-3">
+        🛒 Order Summary
+      </h2>
+
+      {/* Items Table */}
+      {editableItems?.selected_items?.length > 0 ? (
+        <div className="mb-10">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">
+            🧾 Cart Items
+          </h3>
+          <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+            <table className="min-w-full bg-white text-sm lg:text-base">
+              <thead className="bg-green-100 sticky top-0 z-10">
+                <tr className="text-left text-gray-800">
+                  <th className="px-4 py-3">Image</th>
+                  <th className="px-4 py-3">Item Name</th>
+                  <th className="px-4 py-3 text-right">Total Price</th>
+                  <th className="px-4 py-3 text-right">Discount</th>
+                  <th className="px-4 py-3 text-right">Quantity</th>
+                  <th className="px-4 py-3 text-right">Approved Q.</th>
+                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {editableItems.map((item, index) => (
+                {editableItems.selected_items.map((item, index) => (
                   <tr
                     key={index}
                     className={`${
-                      item.Status === "returned" ? "bg-red-100" : "bg-white"
-                    } hover:bg-gray-100`}
+                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-gray-100 transition`}
                   >
-                    <td className="border border-gray-300 px-2 py-2">
+                    <td className="px-4 py-2">
                       <img
                         src={item.image}
                         alt={item.ItemName}
-                        className="w-12 h-12 lg:w-16 lg:h-16 object-cover rounded-md"
+                        className="w-14 h-14 object-cover rounded-md"
                       />
                     </td>
-                    <td className="border border-gray-300 px-2 py-2">
-                      {item.ItemName}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-right">
-                      ₹{item.total_price}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-right">
-                      ₹{item.totalDiscount}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-right">
+                    <td className="px-4 py-2">{item.ItemName}</td>
+                    <td className="px-4 py-2 text-right">₹{item.total_price}</td>
+                    <td className="px-4 py-2 text-right">₹{item.totalDiscount}</td>
+                    <td className="px-4 py-2 text-right">
                       {Math.round(item.quantity)}
                     </td>
-                    <td className="border border-gray-300 px-2 py-2 text-right">
+                    <td className="px-4 py-2 text-right">
                       {item.isEditing ? (
                         <input
                           type="number"
@@ -414,32 +411,27 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
                           onChange={(e) =>
                             handleQuantityChange(index, e.target.value)
                           }
-                          className="w-16 p-1 border rounded"
+                          className="w-16 p-1 border border-gray-300 rounded-md"
                         />
                       ) : (
                         item.approved_quantity
                       )}
                     </td>
-                    <td className="border border-gray-300 px-2 py-2 text-center">
+                    <td className="px-4 py-2 text-center font-semibold">
                       {item.Status === "delivered" && (
-                        <span className="text-green-600 font-bold">
-                          Delivered
-                        </span>
+                        <span className="text-green-600">Delivered</span>
                       )}
                       {item.Status === "returned" && (
-                        <span className="text-red-600 font-bold">Returned</span>
+                        <span className="text-red-600">Returned</span>
                       )}
-                      {item.Status !== "returned" &&
-                        item.Status !== "delivered" && (
-                          <span className="text-orange-600 font-bold">
-                            {item.Status}
-                          </span>
-                        )}
+                      {!["delivered", "returned"].includes(item.Status) && (
+                        <span className="text-orange-600">{item.Status}</span>
+                      )}
                     </td>
-                    <td className="border border-gray-300 px-2 py-2 text-center">
+                    <td className="px-4 py-2 text-center">
                       <button
-                        onClick={() => toggleEditMode(index)}
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                        onClick={() => toggleEditMode(item)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md text-sm"
                       >
                         {item.isEditing ? "Save" : "Edit"}
                       </button>
@@ -449,49 +441,135 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
               </tbody>
             </table>
           </div>
-        ) : (
-          <p className="text-gray-700 text-center mb-6">No items found.</p>
-        )}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 mb-6">No cart items found.</p>
+      )}
 
-        {/* Billing Section */}
-        {Total_Bill && (
-          <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold text-green-800 mb-2">
-              Billing Summary
-            </h3>
-            <div className="flex flex-wrap justify-between items-center mb-2">
-              <span className="font-medium text-gray-700">Total MRP:</span>
-              <span className="text-gray-900 font-semibold">
-                ₹{Total_Bill.total_mrp}
-              </span>
+      {/* Offer Items Table */}
+      {editableOfferItems?.length > 0 ? (
+        <div className="mb-10">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">
+            🎁 Offer Items
+          </h3>
+          <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+            <table className="min-w-full bg-white text-sm lg:text-base">
+              <thead className="bg-green-100 sticky top-0 z-10">
+                <tr className="text-left text-gray-800">
+                  <th className="px-4 py-3">Image</th>
+                  <th className="px-4 py-3">Item Name</th>
+                  <th className="px-4 py-3 text-right">Total Price</th>
+                  <th className="px-4 py-3 text-right">Discount</th>
+                  <th className="px-4 py-3 text-right">Quantity</th>
+                  <th className="px-4 py-3 text-right">Approved Q.</th>
+                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {editableOfferItems.map((item, index) => (
+                  <tr
+                    key={index}
+                    className={`${
+                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-gray-100 transition`}
+                  >
+                    <td className="px-4 py-2">
+                      <img
+                        src={item.offer_image_path}
+                        alt={item.offer_name}
+                        className="w-14 h-14 object-cover rounded-md"
+                      />
+                    </td>
+                    <td className="px-4 py-2">{item.offer_name}</td>
+                    <td className="px-4 py-2 text-right">
+                      ₹{item.offer_mrp - item.offer_discount}
+                    </td>
+                    <td className="px-4 py-2 text-right">₹{item.offer_discount}</td>
+                    <td className="px-4 py-2 text-right">
+                      {Math.round(item.approved_quantity)}
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {item.isOfferEditing ? (
+                        <input
+                          type="number"
+                          value={item.approved_quantity}
+                          onChange={(e) =>
+                            handleQuantityChange(index, e.target.value)
+                          }
+                          className="w-16 p-1 border border-gray-300 rounded-md"
+                        />
+                      ) : (
+                        item.approved_quantity
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-center font-semibold">
+                      {item.Status === "delivered" && (
+                        <span className="text-green-600">Delivered</span>
+                      )}
+                      {item.Status === "returned" && (
+                        <span className="text-red-600">Returned</span>
+                      )}
+                      {!["delivered", "returned"].includes(item.Status) && (
+                        <span className="text-orange-600">{item.Status}</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <button
+                        onClick={() => toggleEditMode(item)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md text-sm"
+                      >
+                        {item.isOfferEditing ? "Save" : "Edit"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 mb-6">No offers found.</p>
+      )}
+
+      {/* Billing Section */}
+      {Total_Bill && (
+        <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-md">
+          <h3 className="text-2xl font-bold text-green-700 mb-4">
+            💳 Billing Summary
+          </h3>
+          <div className="space-y-2 text-gray-800 text-base">
+            <div className="flex justify-between">
+              <span>Total MRP:</span>
+              <span className="font-medium">₹{Total_Bill.total_mrp}</span>
             </div>
-            <div className="flex flex-wrap justify-between items-center mb-2">
-              <span className="font-medium text-gray-700">Total Discount:</span>
-              <span className="text-gray-900 font-semibold">
+            <div className="flex justify-between">
+              <span>Total Discount:</span>
+              <span className="font-medium text-red-600">
                 ₹{Total_Bill.total_discount}
               </span>
             </div>
-            <div className="flex flex-wrap justify-between items-center mb-2">
-              <span className="font-medium text-gray-700">
-                Delivery Charges:
-              </span>
-              <span className="text-gray-900 font-semibold">
-                ₹{Total_Bill.total_delivery}
-              </span>
+            <div className="flex justify-between">
+              <span>Delivery Charges:</span>
+              <span className="font-medium">₹{Total_Bill.total_delivery}</span>
             </div>
-            <div className="flex flex-wrap justify-between items-center border-t border-gray-300 pt-2">
-              <span className="font-medium text-gray-700">Total Amount:</span>
-              <span className="text-green-800 font-bold text-lg">
-                ₹{Total_Bill.total_amount}
-              </span>
+            <div className="flex justify-between border-t border-gray-300 pt-3 text-lg font-bold">
+              <span>Total Amount:</span>
+              <span className="text-green-700">₹{Total_Bill.total_amount}</span>
             </div>
           </div>
-        )}
-
-       
-      </div>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
+
+
+
+
+
+
+
 };
 
 

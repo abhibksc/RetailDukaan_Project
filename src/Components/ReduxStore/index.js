@@ -9,6 +9,9 @@ import { loadState, saveState ,deleteStateKey} from "./utils/localStorage";
 import { updatedImageReducer } from "./Slices/updateImages";
 import { UpdateItems } from "./Slices/UpdateItemsSlice";
 import { cartReducer } from "./Slices/cartSlice";
+import { PageStateSliceReducer } from "./Slices/pageStateSlice";
+import { homeSlice_reducer } from "./Slices/homeSlice";
+import { GroupCategorySlice_reducer } from "./Slices/Groups_CategorySlice";
 
 
 const appReducer = combineReducers({
@@ -16,7 +19,10 @@ const appReducer = combineReducers({
   toggle: toggleSlices,
   updatedImageReducer : updatedImageReducer ,
   UpdateItems  : UpdateItems,
-  cartReducer : cartReducer
+  cartReducer : cartReducer,
+  pageStateSlice : PageStateSliceReducer,
+  homeSlice_reducer : homeSlice_reducer,
+  GroupCategorySlice_reducer : GroupCategorySlice_reducer
 });
 
 

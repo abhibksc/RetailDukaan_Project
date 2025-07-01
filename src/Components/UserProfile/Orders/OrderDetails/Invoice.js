@@ -24,11 +24,12 @@ const Invoice = ({ orderID }) => {
       const data = await response.json();
       setInvoiceData(data); // Store the invoice data
     } catch (error) {
-      console.error("Error fetching invoice:", error);
+      console.log("Error fetching invoice:", error);
     }
   };
 
   const generatePDF = async () => {
+    
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("Authorization token is missing. Please log in.");

@@ -19,7 +19,7 @@ const StoreOffer = () => {
 
   return (
     <div className="flex mt-14 xl:mt-0 gap-4 justify-center">
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       <div className="bg-white flex flex-col gap-4 border p-4 w-[1100px]">
         <h1 className="text-2xl font-bold">Store Offer</h1>

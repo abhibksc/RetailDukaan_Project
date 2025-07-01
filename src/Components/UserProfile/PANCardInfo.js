@@ -26,19 +26,28 @@ const PANCardInfo = () => {
             },
           }
         );
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-          dispatch(
-            updatePan({ panName: data.panName, panNumber: data.panNumber })
-          );
-          setPanName(data.panName);
-          setPanNumber(data.panNumber);
-        } else {
-          console.error("Failed to fetch PAN card details");
-        }
+
+
+
+
+
+        // if (response.ok) {
+        //   const data = await response.json();
+        //   console.log(data);
+        //   dispatch(
+        //     updatePan({ panName: data.panName, panNumber: data.panNumber })
+        //   );
+        //   setPanName(data.panName);
+        //   setPanNumber(data.panNumber);
+        // } else {
+        //   console.error("Failed to fetch PAN card details");
+        // }
+
+
+
+
       } catch (error) {
-        console.error("Error fetching PAN card details:", error);
+        console.log("Error fetching PAN card details:", error);
       }
     };
 
@@ -65,7 +74,7 @@ const PANCardInfo = () => {
 
   return (
     <div className="flex mt-14 xl:mt-0 gap-4 justify-center">
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       <div className="bg-white flex flex-col gap-4 border p-4 w-[1100px]">
         <h1 className="font-bold text-2xl font-roboto">PAN Card Information</h1>

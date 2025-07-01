@@ -9,21 +9,27 @@ import PaymentFailed from "./OrderDetails/PaymentFailed";
 const Orderpanel = () => {
   return (
     <div className="flex">
-      <div className="w-full p-4">
+      <div className="w-full p-4  h-screen mt-20 overflow-scroll scrollbar-hide ">
         <Routes>
+
+
           <Route path="/" element={<UserOrder />} />
           {/* <Route path="/orders" element={<UserOrder />} /> */}
 
           <Route path="order-details/:orderId" element={<OrderDetail />} />
 
 
-{/* successfullyOrder */}
+         {/* successfullyOrder */}
 
-<Route path="successfullyOrder/*" element={<OrderSuccess />} />
-
-<Route path="payment-fail/*" element={<PaymentFailed />} />
+          <Route path="successfullyOrder/*" element={<OrderSuccess />} />
+          
+          <Route path="payment-fail/*" element={<PaymentFailed />} />
 
           <Route path="order-cancel" element={<CancelOrder />} />
+
+          
+
+
         </Routes>
       </div>
     </div>

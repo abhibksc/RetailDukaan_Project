@@ -3,41 +3,20 @@ import baseurl from "./customURl";
 import { log } from "tone/build/esm/core/util/Debug";
 import { toast } from "react-toastify";
 
+  const Merchant_token = localStorage.getItem('Merchanttoken') || null;
+  const User_token = localStorage.getItem('token') || null;
 
 
-
-
-
-
-
-
-// *****************************SuperAdmin ____ superadmintoken****************************************************** 
-
+// *****************************SuperAdmin ____ superadmintoken******************************************************
 
 // CreteDeliveryExecutive
 
 export const CreteRoles = async ({ formDataa }) => {
-  console.log("READY FOR GOING TO BACKEND", formDataa);
+    ("READY FOR GOING TO BACKEND", formDataa);
 
   // Destructuring the fields from `formData`
-  const {
-    name,
-        phone,
-        email,
-        password,
-        address,
-        role
-  } = formDataa;
+  const { name, phone, email, password, address, role } = formDataa;
 
-  console.log(
-    "Data being sent to backend:",
-    name,
-    phone,
-    email,
-    password,
-    role,
-    address
-  );
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("superadmintoken");
@@ -50,14 +29,12 @@ export const CreteRoles = async ({ formDataa }) => {
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('name', name);
-  formData.append('phone', phone);
-  formData.append('email', email);
-  formData.append('password', password);
-  formData.append('role', role);
-  formData.append('address', address);
-
-
+  formData.append("name", name);
+  formData.append("phone", phone);
+  formData.append("email", email);
+  formData.append("password", password);
+  formData.append("role", role);
+  formData.append("address", address);
 
   try {
     // Make the POST request to the API
@@ -72,10 +49,10 @@ export const CreteRoles = async ({ formDataa }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Purchase stored successfully:", response.data.message);
+      ("Purchase stored successfully:", response.data.message);
     return response;
   } catch (error) {
     // // Enhanced error handling
@@ -97,19 +74,11 @@ export const CreteRoles = async ({ formDataa }) => {
   }
 };
 
-
-
-
-
-
-
 // ************************************************User************************************************************
-
 
 export const InitiatePayment = async (payload) => {
   const { amount } = payload;
-  console.log(amount);
-
+    (amount);
 
   const token = localStorage.getItem("token");
   if (!token) {
@@ -117,11 +86,8 @@ export const InitiatePayment = async (payload) => {
     return { error: "Authorization token missing" };
   }
 
-
-  const date = new Date().toISOString().slice(0, 19).replace("T", " "); 
-console.log(date); // Output: "2025-03-09 21:16:36"
-
-  
+  const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+    (date); // Output: "2025-03-09 21:16:36"
 
   try {
     let response = await fetch(`${baseurl}/api/createOrder`, {
@@ -132,26 +98,23 @@ console.log(date); // Output: "2025-03-09 21:16:36"
       },
       body: JSON.stringify({
         amount,
-        date
+        date,
       }),
     });
     let data = await response.json();
-    console.log(data);
+      (data);
     return data;
- 
-
   } catch (error) {
-    return error.response; 
+    return error.response;
   }
 };
-
 
 export const verifyInitiatedpayment = async (payload) => {
   const { order_id, payment_id, signature } = payload;
 
-  console.log("Order ID:", order_id);
-  console.log("Payment ID:", payment_id);
-  console.log("Signature:", signature);
+    ("Order ID:", order_id);
+    ("Payment ID:", payment_id);
+    ("Signature:", signature);
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("token");
@@ -184,7 +147,7 @@ export const verifyInitiatedpayment = async (payload) => {
       throw new Error(data.message || "Failed to verify payment");
     }
 
-    console.log("API Response:", data);
+      ("API Response:", data);
     return data;
   } catch (error) {
     console.error("Error during payment verification:", error.message);
@@ -192,10 +155,13 @@ export const verifyInitiatedpayment = async (payload) => {
   }
 };
 
-
-export const FinalPaymentVarification = async (userID, Order_id ,paymentID, signature,amount) => {
-
-
+export const FinalPaymentVarification = async (
+  userID,
+  Order_id,
+  paymentID,
+  signature,
+  amount
+) => {
   // Retrieve token from localStorage
   const token = localStorage.getItem("token");
   if (!token) {
@@ -206,13 +172,16 @@ export const FinalPaymentVarification = async (userID, Order_id ,paymentID, sign
   const currentDate = new Date().toISOString().split("T")[0];
 
   try {
-    let response = await fetch(`${baseurl}/api/final-verify-payment/${userID}/${Order_id}/${currentDate}/${paymentID}/${signature}/${amount}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    let response = await fetch(
+      `${baseurl}/api/final-verify-payment/${userID}/${Order_id}/${currentDate}/${paymentID}/${signature}/${amount}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }
-    });
+    );
 
     // Handle API response
     let data = await response.json();
@@ -220,17 +189,15 @@ export const FinalPaymentVarification = async (userID, Order_id ,paymentID, sign
       throw new Error(data.message || "Failed to verify payment");
     }
 
-    console.log("API Response:", data);
+      ("API Response:", data);
     return data;
   } catch (error) {
     return { success: false, message: error.message };
   }
 };
 
-export const VerifyOrderID = async ({orderId}) => {
-  console.log(orderId);
-  
-
+export const VerifyOrderID = async ({ orderId }) => {
+    (orderId);
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("token");
@@ -239,14 +206,13 @@ export const VerifyOrderID = async ({orderId}) => {
     return { success: false, message: "Authorization token is missing" };
   }
 
-
   try {
     let response = await fetch(`${baseurl}/api/verifyOrderId/${orderId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-      }
+      },
     });
 
     // Handle API response
@@ -255,7 +221,7 @@ export const VerifyOrderID = async ({orderId}) => {
       throw new Error(data.message || "Failed to verify payment");
     }
 
-    console.log("API Response:", data);
+      ("API Response:", data);
     return data;
   } catch (error) {
     console.error("Error during payment verification:", error.message);
@@ -263,18 +229,14 @@ export const VerifyOrderID = async ({orderId}) => {
   }
 };
 
-
-
-
-
 export const userRegister = async (payload) => {
   const { mail, pass } = payload;
 
   if (mail !== "" && pass !== "") {
     try {
-      console.log(mail);
-      console.log(pass);
-// https://retaildukan.wipenex.com/public/api/registers
+        (mail);
+        (pass);
+      // https://retaildukan.wipenex.com/public/api/registers
       let response = await fetch(`${baseurl}/api/registers`, {
         method: "POST",
         headers: {
@@ -286,13 +248,13 @@ export const userRegister = async (payload) => {
         }),
       });
       let data = await response.json();
-      console.log(data);
+        (data);
 
       if (data) {
         localStorage.setItem("token", data.token);
         alert("Successfully Registered");
-        return data
-      } 
+        return data;
+      }
     } catch (error) {
       console.error("Error during registration:", error);
       alert("An error occurred during registration.");
@@ -302,19 +264,21 @@ export const userRegister = async (payload) => {
   }
 };
 
-// 
+//
 
 export const userLogin = async (payload) => {
-  const {  input , type , otp , otp_id  } = payload;
-  console.log(input);
-  console.log(type);
-  console.log(otp);
-  console.log(otp_id);
+  const { input, type, otp, otp_id ,selectedOffers,referrer,mode ,  Latitude , Longitude ,AreaPin } = payload;
+    (input);
+    (type);
+    (otp);
+    (otp_id);
+    (selectedOffers);
+    (mode);
 
-  
+  const current_date = new Date().toISOString().split("T")[0];
+    (current_date);
 
   try {
-
     let response = await fetch(`${baseurl}/api/login`, {
       method: "POST",
       headers: {
@@ -323,41 +287,43 @@ export const userLogin = async (payload) => {
       body: JSON.stringify({
         input,
         type,
-        otp : otp,
-        otpId : otp_id
+        otp: otp,
+        otpId: otp_id,
+        selectedOffers: selectedOffers,
+        referrer  : referrer, 
+        mode : mode,
+        Latitude ,
+        Longitude ,
+        AreaPin,
+        current_date
+
       }),
     });
 
-    console.log(response);
-    
+      (response);
+
     let data = await response.json();
 
-    console.log(data);
 
-    
-    if (data) {
+    if (data?.token) {
       localStorage.setItem("token", data.token);
-      return data
-    } 
+    }
 
-
+          return data;
+  
   } catch (error) {
-
-    return error.response;
-    
+    throw error
   }
+
+
+
+
 };
 
 export const SenduserAuthenticationOTP = async (payload) => {
-
   const { input, type } = payload;
 
-
-
-  
-
   try {
-
     let response = await fetch(`${baseurl}/api/SenduserAuthenticationOTP`, {
       method: "POST",
       headers: {
@@ -369,26 +335,18 @@ export const SenduserAuthenticationOTP = async (payload) => {
       }),
     });
 
-    
     let data = await response.json();
 
-    
-
     return data;
-
-
   } catch (error) {
-
     return error.response;
-    
   }
 };
 
 // superAdmin login
 
-
 export const uploadLogo = async (logo) => {
-  console.log("Uploading logo:", logo);
+    ("Uploading logo:", logo);
 
   const token = localStorage.getItem("superadmintoken");
 
@@ -407,7 +365,7 @@ export const uploadLogo = async (logo) => {
     });
 
     let data = await response.json();
-    console.log("Upload Response:", data);
+      ("Upload Response:", data);
 
     if (!response.ok) {
       throw new Error(data.message || "Failed to upload logo");
@@ -420,12 +378,11 @@ export const uploadLogo = async (logo) => {
   }
 };
 
-
 export const superAdminLogin = async (payload) => {
   const { authMethod, userType, inputValue } = payload;
-  console.log(authMethod);
-  console.log(userType);
-  console.log(inputValue);
+    (authMethod);
+    (userType);
+    (inputValue);
 
   if (authMethod) {
     try {
@@ -442,10 +399,10 @@ export const superAdminLogin = async (payload) => {
         }),
       });
       let data = await response.json();
-      console.log(data);
+        (data);
       return data;
     } catch (error) {
-return error.response
+      return error.response;
     }
   } else {
     alert("Email and password cannot be empty.");
@@ -508,7 +465,7 @@ export const CreateAdmin = async ({ newAdmin }) => {
       }
 
       let data = await response.json();
-      console.log(data);
+        (data);
       return data;
     } catch (error) {
       console.error("Error during admin creation:", error);
@@ -527,18 +484,18 @@ export const Verify_admin_superadminLogin__otp = async ({
   otp,
   inputValue,
 }) => {
-  console.log(authMethod);
-  console.log(userType);
-  console.log(otp);
-  console.log(inputValue);
+    (authMethod);
+    (userType);
+    (otp);
+    (inputValue);
 
   // ll
 
   if (authMethod && userType && otp) {
     try {
-      console.log(authMethod);
-      console.log(userType);
-      console.log(otp);
+        (authMethod);
+        (userType);
+        (otp);
 
       let response = await fetch(`${baseurl}/api/authorization/verify`, {
         method: "POST",
@@ -554,14 +511,13 @@ export const Verify_admin_superadminLogin__otp = async ({
         }),
       });
       let data = await response.json();
-      console.log(data);
+        (data);
 
       alert(data.message);
 
       if (data.message == "merchant Login successful") {
+          ("Cjflkdsflkdsjklfjd");
 
-        console.log("Cjflkdsflkdsjklfjd");
-        
         localStorage.setItem("Merchanttoken", data.token);
       } else if (data.message === "SuperAdmin Login successful") {
         localStorage.setItem("superadmintoken", data.token);
@@ -569,8 +525,9 @@ export const Verify_admin_superadminLogin__otp = async ({
 
       return data;
     } catch (error) {
-      console.error("Error during login:", error);
-      alert("An error occurred during login.");
+        (error);
+      
+     return error.response;
     }
   } else {
     alert("Email and password cannot be empty.");
@@ -594,7 +551,9 @@ export const postAddress = async (combinedObject) => {
     token,
   } = combinedObject;
 
-  console.log(combinedObject);
+    (combinedObject);
+    console.log(token);
+    
 
   try {
     const response = await axios.post(
@@ -620,16 +579,10 @@ export const postAddress = async (combinedObject) => {
         },
       }
     );
-    console.log(response);
-    
 
-    if (response) {
-      console.log("Address posted successfully:", response.data.address);
-
-      return response;
-    }
+       return response;
   } catch (error) {
-    return error.response
+    throw error
   }
 };
 
@@ -641,16 +594,16 @@ export const buyCard = async ({
   receiver_Gifter_Name,
   receiver_message,
 }) => {
-  console.log(receiver_mail);
-  console.log(receiver_name);
-  console.log(cardValue);
-  console.log(numberOfCard);
-  console.log(receiver_Gifter_Name);
-  console.log(receiver_message);
+    (receiver_mail);
+    (receiver_name);
+    (cardValue);
+    (numberOfCard);
+    (receiver_Gifter_Name);
+    (receiver_message);
 
   const response = localStorage.getItem("token");
   const token = JSON.parse(response);
-  console.log(token.token);
+    (token.token);
 
   try {
     const response = await axios.post(
@@ -672,7 +625,7 @@ export const buyCard = async ({
 
     if (response) {
       alert("Address posted successfully");
-      console.log(response);
+        (response);
       return response;
     }
   } catch (error) {
@@ -687,18 +640,141 @@ export const buyCard = async ({
   }
 };
 
+// Add StoreMainGroup
+
+export const StoreMainGroup = async (name, desktopImage, status, selectedWarehouses) => {
+  if (!name || !desktopImage || !(desktopImage instanceof File)) {
+    console.warn("Invalid input: name and image are required.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("image", desktopImage);
+  formData.append("status", status);
+
+  selectedWarehouses?.forEach((id) => {
+    formData.append("warehouse_ids[]", id);
+  });
+
+  const token = localStorage.getItem("Merchanttoken");
+  if (!token) {
+    console.error("Missing token. Please login.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      `${baseurl}/api/admin/store-group`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.log("Error while creating group:", error?.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+
+
+
+// Refferals *****************************************************************************************
+
+
+
+export const CreateRefferalConfiguration = async (
+ reward_amount, referrals_required, status
+) => {
+    (reward_amount);
+    (referrals_required);
+    (status);
+
+
+  // Create a FormData object
+  const formData = new FormData();
+  formData.append("reward_amount", reward_amount);
+  formData.append("referrals_required", referrals_required);
+  formData.append("status", status);
+
+  // Retrieve token from localStorage
+  const token = localStorage.getItem("Merchanttoken");
+  if (!token) {
+    console.error("Authorization token is missing. Please log in.");
+    return;
+  } else {
+      (token);
+  }
+
+  try {
+    // Make the POST request to the API
+    const response = await axios.post(
+      `${baseurl}/api/admin/CreateRefferalConfiguration`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response;
+
+  } catch (error) {
+    return error.response;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Add Main Category
 
-export const StoreCategory = async (name, desktop_image, mobile_image, status) => {
+export const StoreCategory = async (
+  name,
+  desktop_image,
+  mobile_image,
+  status,
+  GroupId
+) => {
+    (desktop_image);
+    (mobile_image);
+    (name);
+    (status);
+    (GroupId);
 
-  console.log(desktop_image);
-  console.log(mobile_image);
-  console.log(name);
-  console.log(status);
 
   // Ensure that 'image' is a File object before appending it to FormData
   if (!(desktop_image instanceof File)) {
-   
     return;
   }
 
@@ -710,6 +786,8 @@ export const StoreCategory = async (name, desktop_image, mobile_image, status) =
   }
   formData.append("name", name);
   formData.append("status", status);
+  formData.append("GroupId", GroupId);
+
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -717,7 +795,7 @@ export const StoreCategory = async (name, desktop_image, mobile_image, status) =
     console.error("Authorization token is missing. Please log in.");
     return;
   } else {
-    console.log(token);
+      (token);
   }
 
   try {
@@ -732,42 +810,45 @@ export const StoreCategory = async (name, desktop_image, mobile_image, status) =
         },
       }
     );
-
-    // Log the response and return the data
-    console.log("Category created successfully:", response);
     return response;
   } catch (error) {
-
     return error.response;
-
-
-   
   }
 };
 
 // add SubCategory
 
-export const storeSubCategory = async (name,categoryId,status,mobileImage) => {
+export const storeSubCategory = async (
+       name,
+        categoryId,
+        groupId,
+        status,
+        mobileImage
+) => {
+    (groupId);
+    (name);
 
-  console.log(name);
-  console.log(categoryId);
+    (categoryId);
 
-  console.log(status);
-  console.log(mobileImage);
+    (status);
+    (mobileImage);
 
   // Ensure that 'image' is a File object before appending it to FormData
   if (!(mobileImage instanceof File)) {
-    toast.error("Invalid image file. Make sure 'desktop_imageFile' is a File object.");
-    return ;
+    toast.error(
+      "Invalid image file. Make sure 'desktop_imageFile' is a File object."
+    );
+    return;
   }
-
 
   // Create a FormData object
   const formData = new FormData();
   // formData.append("mobile_image", mobileImage);
   // only save mobile image
   formData.append("mobile_image", mobileImage);
+  formData.append("groupId", groupId);
   formData.append("parentCategory", categoryId);
+
   formData.append("name", name);
   formData.append("status", status);
 
@@ -791,10 +872,10 @@ export const storeSubCategory = async (name,categoryId,status,mobileImage) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Sub Category created successfully:", response.data.data);
+      ("Sub Category created successfully:", response.data.data);
     return response;
   } catch (error) {
     return error.response;
@@ -804,10 +885,8 @@ export const storeSubCategory = async (name,categoryId,status,mobileImage) => {
 // add storeSubSubCategory
 
 export const storeSubSubCategory = async (newSubCategory) => {
-
-  const { image, name, status, parentCategory, parentParentCategory } =
+  const { image, name, status, parentCategory, GroupID, parentParentCategory } =
     newSubCategory;
-
 
   // Ensure that 'image' is a File object before appending it to FormData
   if (!(image instanceof File)) {
@@ -820,8 +899,10 @@ export const storeSubSubCategory = async (newSubCategory) => {
   formData.append("sub_subategory_Image", image);
   formData.append("name", name);
   formData.append("status", status);
-  formData.append("parentCategory", parentCategory);
-  formData.append("parentParentCategory", parentParentCategory);
+  formData.append("GroupID", GroupID);
+
+  formData.append("SubCategory", parentCategory);
+  formData.append("Category", parentParentCategory);
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -845,7 +926,6 @@ export const storeSubSubCategory = async (newSubCategory) => {
 
     return response;
   } catch (error) {
-
     return error.response;
   }
 };
@@ -874,9 +954,9 @@ export const postLooseItem = async (
   seller_details,
   legal_disclaimer
 ) => {
-  console.log(loose_images);
+    (loose_images);
 
-  console.log(
+    (
     "READY FOR GOING TO BACKEND",
     " ",
     " ",
@@ -1014,10 +1094,10 @@ export const postLooseItem = async (
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     // Enhanced error handling
@@ -1057,7 +1137,7 @@ export const postPacketItem = async (
   legal_disclaimer,
   packet_varient_warehouse
 ) => {
-  console.log(
+    (
     "READY FOR GOING TO BACKEND",
     " ",
     " ",
@@ -1077,7 +1157,7 @@ export const postPacketItem = async (
     legal_disclaimer,
     packet_varient_warehouse
   );
-  console.log(varients);
+    (varients);
 
   // Create a FormData object
   const formData = new FormData();
@@ -1233,10 +1313,10 @@ export const postPacketItem = async (
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     // Enhanced error handling
@@ -1260,8 +1340,8 @@ export const postPacketItem = async (
 // addDeliveryConstraints
 
 export const addDeliveryChargesOnDistance = async (formData) => {
-  console.log("READY FOR GOING TO BACKEND", " ", " ", formData);
-  console.log(formData);
+    ("READY FOR GOING TO BACKEND", " ", " ", formData);
+    (formData);
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -1282,11 +1362,11 @@ export const addDeliveryChargesOnDistance = async (formData) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
 
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     // Enhanced error handling
@@ -1308,8 +1388,8 @@ export const addDeliveryChargesOnDistance = async (formData) => {
 };
 
 export const addDeliveryChargesOnValue = async (formData) => {
-  console.log("READY FOR GOING TO BACKEND", " ", " ", formData);
-  console.log(formData);
+    ("READY FOR GOING TO BACKEND", " ", " ", formData);
+    (formData);
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -1330,11 +1410,11 @@ export const addDeliveryChargesOnValue = async (formData) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
 
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     // Enhanced error handling
@@ -1358,28 +1438,33 @@ export const addDeliveryChargesOnValue = async (formData) => {
 // StoreItemToCart
 
 export const StoreItemToCart = async (
-  Customer_userId,
-  purchase_item_id,
-  Varient_type,
-  variantId,
-  stock_type , stock_id,
-  quantity
+         Customer_userId,
+          purchase_item_id,
+          Varient_type,
+          variantId,
+          stock_type,
+          stock_id,
+          Latitude,
+          Longitude,
+          AreaPin
 ) => {
-  console.log(
+    (
     "READY FOR GOING TO BACKEND",
     " ",
     " ",
-    Customer_userId,
-    purchase_item_id,
-            variantId,
-            Varient_type,
-            quantity,
-            stock_type , stock_id,
+          Customer_userId,
+          purchase_item_id,
+          Varient_type,
+          variantId,
+          stock_type,
+          stock_id,
+          Latitude,
+          Longitude,
+          AreaPin
   );
 
-
-  const currentDate = new Date().toISOString().split('T')[0];
-  console.log(currentDate);
+  const currentDate = new Date().toISOString().split("T")[0];
+    (currentDate);
 
   // Create a FormData object
   const formData = new FormData();
@@ -1391,8 +1476,9 @@ export const StoreItemToCart = async (
   formData.append("Varient_type", Varient_type);
   formData.append("stock_type", stock_type);
   formData.append("stock_id", stock_id);
-
-
+  formData.append("AreaPin", AreaPin);
+formData.append("Longitude", String(Longitude));
+formData.append("Latitude", String(Latitude));
 
 
 
@@ -1412,10 +1498,10 @@ export const StoreItemToCart = async (
       },
     });
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     return error.response;
@@ -1430,8 +1516,11 @@ export const IncreaseItemQuantityToCart = async ({
   sku_id,
   purchase_item_id,
   Varient_type,
+   Latitude,
+          Longitude,
+          AreaPin
 }) => {
-  console.log(
+    (
     "READY FOR GOING TO BACKEND",
     " ",
     " ",
@@ -1440,11 +1529,13 @@ export const IncreaseItemQuantityToCart = async ({
     sku_id,
     purchase_item_id,
     Varient_type,
+     Latitude,
+          Longitude,
+          AreaPin
   );
 
-
-  const currentDate = new Date().toISOString().split('T')[0];
-  console.log(currentDate);
+  const currentDate = new Date().toISOString().split("T")[0];
+    (currentDate);
 
   // Create a FormData object
   const formData = new FormData();
@@ -1458,6 +1549,9 @@ export const IncreaseItemQuantityToCart = async ({
 
   formData.append("Varient_type", Varient_type);
 
+  formData.append("Latitude", Latitude);
+  formData.append("Longitude", Longitude);
+  formData.append("AreaPin", AreaPin);
 
 
   // Retrieve token from localStorage
@@ -1480,14 +1574,14 @@ export const IncreaseItemQuantityToCart = async ({
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Quantity Increases successfully:", response.data.message);
+      ("Quantity Increases successfully:", response.data.message);
     return response;
   } catch (error) {
-    console.log(error);
-    
+      (error);
+
     return error.response;
   }
 };
@@ -1500,8 +1594,11 @@ export const DecreaseItemQuantityToCart = async ({
   sku_id,
   purchase_item_id,
   Varient_type,
+    Latitude,
+          Longitude,
+          AreaPin
 }) => {
-  console.log(
+    (
     "READY FOR GOING TO BACKEND",
     " ",
     " ",
@@ -1510,11 +1607,13 @@ export const DecreaseItemQuantityToCart = async ({
     sku_id,
     purchase_item_id,
     Varient_type,
+      Latitude,
+          Longitude,
+          AreaPin
   );
 
-
-  const currentDate = new Date().toISOString().split('T')[0];
-  console.log(currentDate);
+  const currentDate = new Date().toISOString().split("T")[0];
+    (currentDate);
 
   // Create a FormData object
   const formData = new FormData();
@@ -1527,6 +1626,10 @@ export const DecreaseItemQuantityToCart = async ({
   formData.append("purchase_item_id", purchase_item_id);
 
   formData.append("Varient_type", Varient_type);
+
+    formData.append("Latitude", Latitude);
+  formData.append("Longitude", Longitude);
+  formData.append("AreaPin", AreaPin);
 
 
   // Retrieve token from localStorage
@@ -1549,13 +1652,12 @@ export const DecreaseItemQuantityToCart = async ({
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Quantity decreases successfully:", response.data.message);
+      ("Quantity decreases successfully:", response.data.message);
     return response;
   } catch (error) {
-
     return error.response;
   }
 };
@@ -1563,7 +1665,7 @@ export const DecreaseItemQuantityToCart = async ({
 // storeWareHouse
 
 export const storeWareHouse = async (newWarehouse) => {
-  console.log(
+    (
     "READY FOR GOING TO BACKEND",
     " ",
     " ",
@@ -1572,7 +1674,6 @@ export const storeWareHouse = async (newWarehouse) => {
   );
 
   const {
-    role_id,
     warehouse_name,
     address,
     mobile_number,
@@ -1594,7 +1695,6 @@ export const storeWareHouse = async (newWarehouse) => {
     const response = await axios.post(
       `${baseurl}/api/admin/postwarehouse`,
       {
-        role_id,
         warehouse_name,
         address,
         mobile_number,
@@ -1611,34 +1711,21 @@ export const storeWareHouse = async (newWarehouse) => {
       }
     );
 
-    console.log(response);
+      (response);
 
-    // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
-    // Enhanced error handling
-    if (error.response) {
-      // Server responded with a status other than 2xx
-      console.error(
-        "Error posting category:",
-        error.response.data.message || "An error occurred."
-      );
-    } else if (error.request) {
-      // Request was made but no response was received
-      console.error("No response received from server:", error.request);
-    } else {
-      // Something else happened while setting up the request
-      console.error("Error setting up the request:", error.message);
-    }
-    throw error; // Re-throw the error for higher-level error handling
+      (error);
+    
+    return error.response;
+
   }
 };
 
 // AddPinCode
 
 export const AddPinCode = async (newPincode) => {
-  console.log("READY FOR GOING TO BACKEND", newPincode);
+    ("READY FOR GOING TO BACKEND", newPincode);
 
   // Accessing the nested `formData` object
   const { formData } = newPincode;
@@ -1647,7 +1734,7 @@ export const AddPinCode = async (newPincode) => {
   const { Area, Status, country_name, district_name, pincode, state_name } =
     formData;
 
-  console.log(
+    (
     "Data being sent to backend:",
     Area,
     Status,
@@ -1696,10 +1783,10 @@ export const AddPinCode = async (newPincode) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     // Enhanced error handling
@@ -1723,7 +1810,7 @@ export const AddPinCode = async (newPincode) => {
 // AddSupplier
 
 export const AddSupplier = async ({ formData }) => {
-  console.log("READY FOR GOING TO BACKEND", formData);
+    ("READY FOR GOING TO BACKEND", formData);
 
   // Destructuring the fields from `formData`
   const {
@@ -1737,7 +1824,7 @@ export const AddSupplier = async ({ formData }) => {
     GSTIN,
   } = formData;
 
-  console.log(
+    (
     "Data being sent to backend:",
     Supplier_Name,
     Mobile_Number,
@@ -1778,26 +1865,25 @@ export const AddSupplier = async ({ formData }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     return error.response;
-
   }
 };
 
 // AddBrand
 
 export const StoreBrand = async ({ formData }) => {
-  console.log("READY FOR GOING TO BACKEND", formData);
+    ("READY FOR GOING TO BACKEND", formData);
 
   // Destructuring the fields from `formData`
   const { brand_name, brand_description, status } = formData;
 
-  console.log(
+    (
     "Data being sent to backend:",
     brand_name,
     brand_description,
@@ -1828,10 +1914,10 @@ export const StoreBrand = async ({ formData }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     return error.response;
@@ -1841,12 +1927,12 @@ export const StoreBrand = async ({ formData }) => {
 // unit
 
 export const Storeunit = async ({ formData }) => {
-  console.log("READY FOR GOING TO BACKEND", formData);
+    ("READY FOR GOING TO BACKEND", formData);
 
   // Destructuring the fields from `formData`
   const { unit, value, parent_id } = formData;
 
-  console.log("Data being sent to backend:", unit, value, parent_id);
+    ("Data being sent to backend:", unit, value, parent_id);
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -1872,10 +1958,10 @@ export const Storeunit = async ({ formData }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     // Enhanced error handling
@@ -1896,19 +1982,36 @@ export const Storeunit = async ({ formData }) => {
   }
 };
 
-
-
 // storeloose_stock
 
 export const storeloose_stock = async ({ formData }) => {
-  console.log("READY FOR GOING TO BACKEND", formData);
+    ("READY FOR GOING TO BACKEND", formData);
 
   // Destructuring the fields from `formData`
-  const { quantity,warehouse,paketings, unit ,unit_value,purchase_item_id, item_id, parentloosevarientId,   varientType,
-    varientId,} = formData;
+  const {
+    quantity,
+    warehouse,
+    paketings,
+    unit,
+    unit_value,
+    purchase_item_id,
+    item_id,
+    parentloosevarientId,
+    varientType,
+    varientId,
+  } = formData;
 
-  console.log("Data being sent to backend:", quantity,warehouse, unit, item_id,unit_value,purchase_item_id,    varientType,
-    varientId,);
+    (
+    "Data being sent to backend:",
+    quantity,
+    warehouse,
+    unit,
+    item_id,
+    unit_value,
+    purchase_item_id,
+    varientType,
+    varientId
+  );
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -1941,10 +2044,10 @@ export const storeloose_stock = async ({ formData }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     return error.response; // Re-throw the error for higher-level error handling
@@ -1954,30 +2057,32 @@ export const storeloose_stock = async ({ formData }) => {
 // storepacketStock
 
 export const storepacketStock = async ({ formData }) => {
-  console.log("READY FOR GOING TO BACKEND", formData);
+    ("READY FOR GOING TO BACKEND", formData);
 
   // Destructuring the fields from `formData`
 
-
-
-
-  const {         varientType,
+  const {
+    varientType,
     varientId,
     purchase_item_id,
     quantity,
     item_id,
     unit,
     warehouse,
-  unit_value } = formData;
+    unit_value,
+  } = formData;
 
-  console.log("Data being sent to backend:",     varientType,
+    (
+    "Data being sent to backend:",
+    varientType,
     varientId,
     purchase_item_id,
     quantity,
     item_id,
     unit,
     warehouse,
-    unit_value );
+    unit_value
+  );
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -1996,9 +2101,9 @@ export const storepacketStock = async ({ formData }) => {
         purchase_item_id,
         quantity,
         unit,
-        unit_value ,
+        unit_value,
         item_id,
-        warehouse
+        warehouse,
       },
       {
         headers: {
@@ -2008,34 +2113,25 @@ export const storepacketStock = async ({ formData }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
-
     return error.response;
-   
   }
 };
 
 // storeloose_Varient
 
 export const storeloose_Varient = async ({ formData }) => {
-  console.log("READY FOR GOING TO BACKEND", formData);
+    ("READY FOR GOING TO BACKEND", formData);
 
   // Destructuring the fields from `formData`
-  const {
-    item_id,
-    LooseVarients,
-  } = formData;
+  const { item_id, LooseVarients } = formData;
 
-  console.log(
-    "Data being sent to backend:",
-    item_id,
-    LooseVarients,
-  );
+    ("Data being sent to backend:", item_id, LooseVarients);
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -2046,78 +2142,96 @@ export const storeloose_Varient = async ({ formData }) => {
 
   // Initialize FormData object
   const formDataToSend = new FormData();
-  
+
   formDataToSend.append("item_id", Number(item_id));
-  
 
   // Append each item in the LooseVarients array
   LooseVarients.forEach((variant, index) => {
-    if(variant.image_path instanceof File){
-      formDataToSend.append(`LooseVarients[${index}][image_path]`, variant.image_path);
+    if (variant.image_path instanceof File) {
+      formDataToSend.append(
+        `LooseVarients[${index}][image_path]`,
+        variant.image_path
+      );
     }
 
-
-      // Handle SpecificationBucket
-      if (variant.SpecificationBucket && Array.isArray(variant.SpecificationBucket)) {
-        variant.SpecificationBucket.forEach((spec, specIndex) => {
-          if (spec.key && spec.value) {
-            formDataToSend.append(`LooseVarients[${index}][SpecificationBucket][${specIndex}][key]`, spec.key);
-            formDataToSend.append(`LooseVarients[${index}][SpecificationBucket][${specIndex}][value]`, spec.value);
-          }
-        });
-      }
+    // Handle SpecificationBucket
+    if (
+      variant.SpecificationBucket &&
+      Array.isArray(variant.SpecificationBucket)
+    ) {
+      variant.SpecificationBucket.forEach((spec, specIndex) => {
+        if (spec.key && spec.value) {
+          formDataToSend.append(
+            `LooseVarients[${index}][SpecificationBucket][${specIndex}][key]`,
+            spec.key
+          );
+          formDataToSend.append(
+            `LooseVarients[${index}][SpecificationBucket][${specIndex}][value]`,
+            spec.value
+          );
+        }
+      });
+    }
 
     // brand_id
-    formDataToSend.append(`LooseVarients[${index}][brand_id]`, variant.brand_id);
+    formDataToSend.append(
+      `LooseVarients[${index}][brand_id]`,
+      variant.brand_id
+    );
 
     formDataToSend.append(`LooseVarients[${index}][sku_id]`, variant.sku_id);
-    formDataToSend.append(`LooseVarients[${index}][variantName]`, variant.variantName);
-    formDataToSend.append(`LooseVarients[${index}][limit_per_order]`, variant.limit_per_order);
+    formDataToSend.append(
+      `LooseVarients[${index}][variantName]`,
+      variant.variantName
+    );
+    formDataToSend.append(
+      `LooseVarients[${index}][limit_per_order]`,
+      variant.limit_per_order
+    );
     formDataToSend.append(`LooseVarients[${index}][Status]`, variant.Status);
-    formDataToSend.append(`LooseVarients[${index}][forPurchase]`, variant.forPurchase);
+    formDataToSend.append(
+      `LooseVarients[${index}][forPurchase]`,
+      variant.forPurchase
+    );
     formDataToSend.append(`LooseVarients[${index}][unit_id]`, variant.unit_id);
-    formDataToSend.append(`LooseVarients[${index}][quantity]`, variant.quantity);
+    formDataToSend.append(
+      `LooseVarients[${index}][quantity]`,
+      variant.quantity
+    );
 
     // forPurchase
 
     // Status
-
   });
 
+  // Make the POST request to the API
+  const response = await axios.post(
+    `${baseurl}/api/admin/storeloose_Varient`,
+    formDataToSend,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
-    // Make the POST request to the API
-    const response = await axios.post(
-      `${baseurl}/api/admin/storeloose_Varient`,
-      formDataToSend,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    (response);
 
-    console.log(response);
-    
-
-    return response;
-  
+  return response;
 };
-
 
 // storePacket_Varient
 
 export const storePacket_Varient = async ({ formData }) => {
-  console.log("FormData received:", formData);
 
   const { item_id, PacketVarients } = formData; // Update to match the property name
 
-  if (!item_id || !PacketVarients || !Array.isArray(PacketVarients)) {
-    console.error("Invalid formData structure:", formData);
+  if (!item_id  || !Array.isArray(PacketVarients)) {
+    console.log("Invalid formData structure:", formData);
     return;
   }
 
-  console.log("Data being sent to backend:", item_id, PacketVarients);
 
   const token = localStorage.getItem("Merchanttoken");
   if (!token) {
@@ -2129,38 +2243,86 @@ export const storePacket_Varient = async ({ formData }) => {
   formDataToSend.append("item_id", Number(item_id));
 
   PacketVarients.forEach((variant, index) => {
+
+    console.log(variant)
+    
+
+    if(variant.ImageBucket.length <= 0){
+toast.warn("ImageBucket is Empty")
+
+      return 
+
+    }
+
+
+        if(variant.SpecificationBucket.length <= 0){
+toast.warn("SpecificationBucket is Empty")
+
+      return 
+
+    }
+
+
     // Handle ImageBucket
     if (variant.ImageBucket && Array.isArray(variant.ImageBucket)) {
       variant.ImageBucket.forEach((image, imageIndex) => {
-        if (image instanceof File) {
-          formDataToSend.append(`PacketVarients[${index}][image_path][${imageIndex}]`, image);
+        if (image.file instanceof File) {
+          formDataToSend.append(
+            `PacketVarients[${index}][image_path][${imageIndex}]`, image.file
+          );
         }
       });
     }
 
+    console.log(variant);
+    
+
     // Handle SpecificationBucket
-    if (variant.SpecificationBucket && Array.isArray(variant.SpecificationBucket)) {
+    if (
+      variant.SpecificationBucket &&
+      Array.isArray(variant.SpecificationBucket)
+    ) {
       variant.SpecificationBucket.forEach((spec, specIndex) => {
         if (spec.key && spec.value) {
-          formDataToSend.append(`PacketVarients[${index}][SpecificationBucket][${specIndex}][key]`, spec.key);
-          formDataToSend.append(`PacketVarients[${index}][SpecificationBucket][${specIndex}][value]`, spec.value);
+          formDataToSend.append(
+            `PacketVarients[${index}][SpecificationBucket][${specIndex}][key]`,
+            spec.key
+          );
+          formDataToSend.append(
+            `PacketVarients[${index}][SpecificationBucket][${specIndex}][value]`,
+            spec.value
+          );
         }
       });
     }
 
     // Add other variant details
-    formDataToSend.append(`PacketVarients[${index}][sku_id]`, variant.sku_id || "");
-    formDataToSend.append(`PacketVarients[${index}][brand_id]`, variant.brand_id || "");
+    formDataToSend.append(
+      `PacketVarients[${index}][sku_id]`,
+      variant.sku_id || ""
+    );
+    formDataToSend.append(
+      `PacketVarients[${index}][brand_id]`,
+      variant.brand_id || ""
+    );
 
-    formDataToSend.append(`PacketVarients[${index}][variantName]`, variant.variantName || "");
+    formDataToSend.append(
+      `PacketVarients[${index}][variantName]`,
+      variant.variantName || ""
+    );
 
-    
-    formDataToSend.append(`PacketVarients[${index}][limit_per_order]`, variant.limit_per_order || "");
-    formDataToSend.append(`PacketVarients[${index}][Status]`, variant.Status || "inactive");
+    formDataToSend.append(
+      `PacketVarients[${index}][limit_per_order]`,
+      variant.limit_per_order || ""
+    );
+    formDataToSend.append(
+      `PacketVarients[${index}][Status]`,
+      variant.Status || "inactive"
+    );
   });
 
   formDataToSend.forEach((value, key) => {
-    console.log(`${key}:`, value);
+      (`${key}:`, value);
   });
 
   try {
@@ -2175,13 +2337,52 @@ export const storePacket_Varient = async ({ formData }) => {
       }
     );
 
+      ("Response from backend:", response);
+    return response;
+  } catch (error) {
+    throw error
+  }
+
+
+};
+
+
+
+
+export const saveWarehousesPincode = async (formData) => {
+  const token = localStorage.getItem("Merchanttoken");
+
+  console.log("FormData received in API function:");
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ':', pair[1]);
+  }
+
+  if (!token) {
+    console.error("Authorization token is missing. Please log in.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      `${baseurl}/api/admin/saveWarehousesPincode`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
     console.log("Response from backend:", response);
     return response;
   } catch (error) {
-    console.error("Error during API call:", error.response || error.message);
-    return error.response;
+    console.log("Error in saveWarehousesPincode:", error);
+    throw error;
   }
 };
+
+
 
 
 
@@ -2189,15 +2390,15 @@ export const storePacket_Varient = async ({ formData }) => {
 // Verifysku
 
 export const checkSkuExists = async (sku_id) => {
-  console.log("READY FOR GOING TO BACKEND", " ", " ", sku_id);
-  console.log(sku_id);
+    ("READY FOR GOING TO BACKEND", " ", " ", sku_id);
+    (sku_id);
 
-  console.log("Chala");
+    ("Chala");
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
   if (!token) {
-    console.log("chala");
+      ("chala");
 
     console.error("Authorization token is missing. Please log in.");
   }
@@ -2214,10 +2415,10 @@ export const checkSkuExists = async (sku_id) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     // Enhanced error handling
@@ -2238,19 +2439,18 @@ export const checkSkuExists = async (sku_id) => {
   }
 };
 
-
 // checkHSNExists
 
-export const checkHSNExists = async ({hsn}) => {
-  console.log("READY FOR GOING TO BACKEND", " ", " ", hsn);
-  console.log(hsn);
+export const checkHSNExists = async ({ hsn }) => {
+    ("READY FOR GOING TO BACKEND", " ", " ", hsn);
+    (hsn);
 
-  console.log("Chala");
+    ("Chala");
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
   if (!token) {
-    console.log("chala");
+      ("chala");
 
     console.error("Authorization token is missing. Please log in.");
   }
@@ -2259,7 +2459,7 @@ export const checkHSNExists = async ({hsn}) => {
     // Make the POST request to the API
     const response = await axios.post(
       `${baseurl}/api/admin/CheckHSNExitORNOT`,
-      { hsn : hsn },
+      { hsn: hsn },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -2267,37 +2467,30 @@ export const checkHSNExists = async ({hsn}) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("Category created successfully:", response.data.message);
+      ("Category created successfully:", response.data.message);
     return response;
   } catch (error) {
     return error.response;
   }
 };
 
-
 export const storeGST = async ({ formData }) => {
-  console.log("READY FOR GOING TO BACKEND", formData);
+    ("READY FOR GOING TO BACKEND", formData);
 
   // Destructuring the fields from `formData`
 
-  const {
-   
-    gst_title,
-    status,
-    value,
-  } = formData;
+  const { gst_title, status, value } = formData;
 
-  console.log(
+    (
     "Data being sent to backend:",
-   
+
     gst_title,
     status,
-    value,
+    value
   );
-
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -2323,10 +2516,10 @@ export const storeGST = async ({ formData }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
-    console.log("gst created successfully:", response.data.message);
+      ("gst created successfully:", response.data.message);
     return response;
   } catch (error) {
     // Enhanced error handling
@@ -2347,24 +2540,11 @@ export const storeGST = async ({ formData }) => {
   }
 };
 
-
 // StorePurchase
 
-
 export const StorePurchase = async ({ form }) => {
-
-
   // Destructuring the fields from `formData`
-  const {
-    invoiceDetails,
-    items,
-    summaryTotals ,
-    purchase_id
-  } = form;
-
-
-
-  
+  const { invoiceDetails, items, summaryTotals, purchase_id } = form;
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -2376,48 +2556,34 @@ export const StorePurchase = async ({ form }) => {
   // Create a FormData object
   const formData = new FormData();
 
-
-
   // Append invoice details
-  formData.append('supplier', invoiceDetails.supplier);
-  formData.append('invoiceNo', invoiceDetails.invoiceNo);
-  formData.append('date', invoiceDetails.date);
-  formData.append('ModeofPayment', invoiceDetails.ModeofPayment);
-  formData.append('MotorVehicleNo', invoiceDetails.MotorVehicleNo);
-  formData.append('e_WayBillNo', invoiceDetails.e_WayBillNo);
+  formData.append("supplier", invoiceDetails.supplier);
+  formData.append("invoiceNo", invoiceDetails.invoiceNo);
+  formData.append("date", invoiceDetails.date);
+  formData.append("ModeofPayment", invoiceDetails.ModeofPayment);
+  formData.append("MotorVehicleNo", invoiceDetails.MotorVehicleNo);
+  formData.append("e_WayBillNo", invoiceDetails?.e_WayBillNo || null);
 
-  
-
-
-  formData.append('totalTaxableAmount', summaryTotals.totalTaxableAmount);
-  formData.append('cgst', summaryTotals.cgst);
-  formData.append('sgst', summaryTotals.sgst);
-  formData.append('igst', summaryTotals.igst);
-  formData.append('discount', summaryTotals.discount);
-  formData.append('totalAmount', summaryTotals.totalAmount);
-  formData.append('roundOff', summaryTotals.roundOff);
-  formData.append('roundOff_Value', summaryTotals.roundOff_Value);
-  formData.append('payment', summaryTotals.payment);
+  formData.append("totalTaxableAmount", summaryTotals.totalTaxableAmount);
+  formData.append("cgst", summaryTotals.cgst);
+  formData.append("sgst", summaryTotals.sgst);
+  formData.append("igst", summaryTotals.igst);
+  formData.append("discount", summaryTotals.discount);
+  formData.append("totalAmount", summaryTotals.totalAmount);
+  formData.append("roundOff", summaryTotals.roundOff);
+  formData.append("roundOff_Value", summaryTotals.roundOff_Value);
+  formData.append("payment", summaryTotals.payment);
 
   if (purchase_id !== undefined && purchase_id !== null) {
-    formData.append('purchase_id', purchase_id);
-}
-
-
-
-
-
-
-
-  
+    formData.append("purchase_id", purchase_id);
+  }
 
   // Append items
   items.forEach((item, index) => {
-    Object.keys(item).forEach(key => {
+    Object.keys(item).forEach((key) => {
       formData.append(`items[${index}][${key}]`, item[key]);
     });
   });
-
 
   try {
     // Make the POST request to the API
@@ -2432,38 +2598,22 @@ export const StorePurchase = async ({ form }) => {
       }
     );
 
-
     // Log the response and return the data
     return response;
   } catch (error) {
-    return error.response; // Re-throw the error for higher-level error handling
+    throw error; // Re-throw the error for higher-level error handling
   }
 };
 
 // CreteItems
 
-
-
 export const CreteItems = async ({ formDataa }) => {
-  console.log("READY FOR GOING TO BACKEND", formDataa);
+    ("READY FOR GOING TO BACKEND", formDataa);
 
   // Destructuring the fields from `formData`
-  const {
-    ItemName,
-    category_id,
-    subCategory_id,
-    sub_subCategory_id,
-    Status
-  } = formDataa;
+  const { ItemName, category_id, subCategory_id, sub_subCategory_id, Status,GroupId,isVeg } =
+    formDataa;
 
-  console.log(
-    "Data being sent to backend:",
-    ItemName,
-    category_id,
-    subCategory_id,
-    sub_subCategory_id,
-    Status
-  );
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -2476,11 +2626,13 @@ export const CreteItems = async ({ formDataa }) => {
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('ItemName', ItemName);
-  formData.append('category_id', category_id);
-  formData.append('subCategory_id', subCategory_id);
-  formData.append('sub_subCategory_id', sub_subCategory_id);
-  formData.append('Status', Status);
+  formData.append("ItemName", ItemName);
+  formData.append("category_id", category_id);
+  formData.append("subCategory_id", subCategory_id);
+  formData.append("sub_subCategory_id", sub_subCategory_id);
+  formData.append("Status", Status);
+  formData.append("GroupId", GroupId);
+  formData.append("isVeg", isVeg);
 
 
 
@@ -2496,31 +2648,37 @@ export const CreteItems = async ({ formDataa }) => {
         },
       }
     );
-
     console.log(response);
+    
 
-    // Log the response and return the data
-    console.log("Purchase stored successfully:", response.data.message);
     return response;
   } catch (error) {
-    return error.response;
+    throw error;
   }
 };
 
 // CreteOfferZone
 export const CreteOfferZone = async ({ formDataa }) => {
-  console.log("Preparing to send data to backend:", formDataa);
+    ("Preparing to send data to backend:", formDataa);
 
   // Destructure the fields from `formDataa`
   const { zoneName, uploadedImages, Status, Device } = formDataa;
 
   // Validate required fields
-  if (!zoneName || !Array.isArray(uploadedImages) || uploadedImages.length === 0 || !Status || !Device) {
-    console.error("Missing required fields: zoneName, uploadedImages, Status, or Device");
+  if (
+    !zoneName ||
+    !Array.isArray(uploadedImages) ||
+    uploadedImages.length === 0 ||
+    !Status ||
+    !Device
+  ) {
+    console.error(
+      "Missing required fields: zoneName, uploadedImages, Status, or Device"
+    );
     return;
   }
 
-  console.log("Validated data:", { zoneName, uploadedImages, Status, Device });
+    ("Validated data:", { zoneName, uploadedImages, Status, Device });
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -2553,7 +2711,7 @@ export const CreteOfferZone = async ({ formDataa }) => {
       }
     );
 
-    console.log("Offer zone created successfully:", response.data.message);
+      ("Offer zone created successfully:", response.data.message);
     return response; // Return response data for further use
   } catch (error) {
     // Enhanced error handling
@@ -2573,25 +2731,15 @@ export const CreteOfferZone = async ({ formDataa }) => {
   }
 };
 
-
-
-
-
 // CreteDeliveryExecutive
 
 export const CreteDeliveryExecutive = async ({ formDataa }) => {
-  console.log("READY FOR GOING TO BACKEND", formDataa);
+    ("READY FOR GOING TO BACKEND", formDataa);
 
   // Destructuring the fields from `formData`
-  const {
-    name,
-        phone,
-        email,
-        password,
-        address
-  } = formDataa;
+  const { name, phone, email, password, address } = formDataa;
 
-  console.log(
+    (
     "Data being sent to backend:",
     name,
     phone,
@@ -2611,13 +2759,11 @@ export const CreteDeliveryExecutive = async ({ formDataa }) => {
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('name', name);
-  formData.append('phone', phone);
-  formData.append('email', email);
-  formData.append('password', password);
-  formData.append('address', address);
-
-
+  formData.append("name", name);
+  formData.append("phone", phone);
+  formData.append("email", email);
+  formData.append("password", password);
+  formData.append("address", address);
 
   try {
     // Make the POST request to the API
@@ -2632,69 +2778,35 @@ export const CreteDeliveryExecutive = async ({ formDataa }) => {
       }
     );
 
-    console.log(response);
-
-    // Log the response and return the data
-    console.log("Purchase stored successfully:", response.data.message);
     return response;
   } catch (error) {
-    // // Enhanced error handling
-    // if (error.response) {
-    //   // Server responded with a status other than 2xx
-    //   console.error(
-    //     "Error posting purchase:",
-    //     error.response.data.message || "An error occurred."
-    //   );
-    // } else if (error.request) {
-    //   // Request was made but no response was received
-    //   console.error("No response received from server:", error.request);
-    // } else {
-    //   // Something else happened while setting up the request
-    //   console.error("Error setting up the request:", error.message);
-    // }
-    // throw error; // Re-throw the error for higher-level error handling
+   
     return error.response;
   }
 };
 
-
 // CreateOffer
 
-
 export const CreateOffer = async ({ formDataa }) => {
-  console.log("READY FOR GOING TO BACKEND", formDataa);
+    ("READY FOR GOING TO BACKEND", formDataa);
 
   // Destructuring the fields from `formData`
   const {
     PostedDate,
     offerName,
     OfferPercentValue,
-    category_id ,
-    subCategory_id ,
-    sub_subCategory_id ,
-    item_id ,
+    category_id,
+    subCategory_id,
+    sub_subCategory_id,
+    item_id,
     startDate,
     endDate,
     Status,
     looseVariantId,
-    PacketVariantId
+    PacketVariantId,
+    group_id
   } = formDataa;
 
-  console.log(
-    "Data being sent to backend:",
-    PostedDate,
-    offerName,
-    OfferPercentValue,
-    category_id ,
-    subCategory_id ,
-    sub_subCategory_id ,
-    item_id ,
-    startDate,
-    endDate,
-    Status,
-    looseVariantId,
-    PacketVariantId
-  );
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -2707,22 +2819,20 @@ export const CreateOffer = async ({ formDataa }) => {
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('PostedDate', PostedDate);
-  formData.append('offerName', offerName);
-  formData.append('OfferPercentValue', OfferPercentValue);
-  formData.append('category_id', category_id || "");
-  formData.append('subCategory_id', subCategory_id || "");
-  formData.append('sub_subCategory_id', sub_subCategory_id || "");
-  formData.append('item_id', item_id || "");
-  formData.append('startDate', startDate);
-  formData.append('endDate', endDate);
-  formData.append('Status', Status);
-  formData.append('looseVariantId', looseVariantId || "");
-  formData.append('PacketVariantId', PacketVariantId || "");
+  formData.append("PostedDate", PostedDate);
+  formData.append("offerName", offerName);
+  formData.append("OfferPercentValue", OfferPercentValue);
+  formData.append("category_id", category_id || "");
+  formData.append("group_id", group_id || "");
 
-
-
-
+  formData.append("subCategory_id", subCategory_id || "");
+  formData.append("sub_subCategory_id", sub_subCategory_id || "");
+  formData.append("item_id", item_id || "");
+  formData.append("startDate", startDate);
+  formData.append("endDate", endDate);
+  formData.append("Status", Status);
+  formData.append("looseVariantId", looseVariantId || "");
+  formData.append("PacketVariantId", PacketVariantId || "");
 
   try {
     // Make the POST request to the API
@@ -2737,21 +2847,19 @@ export const CreateOffer = async ({ formDataa }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
   } catch (error) {
-
     return error.response;
-
-  
   }
 };
 
 // Create Signup Offer
 export const CreateSignUpOffer = async (
-
+  Merchant_userId,
+  Created_for_warehouse,
   offer_name,
   offer_mrp,
   offer_discount,
@@ -2760,27 +2868,18 @@ export const CreateSignUpOffer = async (
   offer_status,
   offer_image_path,
   offerItemBucket
-
-
-
 ) => {
-  console.log(
+    (Merchant_userId);
 
+    (offer_name);
+    (offer_mrp);
+    (offer_discount);
+    (offer_cashback);
+    (offer_description);
+    (offer_status);
+    (offer_image_path);
+    (offerItemBucket);
 
-    offer_name,
-    offer_mrp,
-    offer_discount,
-    offer_cashback,
-    offer_description,
-    offer_status,
-    offer_image_path,
-    offerItemBucket
-
-
-
-
-  );
-  
 
 
   // Retrieve token from localStorage
@@ -2794,33 +2893,63 @@ export const CreateSignUpOffer = async (
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('offer_name', offer_name);
-  formData.append('offer_mrp', offer_mrp);
-  formData.append('offer_discount', offer_discount);
-  formData.append('offer_cashback', offer_cashback);
-  formData.append('offer_description', offer_description);
-  formData.append('offer_status', offer_status);
+  formData.append("Merchant_Id", Merchant_userId);
+  formData.append("Created_for_warehouse", Created_for_warehouse);
+
+
+  formData.append("offer_name", offer_name);
+  formData.append("offer_mrp", offer_mrp);
+  formData.append("offer_discount", offer_discount);
+  formData.append("offer_cashback", offer_cashback);
+  formData.append("offer_description", offer_description);
+  formData.append("offer_status", offer_status);
   // formData.append('offer_image_path', offer_image_path);
 
-  if(offer_image_path instanceof File){
-    console.log("Image is a file:", offer_image_path);
-    
-    formData.append('offer_image_path', offer_image_path);
+  if (offer_image_path instanceof File) {
+      ("Image is a file:", offer_image_path);
+
+    formData.append("offer_image_path", offer_image_path);
   }
 
- offerItemBucket.forEach((item, index) => {
-  formData.append(`offerItemBucket[${index}][looseVariantId]`, item.looseVariantId);
-  formData.append(`offerItemBucket[${index}][PacketVariantId]`, item.PacketVariantId);
-});
+  offerItemBucket.forEach((item, index) => {
+
+    if(item.looseVariantId){
+
+          formData.append(
+      `offerItemBucket[${index}][looseVariantId]`,
+      item.looseVariantId
+    );
+
+
+        formData.append(
+      `offerItemBucket[${index}][PacketVariantId]`,
+      ""
+    );
+
+
+    }
+    else if(item.PacketVariantId){
+
+      
+
+    formData.append(
+      `offerItemBucket[${index}][PacketVariantId]`,
+      item.PacketVariantId
+    );
+
+              formData.append(
+      `offerItemBucket[${index}][looseVariantId]`,
+      ""
+    );
+
+
+    }
 
 
 
 
 
-
-
-
-
+  });
 
   try {
     // Make the POST request to the API
@@ -2835,28 +2964,21 @@ export const CreateSignUpOffer = async (
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
   } catch (error) {
-
     return error.response;
-
-  
   }
+
 
 
 };
 
 // placeOrder
 
-
 export const placeOrder = async () => {
-
-
-
-
   // Retrieve token from localStorage
   const token = localStorage.getItem("token");
   if (!token) {
@@ -2864,33 +2986,26 @@ export const placeOrder = async () => {
     return;
   }
 
-  const currentDate = new Date().toISOString().split('T')[0];
-  console.log(currentDate);
+  const currentDate = new Date().toISOString().split("T")[0];
+    (currentDate);
 
   // Create a FormData object
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('message', "PLACE_ORDER");
+  formData.append("message", "PLACE_ORDER");
   formData.append("current_date", currentDate);
- 
-
-
 
   try {
     // Make the POST request to the API
-    const response = await axios.post(
-      `${baseurl}/api/placeOrder`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    const response = await axios.post(`${baseurl}/api/placeOrder`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
@@ -2899,15 +3014,14 @@ export const placeOrder = async () => {
   }
 };
 
-
-export const OrderCancelByCustomer = async ({message,orderId, OrderItemId ,reason}) => {
-
+export const OrderCancelByCustomer = async ({
+  message,
+  orderId,
+  OrderItemId,
+  reason,
+}) => {
   log("OrderCancelByCustomer", orderId, reason);
   log("OrderItemId", OrderItemId);
-
-
-
-
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("token");
@@ -2916,24 +3030,18 @@ export const OrderCancelByCustomer = async ({message,orderId, OrderItemId ,reaso
     return;
   }
 
-  const currentDate = new Date().toISOString().split('T')[0];
-  console.log(currentDate);
+  const currentDate = new Date().toISOString().split("T")[0];
+    (currentDate);
 
   // Create a FormData object
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('orderId', orderId);
+  formData.append("orderId", orderId);
   formData.append("reason", reason);
   formData.append("currentDate", currentDate);
   formData.append("message", message);
   // formData.append("OrderItemId", OrderItemId);
-
-
-
- 
-
-
 
   try {
     // Make the POST request to the API
@@ -2948,27 +3056,23 @@ export const OrderCancelByCustomer = async ({message,orderId, OrderItemId ,reaso
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
   } catch (error) {
-
     return error.response;
-
-
   }
 };
 
 // DecreaseOrderItemQuantity
-export const DecreaseOrderItemQuantity = async (cancellation_type,reason,message,decreasingQuantity , Order_itemId) => {
-
-
-
-
-
-
-
+export const DecreaseOrderItemQuantity = async (
+  cancellation_type,
+  reason,
+  message,
+  decreasingQuantity,
+  Order_itemId
+) => {
   // Retrieve token from localStorage
   const token = localStorage.getItem("token");
   if (!token) {
@@ -2976,26 +3080,20 @@ export const DecreaseOrderItemQuantity = async (cancellation_type,reason,message
     return;
   }
 
-  const currentDate = new Date().toISOString().split('T')[0];
+  const currentDate = new Date().toISOString().split("T")[0];
 
   // Create a FormData object
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('Order_itemId', Order_itemId);
-  formData.append('reason', reason);
-  formData.append('cancellation_type', cancellation_type);
+  formData.append("Order_itemId", Order_itemId);
+  formData.append("reason", reason);
+  formData.append("cancellation_type", cancellation_type);
 
   formData.append("decreasingQuantity", decreasingQuantity);
   formData.append("currentDate", currentDate);
   formData.append("message", message);
   // formData.append("OrderItemId", OrderItemId);
-
-
-
- 
-
-
 
   try {
     // Make the POST request to the API
@@ -3010,50 +3108,42 @@ export const DecreaseOrderItemQuantity = async (cancellation_type,reason,message
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
   } catch (error) {
-  return error.response;
+    return error.response;
   }
 };
 
-
-
-
 // **************************MERCHANT*****************************
-
-
-
-
 
 // CreateHomeManagementCategory
 
-
 export const CreateHomeManagementCategory = async ({ formDataa }) => {
-  console.log("READY FOR GOING TO BACKEND", formDataa);
+    ("READY FOR GOING TO BACKEND", formDataa);
 
   // Destructuring the fields from `formData`
   const {
     device,
     PostedDate,
     CategoryTitle,
-    category_id ,
-    subCategory_id ,
-    sub_subCategory_id ,
+    category_id,
+    subCategory_id,
+    sub_subCategory_id,
     Status,
   } = formDataa;
 
-  console.log(
+    (
     "Data being sent to backend:",
     device,
     PostedDate,
     CategoryTitle,
-    category_id ,
-    subCategory_id ,
-    sub_subCategory_id ,
-    Status,
+    category_id,
+    subCategory_id,
+    sub_subCategory_id,
+    Status
   );
 
   // Retrieve token from localStorage
@@ -3067,16 +3157,13 @@ export const CreateHomeManagementCategory = async ({ formDataa }) => {
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('device', device);
-  formData.append('PostedDate', PostedDate);
-  formData.append('CategoryTitle', CategoryTitle);
-  formData.append('category_id', category_id);
-  formData.append('subCategory_id', subCategory_id);
-  formData.append('sub_subCategory_id', sub_subCategory_id);
-  formData.append('Status', Status);
-
-
-
+  formData.append("device", device);
+  formData.append("PostedDate", PostedDate);
+  formData.append("CategoryTitle", CategoryTitle);
+  formData.append("category_id", category_id);
+  formData.append("subCategory_id", subCategory_id);
+  formData.append("sub_subCategory_id", sub_subCategory_id);
+  formData.append("Status", Status);
 
   try {
     // Make the POST request to the API
@@ -3091,23 +3178,20 @@ export const CreateHomeManagementCategory = async ({ formDataa }) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
   } catch (error) {
-
     return error.response;
   }
 };
 
-
 // uploadMainBanner
 
-
 export const uploadMainBanner = async (newBanner) => {
-  console.log(newBanner);
-  
+    (newBanner);
+
   // Debug log (optional)
   console.debug("Uploading new banner:", newBanner);
 
@@ -3125,7 +3209,7 @@ export const uploadMainBanner = async (newBanner) => {
     formData.append("device", newBanner.device);
     formData.append("status", newBanner.status);
 
-    newBanner.offerIds.forEach(offerId => {
+    newBanner.offerIds.forEach((offerId) => {
       formData.append("offerIds[]", offerId); // Use 'offerIds[]' to represent an array
     });
 
@@ -3156,9 +3240,11 @@ export const uploadMainBanner = async (newBanner) => {
     // Show user-friendly error messages
     if (error.response) {
       toast.error(
-        `Failed to upload banner: ${error.response.data?.message || "Unknown error"}`
+        `Failed to upload banner: ${
+          error.response.data?.message || "Unknown error"
+        }`
       );
-    } 
+    }
 
     return { error: "Request failed", details: error.response };
   }
@@ -3167,8 +3253,8 @@ export const uploadMainBanner = async (newBanner) => {
 // uploadFeaturedBanner
 
 export const uploadFeaturedBanner = async (newBanner) => {
-  console.log(newBanner);
-  
+    (newBanner);
+
   // Debug log (optional)
   console.debug("Uploading new banner:", newBanner);
 
@@ -3185,12 +3271,11 @@ export const uploadFeaturedBanner = async (newBanner) => {
     formData.append("device", newBanner.device);
     formData.append("status", newBanner.status);
 
-    newBanner.offerIds.forEach(offerId => {
+    newBanner.offerIds.forEach((offerId) => {
       formData.append("offerIds[]", offerId); // Use 'offerIds[]' to represent an array
     });
 
-
-    newBanner.images.forEach(image => {
+    newBanner.images.forEach((image) => {
       formData.append("image[]", image); // Use 'offerIds[]' to represent an array
     });
 
@@ -3221,21 +3306,21 @@ export const uploadFeaturedBanner = async (newBanner) => {
     // Show user-friendly error messages
     if (error.response) {
       toast.error(
-        `Failed to upload banner: ${error.response.data?.message || "Unknown error"}`
+        `Failed to upload banner: ${
+          error.response.data?.message || "Unknown error"
+        }`
       );
-    } 
+    }
 
     return { error: "Request failed", details: error.response };
   }
 };
 
-
 // uploadFeaturedBannerImage
 
 export const uploadFeaturedBannerOfferIds = async (newBanner) => {
-  console.log(newBanner);
+    (newBanner);
 
-  
   // Debug log (optional)
   console.debug("Uploading new banner:", newBanner);
 
@@ -3252,11 +3337,9 @@ export const uploadFeaturedBannerOfferIds = async (newBanner) => {
     formData.append("featuredBannerId", newBanner.featuredBannerId);
     formData.append("imageId", newBanner.image.id);
 
-    newBanner.offerIds.forEach(offerId => {
+    newBanner.offerIds.forEach((offerId) => {
       formData.append("offerIds[]", offerId); // Use 'offerIds[]' to represent an array
     });
-
-
 
     // Make the POST request to the API
     const response = await axios.post(
@@ -3284,16 +3367,15 @@ export const uploadFeaturedBannerOfferIds = async (newBanner) => {
     // Show user-friendly error messages
     if (error.response) {
       toast.error(
-        `Failed to upload banner: ${error.response.data?.message || "Unknown error"}`
+        `Failed to upload banner: ${
+          error.response.data?.message || "Unknown error"
+        }`
       );
-    } 
+    }
 
     return { error: "Request failed", details: error.response };
   }
 };
-
-
-
 
 export const CancelledItemSubmission = async (id) => {
   // Retrieve token from localStorage
@@ -3316,7 +3398,7 @@ export const CancelledItemSubmission = async (id) => {
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
@@ -3326,18 +3408,11 @@ export const CancelledItemSubmission = async (id) => {
   }
 };
 
-
-
-
-export const OrderCancelRequestByMerchant = async ({message,orderId,reason}) => {
-
-
-
-
-
-
-
-
+export const OrderCancelRequestByMerchant = async ({
+  message,
+  orderId,
+  reason,
+}) => {
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
   if (!token) {
@@ -3345,24 +3420,18 @@ export const OrderCancelRequestByMerchant = async ({message,orderId,reason}) => 
     return;
   }
 
-  const currentDate = new Date().toISOString().split('T')[0];
-  console.log(currentDate);
+  const currentDate = new Date().toISOString().split("T")[0];
+    (currentDate);
 
   // Create a FormData object
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('orderId', orderId);
+  formData.append("orderId", orderId);
   formData.append("reason", reason);
   formData.append("currentDate", currentDate);
   formData.append("message", message);
   // formData.append("OrderItemId", OrderItemId);
-
-
-
- 
-
-
 
   try {
     // Make the POST request to the API
@@ -3377,32 +3446,22 @@ export const OrderCancelRequestByMerchant = async ({message,orderId,reason}) => 
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
   } catch (error) {
     return error.response;
-    
   }
 };
 
-
-
-
-
 // AssignDelivery_Executive__
 
-
-
-export const AssignDelivery_Executive__ = async (selectedExecutive, selectedOrderIds) => {
-
-console.log(selectedExecutive, selectedOrderIds);
-
-
-
-
-
+export const AssignDelivery_Executive__ = async (
+  selectedExecutive,
+  selectedOrderIds
+) => {
+    (selectedExecutive, selectedOrderIds);
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");
@@ -3411,27 +3470,19 @@ console.log(selectedExecutive, selectedOrderIds);
     return;
   }
 
-  const currentDate = new Date().toISOString().split('T')[0];
-  console.log(currentDate);
+  const currentDate = new Date().toISOString().split("T")[0];
+    (currentDate);
   // Create a FormData object
   const formData = new FormData();
 
   // Append invoice details
-  formData.append('selectedExecutive', selectedExecutive);
-  formData.append('selectedOrderIds', selectedOrderIds);
-  formData.append('currentDate', currentDate);
-
-
+  formData.append("selectedExecutive", selectedExecutive);
+  formData.append("selectedOrderIds", selectedOrderIds);
+  formData.append("currentDate", currentDate);
 
   selectedOrderIds.forEach((orderId, index) => {
-    
     formData.append(`selectedOrderIds[${index}][orderId]`, orderId || "");
-
-
   });
- 
-
-
 
   try {
     // Make the POST request to the API
@@ -3446,258 +3497,194 @@ console.log(selectedExecutive, selectedOrderIds);
       }
     );
 
-    console.log(response);
+      (response);
 
     // Log the response and return the data
     return response;
   } catch (error) {
-
     return error.response;
-
   }
-
-
 };
 
-
 export const MakeFreeDeliveryExecutive = async (selectedExecutive) => {
+  const formData = new FormData();
 
-  
-  
-  
-  
-  
-  
-    const formData = new FormData();
-  
-    // Append invoice details
-    formData.append('DelvieryExecutiveId', selectedExecutive);
-  
-  
-  
-   
-  
-  
-  
-    try {
-      // Make the POST request to the API
-      const response = await axios.post(
-        `${baseurl}/api/makefreeDeliveryBoyy/${selectedExecutive}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+  // Append invoice details
+  formData.append("DelvieryExecutiveId", selectedExecutive);
+
+  try {
+    // Make the POST request to the API
+    const response = await axios.post(
+      `${baseurl}/api/makefreeDeliveryBoyy/${selectedExecutive}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+      (response);
+
+    // Log the response and return the data
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+export const Schedule_timeDate = async ({ date, time, orderId }) => {
+    (date, time, orderId);
+
+  // Retrieve token from localStorage
+  const token = localStorage.getItem("Merchanttoken");
+  if (!token) {
+    console.error("Authorization token is missing. Please log in.");
+    return;
+  }
+
+  // Create a FormData object
+  const formData = new FormData();
+
+  // Append invoice details
+  formData.append("date", date);
+  formData.append("time", time);
+  formData.append("orderId", orderId);
+
+  try {
+    // Make the POST request to the API
+    const response = await axios.post(
+      `${baseurl}/api/admin/editDelivery_timeDate`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+      (response);
+
+    // Log the response and return the data
+    return response;
+  } catch (error) {
+    // Enhanced error handling
+    if (error.response) {
+      // Server responded with a status other than 2xx
+      console.error(
+        "Error posting purchase:",
+        error.response.data.message || "An error occurred."
       );
-  
-      console.log(response);
-  
-      // Log the response and return the data
-      return response;
-    } catch (error) {
-  
-      return error.response;
-  
+    } else if (error.request) {
+      // Request was made but no response was received
+      console.error("No response received from server:", error.request);
+    } else {
+      // Something else happened while setting up the request
+      console.error("Error setting up the request:", error.message);
     }
-  
-  
-  };
+    throw error; // Re-throw the error for higher-level error handling
+  }
+};
 
+// AddDeliveryDate
 
+export const AddDeliveryDate = async ({ pincode, noOfDays, time }) => {
+    (pincode, noOfDays, time);
 
+  // Retrieve token from localStorage
+  const token = localStorage.getItem("Merchanttoken");
+  if (!token) {
+    console.error("Authorization token is missing. Please log in.");
+    return;
+  }
 
+  // Create a FormData object
+  const formData = new FormData();
 
-export const Schedule_timeDate = async ({date, time , orderId}) => {
+  // Append invoice details
+  formData.append("pincode", pincode);
+  formData.append("noOfDays", noOfDays);
+  formData.append("time", time);
 
-  console.log(date, time , orderId);
-  
-  
-  
-    // Retrieve token from localStorage
-    const token = localStorage.getItem("Merchanttoken");
-    if (!token) {
-      console.error("Authorization token is missing. Please log in.");
-      return;
-    }
+  try {
+    // Make the POST request to the API
+    const response = await axios.post(
+      `${baseurl}/api/admin/storepincodeDeliveryDate`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
+      (response);
 
-  
-    // Create a FormData object
-    const formData = new FormData();
-  
-    // Append invoice details
-    formData.append('date', date);
-    formData.append('time', time);
-    formData.append('orderId', orderId);
-
-   
-  
-  
-  
-    try {
-      // Make the POST request to the API
-      const response = await axios.post(
-        `${baseurl}/api/admin/editDelivery_timeDate`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
+    // Log the response and return the data
+    return response;
+  } catch (error) {
+    // Enhanced error handling
+    if (error.response) {
+      // Server responded with a status other than 2xx
+      console.error(
+        "Error posting purchase:",
+        error.response.data.message || "An error occurred."
       );
-  
-      console.log(response);
-  
-      // Log the response and return the data
-      return response;
-    } catch (error) {
-      // Enhanced error handling
-      if (error.response) {
-        // Server responded with a status other than 2xx
-        console.error(
-          "Error posting purchase:",
-          error.response.data.message || "An error occurred."
-        );
-      } else if (error.request) {
-        // Request was made but no response was received
-        console.error("No response received from server:", error.request);
-      } else {
-        // Something else happened while setting up the request
-        console.error("Error setting up the request:", error.message);
-      }
-      throw error; // Re-throw the error for higher-level error handling
+    } else if (error.request) {
+      // Request was made but no response was received
+      console.error("No response received from server:", error.request);
+    } else {
+      // Something else happened while setting up the request
+      console.error("Error setting up the request:", error.message);
     }
-  };
-  
+    throw error; // Re-throw the error for higher-level error handling
+  }
+};
 
-  // AddDeliveryDate
+// assignDeliveryExecutive
 
+export const dymmythings = async () => {
+  // Create a FormData object
+  const formData = new FormData();
 
-  export const AddDeliveryDate = async ({ pincode, noOfDays, time}) => {
+  // Append invoice details
+  formData.append("pincode", "534534");
+  formData.append("noOfDays", "54");
+  formData.append("time", "54335");
 
-    console.log( pincode, noOfDays, time);
-    
-    
-    
-      // Retrieve token from localStorage
-      const token = localStorage.getItem("Merchanttoken");
-      if (!token) {
-        console.error("Authorization token is missing. Please log in.");
-        return;
+  try {
+    // Make the POST request to the API
+    const response = await axios.post(
+      `${baseurl}/api/dboy/track_delivery_executive`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${"690|VDwc8cEYbybOjSdeJ90F4VvHvZbRoaKYKWtO4lZZa28216d3"}`,
+          "Content-Type": "multipart/form-data",
+        },
       }
-    
-      // Create a FormData object
-      const formData = new FormData();
-    
-      // Append invoice details
-      formData.append('pincode', pincode);
-      formData.append('noOfDays', noOfDays);
-      formData.append('time', time);
-  
-     
-    
-    
-    
-      try {
-        // Make the POST request to the API
-        const response = await axios.post(
-          `${baseurl}/api/admin/storepincodeDeliveryDate`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-    
-        console.log(response);
-    
-        // Log the response and return the data
-        return response;
-      } catch (error) {
-        // Enhanced error handling
-        if (error.response) {
-          // Server responded with a status other than 2xx
-          console.error(
-            "Error posting purchase:",
-            error.response.data.message || "An error occurred."
-          );
-        } else if (error.request) {
-          // Request was made but no response was received
-          console.error("No response received from server:", error.request);
-        } else {
-          // Something else happened while setting up the request
-          console.error("Error setting up the request:", error.message);
-        }
-        throw error; // Re-throw the error for higher-level error handling
-      }
-    };
+    );
 
-    // assignDeliveryExecutive
-    
+      (response);
 
-
-
-
-
-
-
-
-
-       export const dymmythings = async () => {
-
-      
-        
-        
-        
-   
-        
-          // Create a FormData object
-          const formData = new FormData();
-        
-          // Append invoice details
-          formData.append('pincode', "534534");
-          formData.append('noOfDays', "54");
-          formData.append('time', '54335');
-      
-         
-        
-        
-        
-          try {
-            // Make the POST request to the API
-            const response = await axios.post(
-              `${baseurl}/api/dboy/track_delivery_executive`,
-              formData,
-              {
-                headers: {
-                  Authorization: `Bearer ${'690|VDwc8cEYbybOjSdeJ90F4VvHvZbRoaKYKWtO4lZZa28216d3'}`,
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            );
-        
-            console.log(response);
-        
-            // Log the response and return the data
-            return response;
-          } catch (error) {
-            // Enhanced error handling
-            if (error.response) {
-              // Server responded with a status other than 2xx
-              console.error(
-                "Error posting purchase:",
-                error.response.data.message || "An error occurred."
-              );
-            } else if (error.request) {
-              // Request was made but no response was received
-              console.error("No response received from server:", error.request);
-            } else {
-              // Something else happened while setting up the request
-              console.error("Error setting up the request:", error.message);
-            }
-            throw error; // Re-throw the error for higher-level error handling
-          }
-        };
+    // Log the response and return the data
+    return response;
+  } catch (error) {
+    // Enhanced error handling
+    if (error.response) {
+      // Server responded with a status other than 2xx
+      console.error(
+        "Error posting purchase:",
+        error.response.data.message || "An error occurred."
+      );
+    } else if (error.request) {
+      // Request was made but no response was received
+      console.error("No response received from server:", error.request);
+    } else {
+      // Something else happened while setting up the request
+      console.error("Error setting up the request:", error.message);
+    }
+    throw error; // Re-throw the error for higher-level error handling
+  }
+};

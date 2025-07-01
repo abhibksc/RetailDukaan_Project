@@ -20,6 +20,14 @@ const useCartActions = () => {
   const filteredProducts = useSelector((state) => state.filteredProducts); // Update with the correct state path
   const Customer_userId = useSelector((state) => state.auth.Customer_userId);
 
+
+    const Latitude = useSelector((state) => state.auth.Location.Latitude);
+    const Longitude = useSelector((state) => state.auth.Location.Longitude);
+      const AreaPin = useSelector((state) => state.auth.AreaPin);
+  
+
+
+
   const addItemToCart = async (
     variantId,
     purchase_item_id,
@@ -29,17 +37,18 @@ const useCartActions = () => {
     items = null
   ) => {
 
-    console.log(variantId);
-    console.log(purchase_item_id);
-    console.log(Varient_type);
-    console.log(stock_type);
-    console.log(stock_id);
-    
 
 
     const login = localStorage.getItem("token");
 
     if (login) {
+
+      console.log(variantId);
+      console.log(purchase_item_id);
+      console.log(Varient_type);
+      console.log(stock_type);
+      console.log(stock_id);
+      
 
       if(  variantId &&
         purchase_item_id &&
@@ -55,9 +64,13 @@ const useCartActions = () => {
             Varient_type,
             variantId,
             stock_type,
-            stock_id
+            stock_id,
+               Latitude,
+          Longitude,
+          AreaPin
           );
-          console.log(response);
+    console.log(response);
+    
 
           if (
             response &&
@@ -69,14 +82,14 @@ const useCartActions = () => {
           }
          else if (response && response.data.message == "address not found") {
             toast.warn("Please Set Address");
-            console.log(response);
+               (response);
 
             navigate("/profile/addresses");
           }
 
           else if (response && response.data.message == "Out Of Stock") {
             toast.warn("Out Of Stock");
-            console.log(response);
+               (response);
           }
 
           else if (response && response.data.message || response.data.error) {
@@ -144,7 +157,7 @@ const useCartActions = () => {
       toast.warn("Item not found");
       return;
     }
-    console.log(reduxcartItems);
+       (reduxcartItems);
     dispatch(increaseCart({ variant_sku_id: filterItem.variant_sku_id }));
 
     try {
@@ -154,9 +167,12 @@ const useCartActions = () => {
         sku_id: variantId,
         purchase_item_id,
         Varient_type,
+           Latitude,
+          Longitude,
+          AreaPin
       });
 
-      console.log(response);
+         (response);
       
 
       
@@ -206,7 +222,7 @@ const useCartActions = () => {
     );
 
     if (!filterItem) {
-      console.log("Item not found");
+         ("Item not found");
       return;
     }
 
@@ -219,6 +235,9 @@ const useCartActions = () => {
         sku_id: variantId,
         purchase_item_id,
         Varient_type,
+           Latitude,
+          Longitude,
+          AreaPin
       });
 
      if (response && response.data.groceryItems) {

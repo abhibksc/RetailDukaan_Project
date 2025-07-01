@@ -5,6 +5,7 @@ import OrderTracking from "./OrderTracking";
 import { getOrderDetail, OrderItem } from "../../../CrudOperations/GetOperation";
 import OrderItems, { CancelOrders } from "./OrderItems";
 import LoadingModal from "../../../LoadingModal";
+import { toast } from "react-toastify";
 
 
 const OrderDetail = () => {
@@ -42,11 +43,13 @@ const OrderDetail = () => {
           
 
 
-          if(response && response.data.message === `All ${orderId} Order Details Retrieved Successfully!!`){
+          if(response && response?.data?.message === `All ${orderId} Order Details Retrieved Successfully!!`){
 
-            const orderDetails = response.data.orders
+            const orderDetails = response?.data?.orders
 
-            setDeliveryAddress(orderDetails.Customer.delivery_address)
+if(orderDetails){
+
+              setDeliveryAddress(orderDetails?.Customer?.delivery_address)
             setTrackItem({
                itemDetail : orderDetails.Items,
                BillDetail : orderDetails.Total_Bill,               
@@ -59,9 +62,19 @@ const OrderDetail = () => {
 
             setOrderItems(orderDetails.Items)
 
+}
+else{
+
+            toast.error("There is no any order of this orderID");
+
+
+}
 
             console.log(response);
 
+          }
+          else{
+            toast.error(response?.data?.message || response?.data?.error);
           }
           
 
@@ -85,12 +98,15 @@ const OrderDetail = () => {
 
 <LoadingModal/> 
   </div>: (
-    <div className="mt-6  min-h-screen mx-20">
+    <div className="mx-20">
       <div className=" shadow-md ">
         {/* Delivery Address Section */}
        <OrderDeliveryAddress delivery_Addresss_data={delivery_Addresss}/>
 
     <OrderTracking order_track_data={trackItem} orderId={orderId} order_status={order_status}/>
+
+
+    
 
     <OrderItems OrderItems_data={OrderItemsData} order_status={order_status}/>
 

@@ -12,7 +12,7 @@ const GiftCard = () => {
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 justify-center mt-14 xl:mt-0">
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       <div className="flex flex-col gap-3 p-4 w-full lg:w-auto">
         <div className="flex flex-col bg-white gap-4 border p-4 w-[1100px]">

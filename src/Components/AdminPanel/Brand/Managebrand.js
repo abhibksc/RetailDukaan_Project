@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import AddBrand from "./AddBrand";
 import { getAllBrand } from "../../CrudOperations/GetOperation";
 import { DeleteBrand } from "../../CrudOperations/DeleteOperation";
-import PaginationExample from "../Stocks/Purchase/PaginationExample";
+import PaginationExample from "../../PaginationExample";
 
 const Managebrand = () => {
 

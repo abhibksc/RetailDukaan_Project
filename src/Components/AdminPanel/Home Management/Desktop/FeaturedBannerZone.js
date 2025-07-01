@@ -49,7 +49,7 @@ const FeaturedBannerZone = () => {
           setZoneName("");
           setDevice("");
           setUploadedImages([]);
-          
+
           setStatus("");
         }
       } else {
@@ -63,9 +63,62 @@ const FeaturedBannerZone = () => {
   };
 
   // Handle file selection
-  const handleFileChange = (e) => {
+  // const handleFileChange = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   setUploadedImages(files);
+  // };
+
+  const validateImage = (file) => {
+    return new Promise((resolve, reject) => {
+      if (!file) return reject("No file selected");
+
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/gif",
+        "image/webp",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        return reject(`${file.name} is not a supported image format.`);
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        return reject(`${file.name} is larger than 2MB.`);
+      }
+
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        if (img.width === 1000 && img.height === 1000) {
+          resolve(file);
+        } else {
+          reject(`${file.name} must be exactly 1000 x 1000 pixels.`);
+        }
+      };
+      img.onerror = () => reject(`${file.name} is not a valid image.`);
+    });
+  };
+
+  const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
-    setUploadedImages(files);
+    const validImages = [];
+
+    for (let file of files) {
+      try {
+        const validated = await validateImage(file);
+        validImages.push(validated);
+      } catch (err) {
+        toast.error(err);
+      }
+    }
+
+    if (validImages.length > 0) {
+      setUploadedImages(validImages);
+      toast.success(`${validImages.length} valid image(s) selected`);
+    } else {
+      setUploadedImages([]);
+    }
   };
 
   const handleDelete = async (bannerId) => {
@@ -96,7 +149,10 @@ const FeaturedBannerZone = () => {
 
       {/* Form Section */}
       <h1 className="text-2xl font-bold mb-2">Create Zone</h1>
-      <form className="grid grid-cols-4 gap-5 border-b-2 p-2 pb-5" onSubmit={handleSubmit}>
+      <form
+        className="grid grid-cols-4 gap-5 border-b-2 p-2 pb-5"
+        onSubmit={handleSubmit}
+      >
         <div className="mb-2">
           <label className="block text-gray-700">Zone Name</label>
           <input
@@ -109,12 +165,12 @@ const FeaturedBannerZone = () => {
         </div>
         <div className="mb-2">
           <label className="block text-gray-700">Upload Images</label>
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            className="w-full p-3 border rounded bg-gray-50 text-gray-800"
-          />
+  <input
+    type="file"
+    multiple
+    onChange={handleFileChange}
+    className="w-full p-3 border rounded bg-gray-50 text-gray-800"
+  />
         </div>
         <div className="mb-2">
           <label className="block text-gray-700">Status</label>
@@ -141,7 +197,10 @@ const FeaturedBannerZone = () => {
           </select>
         </div>
         <div>
-          <button type="submit" className="bg-blue-600 text-white py-2 px-4 mt-6 rounded">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-4 mt-6 rounded"
+          >
             Submit
           </button>
         </div>
@@ -162,10 +221,18 @@ const FeaturedBannerZone = () => {
         <tbody>
           {uploadedZones.map((zone) => (
             <tr key={zone.bannerId} className="text-center">
-              <td className="border border-gray-300 px-4 py-2">{zone.zone_name}</td>
-              <td className="border border-gray-300 px-4 py-2">{zone.zone_name}</td>
-              <td className="border border-gray-300 px-4 py-2">{zone.device}</td>
-              <td className="border border-gray-300 px-4 py-2">{zone.status}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {zone.zone_name}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {zone.zone_name}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {zone.device}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {zone.status}
+              </td>
               <td className="px-4 py-2 text-sm">
                 <button
                   onClick={() => handleDelete(zone.bannerId)}

@@ -8,7 +8,6 @@ import { logout, signIn } from "../ReduxStore/Slices/auth";
 import { GetUserData } from "../CrudOperations/GetOperation";
 import axios from "axios";
 
-
 const HomePage = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -30,7 +29,7 @@ const HomePage = () => {
   //       }
 
   //       const data = await response.json(); // Parse JSON
-  //       console.log(data); // Log the data
+  //         (data); // Log the data
 
   //     } catch (error) {
   //       console.error("Error fetching data:", error); // Handle errors
@@ -40,15 +39,14 @@ const HomePage = () => {
   //   fetchProducts(); // Call the async function
   // }, []); // Empty dependency array to run once on mount
 
-
   // // Effect to handle localStorage and update Redux state on component mount
   // useEffect(() => {
   //   const storedData = localStorage.getItem("token");
   //   if (storedData) {
   //     try {
   //       const userData = storedData;
-  //       console.log(userData);
-        
+  //         (userData);
+
   //       dispatch(
   //         signIn({
   //           token: userData.token,
@@ -61,25 +59,21 @@ const HomePage = () => {
   //       console.error("Failed to parse JSON:", error);
   //     }
   //   } else {
-  //     console.log("No user data found in localStorage.");
+  //       ("No user data found in localStorage.");
   //     dispatch(logout());
   //   }
   // }, [dispatch]);
 
   // useEffect(() => {
 
-
   //   const fun = async () => {
-
-    
-
 
   //     const token = localStorage.getItem('token');
 
   //     if (token) {
   //       try {
   //         const response = await GetUserData();
-  //         console.log(response);
+  //           (response);
 
   //         dispatch(signIn({
   //           token: token,
@@ -96,7 +90,6 @@ const HomePage = () => {
 
   //   fun();
 
-  
   // }, [dispatch]);
 
   // Effect to handle showing modal when registered state changes
@@ -115,7 +108,7 @@ const HomePage = () => {
   const images = [
     "https://www.bigbasket.com/media/uploads/banner_images/B2C061811354-21877-DT-460-all-cm-220624.jpg?tr=w-1920,q=80",
     "https://www.bigbasket.com/media/uploads/banner_images/B2C061811354-21876-DT-460-all-cm-220624.jpg?tr=w-1920,q=80",
-    "https://www.bigbasket.com/media/uploads/banner_images/B2C061811354-21875-DT-460-all-cm-220624.jpg?tr=w-1920,q=80"
+    "https://www.bigbasket.com/media/uploads/banner_images/B2C061811354-21875-DT-460-all-cm-220624.jpg?tr=w-1920,q=80",
   ];
 
   const images2 = [
@@ -123,7 +116,7 @@ const HomePage = () => {
     "https://rukminim2.flixcart.com/flap/128/128/image/8014b1.jpg?q=100",
     "https://rukminim2.flixcart.com/flap/128/128/image/8014b1.jpg?q=100",
     "https://rukminim2.flixcart.com/flap/128/128/image/ac8550.jpg?q=100",
-    "https://rukminim2.flixcart.com/flap/128/128/image/ac8550.jpg?q=100"
+    "https://rukminim2.flixcart.com/flap/128/128/image/ac8550.jpg?q=100",
   ];
 
   // Carousel responsive options
@@ -131,46 +124,46 @@ const HomePage = () => {
     {
       breakpoint: "1400px",
       numVisible: 2,
-      numScroll: 1
+      numScroll: 1,
     },
     {
       breakpoint: "1199px",
       numVisible: 3,
-      numScroll: 1
+      numScroll: 1,
     },
     {
       breakpoint: "767px",
       numVisible: 2,
-      numScroll: 1
+      numScroll: 1,
     },
     {
       breakpoint: "575px",
       numVisible: 1,
-      numScroll: 1
-    }
+      numScroll: 1,
+    },
   ];
 
   const responsiveOptions2 = [
     {
       breakpoint: "1400px",
       numVisible: 4,
-      numScroll: 1
+      numScroll: 1,
     },
     {
       breakpoint: "1199px",
       numVisible: 3,
-      numScroll: 1
+      numScroll: 1,
     },
     {
       breakpoint: "767px",
       numVisible: 2,
-      numScroll: 1
+      numScroll: 1,
     },
     {
       breakpoint: "575px",
       numVisible: 1,
-      numScroll: 1
-    }
+      numScroll: 1,
+    },
   ];
 
   // Custom styles to hide navigation icons
@@ -182,10 +175,6 @@ const HomePage = () => {
 
   return (
     <main className="bg-gradient-to-b from-green-300 to-white">
-
-
-
-
       {/* Apply custom styles */}
       <style>{customCarouselStyles}</style>
 

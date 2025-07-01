@@ -36,7 +36,7 @@ import { VscCalendar } from "react-icons/vsc";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../ConfirmationModal";
 import GenerateCancelRequestModal from "../GenerateCancelRequestModal";
-import PaginationExample from "../../Stocks/Purchase/PaginationExample";
+import PaginationExample from "../../../PaginationExample";
 import LoadingModal from "../../../LoadingModal";
 import { AssignDelivery_Executive__ } from "../../../CrudOperations/PostOperation";
 import {

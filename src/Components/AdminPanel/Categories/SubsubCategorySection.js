@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { storeSubSubCategory } from "../../CrudOperations/PostOperation";
 import {
   Show_Sub_SubCategory,
+  ShowGroupCategories,
   ShowMainCategory,
   ShowSubCategory,
 } from "../../CrudOperations/GetOperation";
@@ -10,10 +11,9 @@ import { Update_Sub_SubCategory } from "../../CrudOperations/Update&Edit";
 import { Link, useNavigate } from "react-router-dom";
 import { Atom } from "react-loading-indicators";
 import { toast } from "react-toastify";
-import { View } from "lucide-react";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PaginationExample from "../Stocks/Purchase/PaginationExample";
+import PaginationExample from "../../PaginationExample";
 
 const SubsubCategorySection = () => {
   const [currentPage, setCurrentPage] = useState(0); // Initial page is 0
@@ -21,6 +21,8 @@ const SubsubCategorySection = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [subsubCategories, setSubsubCategories] = useState([]);
+  const [FilterSubsubCategories, setFilterSubsubCategories] = useState([]);
+
   const [categories, setCategories] = useState([]);
   const [parentParentCategories, setParentParentCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -30,41 +32,72 @@ const SubsubCategorySection = () => {
   const [isEditMode, setIsEditMode] = useState(false);
 
   const [isOpenCategoryModal, setIsOpenCategoryModal] = useState(false);
-  const [CategoryModalData, setCategoryModalData] = useState(false);
+  const [CategoryModalData, setCategoryModalData] = useState({
+    GroupName: "",
+    CategoryName: "",
+    SubCategoryName: "",
+  });
   const [errors, setErrors] = useState({ mobile_image: "" });
+
+  const [filterCategory, setFilterCategory] = useState([
+    // Add more filterCategory here
+  ]);
+
+  const [filterSubCategory, setFilterSubCategory] = useState([
+    // Add more filterCategory here
+  ]);
+  const [SubCategory, setSubCategory] = useState([
+    // Add more filterCategory here
+  ]);
+
+  const [groupId, setGroupId] = useState("");
+
+  const [GroupList, setGroupList] = useState([
+    // Add more GroupList here
+  ]);
+
+  const [FilterGroupList, setFilterGroupList] = useState([
+    // Add more GroupList here
+  ]);
 
   const [newSubsubCategory, setNewSubsubCategory] = useState({
     name: "",
     status: "Active",
+    GroupID: "",
     parentCategory: "",
     parentParentCategory: "",
     image: null,
     id: "",
   });
 
-
-
   const validateImage = (file) => {
     return new Promise((resolve, reject) => {
       if (!file) return reject("No file selected");
 
-      const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif", "image/webp"];
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/gif",
+        "image/webp",
+      ];
       if (!allowedTypes.includes(file.type)) {
         return reject("Only jpeg, png, jpg, gif, webp images are allowed");
       }
 
-      if (file.size > 100 * 1024) {
-        return reject("Image must be ≤ 100KB");
+      
+      if (file.size > 2 * 1024 * 1024) {
+              return reject(`${file.name} is larger than 2MB.`);
       }
 
       const img = new Image();
       img.src = URL.createObjectURL(file);
 
       img.onload = () => {
-        if (img.width === 83 && img.height === 90) {
+         if (img.width === 1000 && img.height === 1000) {
           resolve();
         } else {
-          reject("Image must be exactly 83x90 pixels");
+          reject("Image must be exactly 1000 x 1000 pixels");
         }
       };
 
@@ -77,111 +110,71 @@ const SubsubCategorySection = () => {
 
     validateImage(file)
       .then(() => {
-
-          setNewSubsubCategory((prev) => ({
-      ...prev,
-      image: file,
-    }));
-    setErrors((prev) => ({ ...prev,  "mobile_image": "" }));
-
-
-
-
-
+        setNewSubsubCategory((prev) => ({
+          ...prev,
+          image: file,
+        }));
+        setErrors((prev) => ({ ...prev, mobile_image: "" }));
       })
       .catch((err) => {
-        setErrors((prev) => ({ ...prev,  "mobile_image": err }));
-          
+        setErrors((prev) => ({ ...prev, mobile_image: err }));
+
         setNewSubsubCategory((prev) => ({
           ...prev,
           image: "",
         }));
-
-
       });
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const navigate = useNavigate();
 
-
   useEffect(() => {
+
     const fetchCategories = async () => {
       setLoading(true);
 
       try {
-        const [subSubCategoryRes, mainCategoryRes, subCategoryRes] =
-          await Promise.all([
-            Show_Sub_SubCategory(),
-            ShowMainCategory(),
-            ShowSubCategory(),
-          ]);
-
+        const [
+          subSubCategoryRes,
+          mainCategoryRes,
+          subCategoryRes,
+          ShowGroupCategoriesresponse,
+        ] = await Promise.all([
+          Show_Sub_SubCategory(),
+          ShowMainCategory(),
+          ShowSubCategory(),
+          ShowGroupCategories(),
+        ]);
 
         setSubsubCategories(subSubCategoryRes.data);
-        setParentParentCategories(mainCategoryRes.data);
-        setCategories(subCategoryRes.data);
+        setFilterSubsubCategories(subSubCategoryRes.data);
+
+        setFilterSubCategory(subCategoryRes.data);
+        setSubCategory(subCategoryRes.data);
+
+        setFilterCategory(mainCategoryRes.data);
+        setCategories(mainCategoryRes.data);
+
+
+        if (ShowGroupCategoriesresponse?.data) {
+          setGroupList(ShowGroupCategoriesresponse.data);
+          setFilterGroupList(ShowGroupCategoriesresponse.data);
+        }
+
         setLoading(false);
       } catch (err) {
         setError("Failed to load categories. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCategories();
   }, []);
 
-
-  const handleParentParentCategoryChange = (e) => {
-
-    
-    const selectedCategory = e.target.value;
-
-
-
-    const selectedParentCategory = parentParentCategories.find(
-      (category) => category.id == selectedCategory
-    );
-
-    
-
-    if (selectedParentCategory) {
-      const { id } = selectedParentCategory;
-      setNewSubsubCategory((prev) => ({
-        ...prev,
-        parentParentCategory: selectedCategory,
-        id,
-      }));
-      setFilteredCategories(
-        categories.filter((category) => category.category_id === id)
-      );
-    } else {
-      setError("Selected Grand Parent Category not found.");
-    }
-
-
-
-  };
-
   const handleAddSubsubCategory = () => {
     setIsEditMode(false);
 
-    
     setNewSubsubCategory({
       name: "",
       status: "Active",
@@ -190,7 +183,6 @@ const SubsubCategorySection = () => {
       image: null,
     });
 
-    
     setIsAddEditModalOpen(true);
   };
 
@@ -205,75 +197,50 @@ const SubsubCategorySection = () => {
       if (isEditMode) {
         setLoading(true);
 
-        // setSubsubCategories((prev) =>
-        //   prev.map((cat) =>
-        //     cat.id === selectedSubsubCategory.id
-        //       ? { ...cat, ...newSubsubCategory, image: imageURL }
-        //       : cat
-        //   )
-        // );
-
-        // console.log(newSubsubCategory);
-
         const response = await Update_Sub_SubCategory(newSubsubCategory);
-        console.log(response);
 
-        if (response && response.data.message === "Updated Successfully" ) {
-
-
+        if (response?.data?.message === "Updated Successfully") {
           const [subSubCategoryRes, mainCategoryRes, subCategoryRes] =
-          await Promise.all([
-            Show_Sub_SubCategory(),
-            ShowMainCategory(),
-            ShowSubCategory(),
-          ]);
+            await Promise.all([
+              Show_Sub_SubCategory(),
+              ShowMainCategory(),
+              ShowSubCategory(),
+            ]);
 
-        console.log(subSubCategoryRes);
-        console.log(mainCategoryRes);
-        console.log(subCategoryRes);
+          setSubsubCategories(subSubCategoryRes.data);
+          setParentParentCategories(mainCategoryRes.data);
+          setCategories(subCategoryRes.data);
+          setLoading(false);
 
-        setSubsubCategories(subSubCategoryRes.data);
-        setParentParentCategories(mainCategoryRes.data);
-        setCategories(subCategoryRes.data);
-        setLoading(false);
-
-
-        setIsAddEditModalOpen(false)
-        setIsEditMode(false);
+          setIsAddEditModalOpen(false);
+          setIsEditMode(false);
         } else {
-          toast.error();
+              toast.error(response?.data?.message)
+               toast.error(response?.data?.error)
         }
       } else {
         setLoading(true);
 
         console.log(newSubsubCategory);
-        
 
         const res = await storeSubSubCategory(newSubsubCategory);
         console.log(res);
 
         if (res?.data?.message == "SubSubcategory created successfully") {
-          
           const getdata = await Show_Sub_SubCategory();
 
           if (getdata && getdata?.data?.length > 0) {
             setSubsubCategories(getdata?.data);
           }
 
-
-          toast.success(res.data.message)
-
-
-        } 
-        else{
-          
-
+          toast.success(res.data.message);
+        } else {
           toast.error(res?.data?.message);
+                toast.error(res?.data?.error)
         }
 
         setLoading(false);
       }
-
 
       // setIsAddEditModalOpen(false);
       setNewSubsubCategory({
@@ -287,7 +254,6 @@ const SubsubCategorySection = () => {
       setSelectedSubsubCategory(null);
       setIsAddEditModalOpen(false);
       setIsEditMode(false);
-
     } catch (err) {
       setError("Failed to save the sub-subcategory. Please try again.");
     }
@@ -295,105 +261,28 @@ const SubsubCategorySection = () => {
 
   const handleEditSubsubCategory = (subsubCategory) => {
 
-
-
-
-
-
-
-
     try {
 
       setNewSubsubCategory({
         name: subsubCategory.SubSubCategoryName,
+        GroupID: subsubCategory.GroupId,
         status: subsubCategory.Status,
         parentParentCategory: subsubCategory.CategoryId,
         parentCategory: subsubCategory.SubCategoryId,
-        image: subsubCategory.image,
         id: subsubCategory.SubSubCategoryId,
       });
 
-      setFilteredCategories(
-            categories.filter(
-              (category) => category.category_id === subsubCategory.CategoryId
-            )
-          );
+      // setFilteredCategories(
+      //   categories.filter(
+      //     (category) => category.category_id === subsubCategory.CategoryId
+      //   )
+      // );
 
-
-
-          setIsEditMode(true);
-          setIsAddEditModalOpen(true);
-
-
+      setIsEditMode(true);
+      setIsAddEditModalOpen(true);
     } catch (err) {
       setError("Failed to load categories. Please try again.");
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // setParentParentCategories(mainCategoryRes.data);
-
-    // setFilteredCategories(
-    //   categories.filter((category) => category.category_id === subsubCategory.CategoryId)
-    // );
-
-    // setNewSubsubCategory({
-    //   name: subsubCategory.SubSubCategoryName,
-    //   status: "Active",
-    //   parentCategory: subsubCategory.SubCategoryId,
-    //   parentParentCategory: subsubCategory.CategoryId,
-    //   image: null,
-    //   id: subsubCategory.SubSubCategoryId,
-    // });
-
-    // setSelectedSubsubCategory(subsubCategory);
-
-    // const selectedGrandParent = parentParentCategories.find(
-    //   (ele) => ele.id === subsubCategory.grant_parent_Category_id
-    // );
-    // const selectedParent = categories.find(
-    //   (ele) => ele.id === subsubCategory.parent_Category_id
-    // );
-
-    // if (selectedGrandParent) {
-    //   setFilteredCategories(
-    //     categories.filter(
-    //       (category) => category.category_id === selectedGrandParent.id
-    //     )
-    //   );
-
-    //   setNewSubsubCategory({
-    //     name: subsubCategory.name,
-    //     status: subsubCategory.status,
-    //     parentParentCategory: selectedGrandParent.name,
-    //     parentCategory: selectedParent ? selectedParent.name : "",
-    //     image: subsubCategory.image,
-    //     id: subsubCategory.id,
-    //   });
-    // }
-
   };
 
   const handleDelete = async () => {
@@ -411,9 +300,6 @@ const SubsubCategorySection = () => {
           ShowSubCategory(),
         ]);
 
-      console.log(subSubCategoryRes);
-      console.log(mainCategoryRes);
-      console.log(subCategoryRes);
 
       setSubsubCategories(subSubCategoryRes.data);
       setParentParentCategories(mainCategoryRes.data);
@@ -433,9 +319,6 @@ const SubsubCategorySection = () => {
 
   const handleDeleteClick = (subsubCategory) => {
     setLoading(true);
-
-    console.log(subsubCategory.id);
-
     setSelectedSubsubCategory(subsubCategory);
     setIsDeleteModalOpen(true);
     setLoading(false);
@@ -460,6 +343,37 @@ const SubsubCategorySection = () => {
   // Handle page change
   const handlePageChange = (selectedPage) => {
     setCurrentPage(selectedPage.selected);
+  };
+
+  const handleGroupSelect = (e) => {
+    const data = e.target.value;
+
+    setNewSubsubCategory((prev) => ({
+      ...prev,
+      GroupID: data,
+      parentCategory: "",
+      parentParentCategory: "",
+    }));
+
+    const filterCategory = categories.filter((ele) => ele.GroupId == data);
+
+    setFilterCategory(filterCategory);
+  };
+
+  const handleParentParentCategoryChange = (e) => {
+    const selectedMainCategory = e.target.value;
+
+    setNewSubsubCategory((prev) => ({
+      ...prev,
+      parentParentCategory: selectedMainCategory,
+      parentCategory: "",
+    }));
+
+    const filterCategory = SubCategory.filter(
+      (ele) => ele.CategoryId == selectedMainCategory
+    );
+
+    setFilterSubCategory(filterCategory);
   };
 
   return (
@@ -515,7 +429,10 @@ const SubsubCategorySection = () => {
           </thead>
           <tbody>
             {currentItems.map((subsubCategory, index) => (
-              <tr key={`${subsubCategory.name}-${index}`} className="border-b last:border-0">
+              <tr
+                key={`${subsubCategory.name}-${index}`}
+                className="border-b last:border-0"
+              >
                 {/* <td className="py-4 px-6 text-gray-800">{index + 1}</td> */}
                 <td className="py-4 px-6 text-gray-800">
                   {subsubCategory.image_url ? (
@@ -548,8 +465,11 @@ const SubsubCategorySection = () => {
                     onClick={() => {
                       setIsOpenCategoryModal(true);
                       setCategoryModalData({
+                        GroupName: subsubCategory.GroupName,
+
                         CategoryName: subsubCategory.CategoryName,
                         SubCategoryName: subsubCategory.SubCategoryName,
+
                       });
                     }}
                     className="bg-red-500 text-white py-1 px-2 rounded-md"
@@ -591,6 +511,24 @@ const SubsubCategorySection = () => {
               {isEditMode ? "Edit SubsubCategory" : "Add New SubsubCategory"}
             </h2>
             <form onSubmit={handleAddEditSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Group
+                </label>
+                <select
+                  value={newSubsubCategory.GroupID}
+                  onChange={(e) => handleGroupSelect(e)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                >
+                  <option value="">Select Group</option>
+                 {GroupList.map((gro, index) => (
+                <option key={gro.group_id} value={gro.group_id}>
+                  {gro.group_name}
+                </option>
+              ))}
+                </select>
+              </div>
 
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
@@ -604,14 +542,15 @@ const SubsubCategorySection = () => {
                   <option value="" disabled>
                     Select Main Category
                   </option>
-                  {parentParentCategories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
+                  {newSubsubCategory.GroupID &&
+                    filterCategory.length > 0 &&
+                    filterCategory.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                 </select>
               </div>
-
 
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
@@ -630,14 +569,17 @@ const SubsubCategorySection = () => {
                   <option value="" disabled>
                     Select Sub Category
                   </option>
-                  {filteredCategories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
+                  {console.log(filterSubCategory)
+                  }
+                  {newSubsubCategory.parentParentCategory &&
+                    filterSubCategory.length > 0 &&
+                    filterSubCategory.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                 </select>
               </div>
-
 
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
@@ -657,25 +599,18 @@ const SubsubCategorySection = () => {
                 />
               </div>
 
-
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
                   Status
                 </label>
                 <select
-                                  required={!isEditMode}
-
+                  required={!isEditMode}
                   value={newSubsubCategory.status}
                   onChange={(e) =>
-
                     setNewSubsubCategory((prev) => ({
                       ...prev,
                       status: e.target.value,
                     }))
-
-
-
-                    
                   }
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
                 >
@@ -684,14 +619,12 @@ const SubsubCategorySection = () => {
                 </select>
               </div>
 
-
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
                   Image
                 </label>
                 <input
-                                    required={!isEditMode}
-
+                  required={!isEditMode}
                   type="file"
                   onChange={(e) => handleImageChange(e.target.files[0])}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
@@ -699,9 +632,10 @@ const SubsubCategorySection = () => {
               </div>
 
               {errors.mobile_image && (
-              <p className="text-red-500 text-sm mt-1">{errors.mobile_image}</p>
-            )}
-
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.mobile_image}
+                </p>
+              )}
 
               <div className="flex justify-end space-x-4">
                 <button
@@ -718,8 +652,6 @@ const SubsubCategorySection = () => {
                   {isEditMode ? "Update" : "Add"}
                 </button>
               </div>
-
-
             </form>
           </div>
         </div>
@@ -765,6 +697,13 @@ const SubsubCategorySection = () => {
               Category Details
             </h2>
 
+            <h3 className="text-xl  mb-4 text-gray-800 text-center">
+              Group Name :-{" "}
+              <span className="font-extrabold">
+                {CategoryModalData.GroupName}
+              </span>
+            </h3>
+
             {/* Details */}
             <div className="space-y-4">
               <>
@@ -783,6 +722,7 @@ const SubsubCategorySection = () => {
                 </div>
               </>
             </div>
+
             {/* Action Buttons */}
             <div className="flex justify-between gap-4 mt-6">
               <button

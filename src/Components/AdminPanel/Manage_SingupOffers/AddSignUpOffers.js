@@ -1,137 +1,109 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { toast } from "react-toastify";
 import {
+  fetchWarehousesPincode,
+  Get_Singup_Edited_Data,
   GetAllCreatedItems,
-  getAllLooseVarient,
-  getAllLooseVarientForCreatingOFFER,
   GetAllOffers,
-  getAllPacketStock,
   getAllpacketVariants_CreatingFor_SignupOffer,
-  getAllPacketVarientForCreatingOFFER,
+  GetItemVariants_for_creating_SingUpOffer,
   LooseVariants_for_CreateSingupAllOffers,
-  Show_Users_MainCategory,
-  Show_Users_Sub_SubCategory,
-  Show_users_SubCategory,
 } from "../../CrudOperations/GetOperation";
-import { CreateOffer, CreateSignUpOffer } from "../../CrudOperations/PostOperation";
+import { CreateSignUpOffer } from "../../CrudOperations/PostOperation";
+import { UpdateSignUpOffer } from "../../CrudOperations/Update&Edit";
 import * as Tone from "tone";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import ItemList from "./ItemLIst";
+
+// Reducer & initial state
+const initialState = {
+  offer_name: "",
+  Created_for_warehouse: "",
+  offer_mrp: "",
+  offer_discount: "",
+  offer_cashback: "",
+  offer_description: "",
+  offer_status: 1,
+  offer_image_path: null,
+  offerImagePriview: "",
+  offerItemBucket: [],
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "SET_FIELD":
+      return { ...state, [action.field]: action.value };
+    case "RESET_FORM":
+      return initialState;
+    case "SET_IMAGE":
+      return {
+        ...state,
+        offer_image_path: action.file,
+        offerImagePriview: action.preview,
+      };
+    case "ADD_ITEM":
+      return {
+        ...state,
+        offerItemBucket: [...state.offerItemBucket, action.item],
+      };
+    case "REMOVE_ITEM":
+      return {
+        ...state,
+        offerItemBucket: state.offerItemBucket.filter((item) => {
+          return !(
+            item.varianType === action.varianType &&
+            (item.looseVariantId === action.looseVariantId ||
+              item.PacketVariantId === action.PacketVariantId)
+          );
+        }),
+      };
+    case "SET_ALL":
+      return { ...state, ...action.payload };
+    default:
+      return state;
+  }
+}
 
 const AddSignUpOffers = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const Merchant_userId = useSelector((state) => state.auth.Merchant_userId);
 
-  const [item_id, setItem_Id] = useState("");
-  const [looseVariantId, setLooseVariantId] = useState("");
-  const [PacketVariantId, setPacketVariantId] = useState("");
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    offer_name,
+    Created_for_warehouse,
+    offer_mrp,
+    offer_discount,
+    offer_cashback,
+    offer_description,
+    offer_status,
+    offer_image_path,
+    offerImagePriview,
+    offerItemBucket,
+  } = state;
 
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
-  const [unit_value, setUnitValue] = useState("");
-  const [purchase_item_id, setPurchase_item_id] = useState("");
-  const [category_id, setCategoryId] = useState("");
-
-  const [PostedDate, setPostedDate] = useState("");
-
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
-  // Newssss
-  const [offer_name, setoffer_name] = useState("");
-  const [offer_mrp, setoffer_mrp] = useState("");
-  const [offer_discount, setoffer_discount] = useState("");
-  const [offer_cashback, setoffer_cashback] = useState("");
-  const [offer_description, setoffer_description] = useState("");
-  const [offer_status, setoffer_status] = useState(1);
-  const [offer_image_path, setoffer_image_path] = useState("");
-  const [offerImagePriview, setofferImagePriview] = useState("");
-  const [offerItemBucket, setofferItemBucket] = useState("");
-
-
-  //   const [PostedDate, setPostedDate] = useState("");
-  //   const [PostedDate, setPostedDate] = useState("");
-
-  //   PostedDate
-
-  const [Status, setStatus] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const Navigate = useNavigate();
-
-  //   const [category_id, setCategoryId] = useState("");
-  const [subCategory_id, setSubCategoryId] = useState("");
-  const [sub_subCategory_id, setSub_SubCategoryId] = useState("");
-
-  const [PurchasedList, setPurchasedList] = useState([]);
-  const [UnitList, setUnitList] = useState([]);
-  const [FilterUnitList, setFilterUnitList] = useState([]);
-  const [AvailableQuantity, setAvailableQuantity] = useState("");
-  const [PurchasedListInvoice, setPurchasedListInvoice] = useState([]);
-
-  const [CategoryList, setCategoryList] = useState([]);
-  const [SubCategoryList, setSubCategoryList] = useState([]);
-  const [Sub_SubCategoryList, setSub_SubCategoryList] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [ItemList, setItemList] = useState([]);
+  const [WareHouseList, setWareHouseList] = useState([]);
 
   const [LooseVariantList, setLooseVarientList] = useState([]);
   const [PacketVariantList, setPacketVarientList] = useState([]);
-
-  const [OfferList, setOfferList] = useState([]);
+  const [looseVariantId, setLooseVariantId] = useState("");
+  const [PacketVariantId, setPacketVariantId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log(location);
-
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [
-          allOffer,
-          items,
-          Category,
-          Sub_Category,
-          Sub_subCategory,
-          looseVariant,
-          packetVarient,
-        ] = await Promise.all([
-          GetAllOffers(),
-          GetAllCreatedItems(),
-          Show_Users_MainCategory(),
-          Show_users_SubCategory(),
-          Show_Users_Sub_SubCategory(),
-          LooseVariants_for_CreateSingupAllOffers(),
-          getAllpacketVariants_CreatingFor_SignupOffer(),
-        ]);
-        console.log(looseVariant);
-        console.log(packetVarient);
-
-        if (allOffer.data.message === "All Offer retrieved successfully!") {
-          setOfferList(items.data.data);
+        const [warehouseRes] = await Promise.all([fetchWarehousesPincode()]);
+        if (warehouseRes?.data?.length > 0) {
+          setWareHouseList(warehouseRes.data);
         }
-        if (items.data.message === "All Items retrieved successfully!") {
-          setItemList(items.data.data);
-        }
-
-        if (
-          looseVariant.data.message ===
-          "All Stocked LooseVariant for Creating Signup Offer retrieved successfully!"
-        ) {
-          console.log(looseVariant);
-          
-          setLooseVarientList(looseVariant.data.data);
-        }
-
-        if (
-          packetVarient.data.message ===
-          "All Stocked packetVariants for Creating Signup Offer retrieved successfully!"
-        ) {
-          setPacketVarientList(packetVarient.data.data);
-        }
-
-        if (Category?.data) setCategoryList(Category.data);
-        if (Sub_Category?.data) setSubCategoryList(Sub_Category.data);
-        if (Sub_subCategory?.data) setSub_SubCategoryList(Sub_subCategory.data);
       } catch (error) {
-        console.error("Error fetching data: ", error);
-        toast.error("Failed to fetch categories");
+        toast.error(
+          error?.response?.data?.message || error?.response?.data?.error
+        );
       } finally {
         setLoading(false);
       }
@@ -139,126 +111,65 @@ const AddSignUpOffers = () => {
     fetchData();
   }, []);
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const EditData = location.state?.Edit_id;
+    if (EditData) {
+      const fun = async () => {
+        const res = await Get_Singup_Edited_Data(EditData);
+        const ActualData = res?.data?.[0];
 
-    console.log(offerItemBucket);
-    
-
-
-
-    const response = await CreateSignUpOffer(
-
-      offer_name,
-      offer_mrp,
-      offer_discount,
-      offer_cashback,
-      offer_description,
-      offer_status,
-      offer_image_path,
-      offerItemBucket
-    );
-    console.log(response);
-    if (response && response.data.message === "Offer saved successfully!") {
-      const Merchanttoken = localStorage.getItem("Merchanttoken");
-
-      // Navigate(`/admin/${Merchanttoken}/ManageOffer`);
-
-      setCategoryId(""),
-        setSubCategoryId(""),
-        setSub_SubCategoryId(""),
-        setItem_Id(""),
-        setLooseVariantId("");
-      setPacketVariantId("");
-
-      toast.success(response.data.message);
-      const synth = new Tone.Synth().toDestination();
-      await Tone.start(); // Required to unlock audio context in modern browsers
-      synth.triggerAttackRelease("C4", "8n"); // Plays a "C4" note for a short duration
+        if (res?.message.includes("retrieved successfully")) {
+          dispatch({
+            type: "SET_ALL",
+            payload: {
+              offer_name: ActualData?.title || "",
+              offer_mrp: ActualData?.offer_mrp || "",
+              offer_discount: ActualData?.offer_discount || "",
+              offer_cashback: ActualData?.offer_cashback || "",
+              offer_description: ActualData?.offer_description || "",
+              offer_status: ActualData?.offer_status || 1,
+              offerImagePriview: ActualData?.offer_image_path || "",
+              offerItemBucket: ActualData?.items || [],
+            },
+          });
+        } else {
+          toast.error(res?.data?.message);
+        }
+      };
+      fun();
     }
+  }, [location.state]);
 
-    // closeModal();
-  };
+  useEffect(() => {
+    console.log(Created_for_warehouse);
 
-  const ItemSubmittion = (e) => {
+    if (Created_for_warehouse) {
+      // setPacketVarientList()
+      // setLooseVarientList()
 
+      const fun = async () => {
+        try {
+          const response = await GetItemVariants_for_creating_SingUpOffer(
+            Created_for_warehouse
+          );
 
-    if (looseVariantId === "" && PacketVariantId === "") {
-      toast.error("Please Select Item");
-      return;
+          console.log(response);
+
+          if (
+            response?.data?.message ===
+            "All Loose and packet variant  for Creating Signup Offer retrieved successfully!"
+          ) {
+            setPacketVarientList(response?.data?.Packet);
+            setLooseVarientList(response?.data?.Loose);
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      };
+
+      fun();
     }
-
-
-
-
-    setofferItemBucket((prev) => [
-      ...prev,
-      {
-        looseVariantId: looseVariantId || null,
-        PacketVariantId: PacketVariantId || null,
-      },
-    ]);
-    
-
-
-
-
-
-
-
-
-  };
-
-  const handleItemChange = (e) => {
-    const data = e.target.value;
-
-    console.log(data);
-
-    setPurchase_item_id(data);
-
-    console.log(PurchasedListInvoice);
-
-    const purchaseId = PurchasedListInvoice.find((ele) =>
-      ele.items.filter((ele) => ele.id == data)
-    );
-
-    console.log(purchaseId);
-
-    setPurchaseId(Number(purchaseId.id));
-
-    const selectedPurchase = PurchasedList.find(
-      (item) => item.id == e.target.value
-    );
-    console.log(selectedPurchase);
-
-    if (selectedPurchase) {
-      const matchingUnit = UnitList.find(
-        (ele) => ele.id == selectedPurchase.unit_Id
-      );
-
-      setAvailableQuantity(
-        `${selectedPurchase.AvailableQuantity} ${matchingUnit.unit}`
-      );
-
-      setFilterUnitList(
-        UnitList.filter(
-          (ele) =>
-            ele.parent_id == selectedPurchase.unit_Id ||
-            ele.id == selectedPurchase.unit_Id
-        )
-      );
-    }
-  };
-
-  // Filter Subcategories based on selected Category
-  const filteredSubCategories = SubCategoryList.filter(
-    (subCat) => subCat.category_id === Number(category_id)
-  );
-
-  // Filter Sub-Subcategories based on selected Subcategory
-  const filteredSubSubCategories = Sub_SubCategoryList.filter(
-    (subSubCat) => subSubCat.sub_category_id === Number(subCategory_id)
-  );
+  }, [Created_for_warehouse]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -268,16 +179,114 @@ const AddSignUpOffers = () => {
     img.src = URL.createObjectURL(file);
 
     img.onload = () => {
-      const { width, height } = img;
-      if (width === 600 && height === 400) {
-        // Accept the image
-        setofferImagePriview(img.src);
-        setoffer_image_path(file);
+      if (img.width === 1000 && img.height === 1000) {
+        dispatch({
+          type: "SET_IMAGE",
+          file: file,
+          preview: img.src,
+        });
       } else {
-        alert("Image must be exactly 600x400 pixels.");
-        e.target.value = null; // Reset the input
+        alert("Image must be exactly 1000 x 1000 pixels.");
+        e.target.value = null;
       }
     };
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (
+      !offer_name ||
+      !Created_for_warehouse ||
+      !offer_mrp ||
+      !offer_discount ||
+      !offer_cashback ||
+      !offer_description ||
+      !offer_status ||
+      offerItemBucket.length === 0
+    ) {
+      toast.error("Please fill all fields and add at least one item.");
+      setLoading(false);
+      return;
+    }
+
+    const payload = {
+      userId: Merchant_userId,
+      Created_for_warehouse: Created_for_warehouse,
+      title: offer_name,
+      offer_mrp,
+      offer_discount,
+      offer_cashback,
+      offer_description,
+      offer_status,
+      offer_image_path,
+      items: offerItemBucket,
+    };
+
+    const response = location.state?.Edit_id
+      ? await UpdateSignUpOffer(
+          Merchant_userId,
+          location.state.Edit_id,
+          ...Object.values(payload).slice(1)
+        )
+      : await CreateSignUpOffer(...Object.values(payload));
+
+    const success = response?.data?.message.includes("successfully");
+
+    if (success) {
+      toast.success(response.data.message);
+      const synth = new Tone.Synth().toDestination();
+      await Tone.start();
+      synth.triggerAttackRelease("C4", "8n");
+
+      dispatch({ type: "RESET_FORM" });
+      navigate(`/admin/${localStorage.getItem("Merchanttoken")}/singupOffers`);
+    }
+
+    setLoading(false);
+  };
+
+  const handleAddItem = () => {
+    if (!looseVariantId && !PacketVariantId) {
+      return toast.error("Please Select Item");
+    }
+
+    if (looseVariantId) {
+      const exists = offerItemBucket.some(
+        (item) => item.looseVariantId === looseVariantId
+      );
+      if (exists) return alert("Loose variant already exists.");
+
+      const variant = LooseVariantList.find((ele) => ele.id == looseVariantId);
+      dispatch({
+        type: "ADD_ITEM",
+        item: {
+          looseVariantId,
+          variant_name: variant?.variantName,
+          varianType: variant?.varient_type,
+        },
+      });
+    }
+
+    if (PacketVariantId) {
+      const exists = offerItemBucket.some(
+        (item) => item.PacketVariantId === PacketVariantId
+      );
+      if (exists) return alert("Packet variant already exists.");
+
+      const variant = PacketVariantList.find(
+        (ele) => ele.id == PacketVariantId
+      );
+      dispatch({
+        type: "ADD_ITEM",
+        item: {
+          PacketVariantId,
+          variant_name: variant?.variantName,
+          varianType: variant?.varient_type,
+        },
+      });
+    }
   };
 
   return (
@@ -288,219 +297,140 @@ const AddSignUpOffers = () => {
         </div>
       )}
 
-      <h1 className="text-2xl font-bold mb-4 border-blue-400 border-b-2 py-2  ">
-        Create Signup Offers
+      <h1 className="text-2xl font-bold mb-4 border-b-2 py-2">
+        {location.state?.Edit_id ? "Update" : "Create"} Signup Offers
       </h1>
 
-      {/* Add Item Form */}
-      <div className="grid grid-cols-4 gap-5 border-b-2 p-2  pb-5">
-        {/* date Input */}
-
-        {/* offerName Input */}
+      <div className="grid grid-cols-4 gap-5 border-b-2 p-2 pb-5">
         <div>
-          <label className="block font-medium">Offer Name *</label>
-          <input
-            type="text"
-            name="offer_name"
-            value={offer_name}
-            onChange={(e) => setoffer_name(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
+          <label className="block font-medium text-sm mb-1">
+            Warehouse Name *
+          </label>
+          <select
+            value={state.Created_for_warehouse}
+            onChange={(e) =>
+              dispatch({
+                type: "SET_FIELD",
+                field: "Created_for_warehouse",
+                value: e.target.value,
+              })
+            }
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          >
+            <option value="">Select Warehouse</option>
+            {WareHouseList.map((ware) => (
+              <option key={ware.warehouse_id} value={ware.warehouse_id}>
+                {ware.warehouse_name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Value Input */}
-        <div>
-          <label className="block font-medium">Offer MRP *</label>
-          <input
-            type="number"
-            name="offer_mrp"
-            value={offer_mrp}
-            onChange={(e) => setoffer_mrp(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
+        {[
+          ["Offer Name", "offer_name", "text"],
+
+          ["Offer MRP", "offer_mrp", "number"],
+          ["Offer Discount (%)", "offer_discount", "number"],
+          ["Offer Cashback", "offer_cashback", "number"],
+          ["Offer Description", "offer_description", "text"],
+        ].map(([label, field, type]) => (
+          <div key={field}>
+            <label className="block font-medium">{label} *</label>
+            <input
+              type={type}
+              value={state[field]}
+              onChange={(e) =>
+                dispatch({
+                  type: "SET_FIELD",
+                  field,
+                  value: e.target.value,
+                })
+              }
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        ))}
 
         <div>
-          <label className="block font-medium">Offer Discount (%) *</label>
-          <input
-            type="number"
-            name="offer_discount"
-            value={offer_discount}
-            onChange={(e) => setoffer_discount(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">offer Cashback *</label>
-          <input
-            type="number"
-            name="offer_cashback"
-            value={offer_cashback}
-            onChange={(e) => setoffer_cashback(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">offer Description</label>
-          <input
-            type="text"
-            name="offer_description"
-            value={offer_description}
-            onChange={(e) => setoffer_description(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div className="mb-2">
           <label className="block font-medium">Offer Status</label>
           <select
             value={offer_status}
-            onChange={(e) => setoffer_status(e.target.value)}
-            className="border border-gray-300 p-2 w-full rounded-md"
+            onChange={(e) =>
+              dispatch({
+                type: "SET_FIELD",
+                field: "offer_status",
+                value: e.target.value,
+              })
+            }
+            className="w-full p-2 border rounded"
           >
             <option value="">Select Status</option>
-            <option key={1} value={1}>
-              Active
-            </option>
-
-            <option key={0} value={0}>
-              Inactive
-            </option>
+            <option value={1}>Active</option>
+            <option value={0}>Inactive</option>
           </select>
         </div>
 
         <div>
-          <label className="block font-medium">Offer Image *    <span className="text-sm">(600 x 400)</span></label>
+          <label className="block font-medium">
+            Offer Image * <span className="text-sm">(1000 x 1000)</span>
+          </label>
           <input
             type="file"
-            name="offer_image_path"
-            onChange={(e) => handleImageChange(e)}
+            onChange={handleImageChange}
             accept="image/*"
             className="w-full p-1 border rounded"
           />
-
-          {/* {offerImagePriview && (
-        <div className="mt-4 ">
-          <p className="text-sm font-medium">Image Preview:</p>
-          <img
-            src={offerImagePriview}
-            alt="Preview"
-            className="mt-2 w-64 h-auto rounded border"
-          />
-        </div>
-      )} */}
         </div>
       </div>
 
-      <div>
+      <div className="mt-4">
+        <h2 className="text-xl font-bold mb-2">Add Item to Offer</h2>
+        <div className="flex gap-4 mb-4">
+          {[
+            [
+              "Loose Varient",
+              looseVariantId,
+              setLooseVariantId,
+              LooseVariantList,
+            ],
+            [
+              "Packet Varient",
+              PacketVariantId,
+              setPacketVariantId,
+              PacketVariantList,
+            ],
+          ].map(([label, value, setter, list]) => (
+            <div key={label}>
+              <label className="block font-medium text-sm mb-1">{label}</label>
+              <select
+                value={value}
+                onChange={(e) => setter(e.target.value)}
+                className="border p-2 rounded text-sm"
+              >
+                <option value="">Select Item</option>
 
-        
-          <h1 className="text-xl mt-4 font-bold   ">
-            Add Item to Offer
-          </h1>
-
-        <div className="mt-3 border-b-2 p-2  pb-5 flex gap-5 items-center">
-          {/* LooseVariant Dropdown */}
-          <div className="mb-2">
-            <label className="block text-gray-700 text-sm font-medium">
-              Loose Varient
-            </label>
-            <select
-              value={looseVariantId}
-              onChange={(e) => setLooseVariantId(e.target.value)}
-              className="border border-gray-300 p-2  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            >
-              <option value="">Select Item</option>
-              {LooseVariantList.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.variantName}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* PacketVariant Dropdown */}
-          <div className="mb-2">
-            <label className="block text-gray-700 text-sm font-medium">
-              Packet Varient
-            </label>
-            <select
-              value={PacketVariantId}
-              onChange={(e) => setPacketVariantId(e.target.value)}
-              className="border border-gray-300 p-2  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            >
-              <option value="">Select Item</option>
-              {PacketVariantList.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.variantName}
-                </option>
-              ))}
-            </select>
-          </div>
-
+                {list.map((item, index) => (
+                  <option key={index} value={item.id}>
+                    {item.itemName} {item.variantName} ({item.sku_id}) (
+                    {item.BrandName})
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
           <button
-            onClick={() => ItemSubmittion()}
-            className=" bg-green-600 hover:bg-gray-900  text-white py-1 px-3 mt-2  rounded"
+            onClick={handleAddItem}
+            className="bg-green-600 text-white px-3 py-1 rounded mt-6"
           >
             Add Item
           </button>
-
-
         </div>
 
-        <div>
-
-              {/* item List */}
-      <div className="overflow-x-auto mt-5 text-left p-5">
-        <h4 className="text-lg font-semibold mb-2">Item List</h4>
-        <table className="min-w-full bg-white table-auto border border-gray-300 rounded-lg shadow-sm">
-          <thead className="bg-gray-100">
-            <tr className="border-b">
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                Name
-              </th>
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                HSN
-              </th>
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                Qty
-              </th>
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                Cost Price
-              </th>
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                Discount
-              </th>
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                Taxable Amt.
-              </th>
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                GST Amount
-              </th>
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                Total
-              </th>
-              <th className="py-3 px-4 text-center font-semibold text-gray-700">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-
-          </tbody>
-        </table>
+        <ItemList offerItemBucket={offerItemBucket} dispatch={dispatch} />
       </div>
 
-
-
-        </div>
-      </div>
-
-      {/* Submit Button */}
       <button
-        onClick={handleFormSubmit}
+        onClick={handleSubmit}
         className="mt-6 bg-blue-600 text-white py-2 px-4 rounded"
       >
         Submit

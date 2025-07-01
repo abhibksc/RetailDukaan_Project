@@ -1,31 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { getDesktopFeaturedBannersInCustomerUI } from '../CrudOperations/GetOperation';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const ProductSection = () => {
-  const [bannerData, setBannerData] = useState([]);
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchBanners = async () => {
-      try {
-        const response = await getDesktopFeaturedBannersInCustomerUI();
-        console.log(response);
 
-        setBannerData(response.data.FeaturedBanner || []);
-      } catch (error) {
-        console.error('Error fetching banner data:', error);
-      }
-    };
-
-    fetchBanners();
-  }, []);
-
+    const bannerData = useSelector(
+    (state) => state.homeSlice_reducer.featuredBanner
+  );
+     (bannerData);
 
     // Function to handle image click
     const handleFeaturedBannerClick = async(ImageId) => {
-
-      navigate(`/grocery/items`, { state: { ImageId: ImageId} });
-      
+      navigate(`/product/items`, { state: { ImageId: ImageId} });
     };
 
   return (

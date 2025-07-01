@@ -20,9 +20,10 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-72 hidden lg:flex flex-col gap-3 bg-gray-200 ">
+    <div
+    className="w-72 hidden lg:flex flex-col gap-3 bg-white  ">
       {/* Profile Section */}
-      <div className="border p-3   flex gap-2 items-center bg-white">
+      <div className="border p-3   flex gap-2 items-center ">
         <img
           className="w-10 ml-4 rounded-full"
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1imiVM8S3xrhemabq6IZYCUfJTLWABjE_1Q&s"
@@ -156,7 +157,17 @@ const Sidebar = () => {
                Store Offer
               </Link> */}
 
-
+     {/* <Link
+                to="/profile/referral"
+                className={`text-sm font-semibold cursor-pointer hover:text-blue-500 ${
+                  activeItem === "/profile/referral"
+                    ? "text-blue-600 font-semibold"
+                    : ""
+                }`}
+                onClick={() => handleItemClick("/profile/referral")}
+              >
+                My Refferals
+              </Link> */}
 
 
               <Link

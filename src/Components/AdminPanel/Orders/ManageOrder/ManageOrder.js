@@ -3,26 +3,35 @@ import { FaListAlt, FaUpload, FaDownload, FaUserPlus } from "react-icons/fa"; //
 import { useNavigate } from "react-router-dom";
 import { VscCalendar } from "react-icons/vsc";
 
-
 // import successTone from "../../../../assets/tones/success-tone.mp3"; // Import the success tone audio file
 
-import successTone from "../../../../assets/tones/successtone.mp3"; 
+import successTone from "../../../../assets/tones/successtone.mp3";
 import { toast } from "react-toastify";
 import BackButton from "../../../BackButton";
 import GenerateCancelRequestModal from "../GenerateCancelRequestModal";
-import PaginationExample from "../../Stocks/Purchase/PaginationExample";
-import { AllDeliveryExecutive_retrive, getAllOrders, GetItemDetails, order_Confirm_Payment_details, order_DeliveryData, OrderItem } from "../../../CrudOperations/GetOperation";
+import PaginationExample from "../../../PaginationExample";
+import {
+  AllDeliveryExecutive_retrive,
+  getAllOrders,
+} from "../../../CrudOperations/GetOperation";
 import ConfirmationModal from "../ConfirmationModal";
-import { CustomerModal, DeliveryExecutiveModal, ItemModal, MakeDeliveryBoyFreeModal, PaymentModal, ScheduleModal } from "../OrderModals";
+import {
+  CustomerModal,
+  DeliveryExecutiveModal,
+  ItemModal,
+  MakeDeliveryBoyFreeModal,
+  PaymentModal,
+  ScheduleModal,
+} from "../OrderModals";
 import { AssignDelivery_Executive__ } from "../../../CrudOperations/PostOperation";
 import LoadingModal from "../../../LoadingModal";
-import {  ChangeOrderStatus, ChangePaymentStatus, orderStatusChangeByMerchant, performAcceptOrderAction } from "../../../CrudOperations/Update&Edit";
-
-
-
-
-
-
+import {
+  ChangeOrderStatus,
+  ChangePaymentStatus,
+  orderStatusChangeByMerchant,
+  performAcceptOrderAction,
+  performCollectOrderAction,
+} from "../../../CrudOperations/Update&Edit";
 
 const ManageOrder = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -126,18 +135,18 @@ const ManageOrder = () => {
 
   // Filter and search logic
   let filteredOrders = orders
-  .filter((order) => {
-    const orderStatus = order.order_status?.order_status;
-    console.log("Order Status:", orderStatus);
-    console.log("Filter:", filter);
+    .filter((order) => {
+      const orderStatus = order.order_status?.order_status;
+      console.log("Order Status:", orderStatus);
+      console.log("Filter:", filter);
 
-    if (filter === "all" || orderStatus === filter) {
-      return true;
-    }
+      if (filter === "all" || orderStatus === filter) {
+        return true;
+      }
 
-    return false;
-  })
-  .reverse(); // 👈 Reverse the filtered results
+      return false;
+    })
+    .reverse(); // 👈 Reverse the filtered results
 
   // filteredOrders = filteredOrders.sort((a, b) => {
   //   // Sorting orders by date, most recent first
@@ -147,9 +156,7 @@ const ManageOrder = () => {
   // });
 
   // Calculate total pages
- 
- 
- 
+
   const pageCount = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
 
   const validCurrentPage = Math.max(0, Math.min(currentPage, pageCount - 1));
@@ -404,6 +411,45 @@ const ManageOrder = () => {
     setIsLoad(false);
   };
 
+  // handleCollectClick
+
+  const handleCollectClick = async (orderId) => {
+    console.log(orderId);
+
+    setIsLoad(true);
+    try {
+      const currentDate = new Date().toISOString().split("T")[0];
+      console.log(currentDate);
+
+      const response = await performCollectOrderAction({
+        message: "Collect",
+        orderStatus: "Processed",
+        orderId,
+        currentDate,
+      });
+      console.log(response);
+
+      if (response.data.message == "Transaction successfully settled! Thank you for your prompt payment.") {
+        const response2 = await getAllOrders();
+        if (
+          response2 &&
+          response2.data.messsage == "All Orders Retrive Successfully!!"
+        ) {
+          setOrders(response2.data.orders);
+        }
+
+        playSuccessTone();
+        toast.success("Transaction successfully settled! Thank you for your prompt payment.");
+      }
+      else{
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      console.log("Failed to accept order:", error);
+    }
+    setIsLoad(false);
+  };
+
   const playSuccessTone = () => {
     const audio = new Audio(successTone); // Create a new audio instance
     audio.play(); // Play the imported audio file
@@ -437,7 +483,6 @@ const ManageOrder = () => {
   // orderStatus change by merchant...
 
   const handleOrderStatusChangeByMerchant = async (value, orderId) => {
-
     setIsLoad(true);
     try {
       const currentDate = new Date().toISOString().split("T")[0];
@@ -488,6 +533,17 @@ const ManageOrder = () => {
             >
               Generate Cancel Request
             </button>
+
+
+                       <button
+              className="bg-gradient-to-r from-green-500 to-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:from-green-600 hover:to-green-500 hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out"
+              onClick={()=> navigate(`/admin/${localStorage.getItem("Merchanttoken")}/asignDeliveryExecutive`)}
+            >
+              Assign Delivery Executive
+            </button>
+
+
+
 
             {/* <button
               className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:from-indigo-600 hover:to-blue-500 hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out"
@@ -569,6 +625,9 @@ const ManageOrder = () => {
                   <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
                     Payment
                   </th>
+                  <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
+                    Collect
+                  </th>
 
                   <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
                     Action
@@ -582,166 +641,196 @@ const ManageOrder = () => {
                 </tr>
               </thead>
               <tbody>
-                           {searchQuery
-                             ? orders
-                                 .filter(
-                                   (ele) =>
-                                     ele.unique_order_id.toLowerCase() ===
-                                     searchQuery.toLowerCase()
-                                 )
-           
-                                 .map((item, index) => (
-                                   <tr key={item.id} className="bg-blue-200">
-                                     <td className="py-3 px-5 border-b border-gray-200">
-                                       {item.unique_order_id}
-                                     </td>
-           
-                                     <td className="py-3 px-5 border-b border-gray-200">
-                                       {item.order_receive_date}
-                                     </td>
-           
-                                     <td className="py-3 px-5 border-b border-gray-200">
-                                       <button
-                                         className="text-blue-500 hover:text-blue-700"
-                                         onClick={() => handleCustomerClick(item.Customer)}
-                                       >
-                                         <FaListAlt size={20} />
-                                       </button>
-                                     </td>
-                                     {console.log(item)}
-           
-                                     <td className="py-3 px-5 border-b border-gray-200">
-                                       <button
-                                         className="text-blue-500 hover:text-blue-700"
-                                         onClick={() =>
-                                           handleOrderItemClick(
-                                             item.Items,
-                                             item.unique_order_id
-                                           )
-                                         }
-                                       >
-                                         <FaListAlt size={20} />
-                                       </button>
-                                     </td>
-           
-                                     <td className="py-3 px-5 border-b border-gray-200">
-                                       <button
-                                         className="text-blue-500 hover:text-blue-700"
-                                         onClick={() =>
-                                           handleScheduledClick(
-                                             item.id,
-                                             item.Expected_Delivery &&
-                                               item.Expected_Delivery
-                                           )
-                                         }
-                                       >
-                                         <VscCalendar size={20} />
-                                       </button>
-                                     </td>
-           
-                                     <td className="py-3 px-5 border-b border-gray-200">
-                                       <div className="mb-2">
-                                         {item.order_status.order_status}
-                                       </div>
-                                     </td>
-           
-                                     <td className="py-7 px-5 border-b border-gray-200 flex justify-center items-center">
-                                       <FaUserPlus
-                                         className="w-6 h-6 text-center"
-                                         onClick={() =>
-                                           handleClickDeliveryExecutive(
-                                             item.id,
-                                             item.unique_order_id,
-                                             item.order_status.delivery_status,
-                                             item.DeliveryExecutive
-                                               ? item.DeliveryExecutive
-                                               : null
-                                           )
-                                         }
-                                       />
-                                     </td>
-           
-                                     {/*  <FaUserPlus className="w-6 h-6" /> */}
-           
-                                     <td className="py-3 px-5 border-b border-gray-200">
-                                       <button
-                                         className="text-blue-500 hover:text-blue-700"
-                                         onClick={() =>
-                                           handlePaymentClick(
-                                             item.payment_type,
-                                             item.order_status.payment_status,
-                                             item.unique_order_id
-                                           )
-                                         }
-                                       >
-                                         <div className="">
-                                           <FaListAlt size={20} />
-                                         </div>
-                                       </button>
-                                     </td>
-           
-                                     <td className="border-b border-gray-200">
-                                       {console.log(item.action)}{" "}
-                                       {/* Debugging to check the exact value */}
-                                       {item.action != "accepted" &&
-                                         item.action != "rejected" && (
-                                           <div className="flex space-x-10">
-                                             <button
-                                               className="p-2 shadow-lg rounded-sm text-green-500 border hover:text-green-700 hover:shadow-md hover:rounded-md"
-                                               onClick={() => handleAcceptClick(item.id)}
-                                             >
-                                               <svg
-                                                 xmlns="http://www.w3.org/2000/svg"
-                                                 className="w-5 h-5"
-                                                 fill="none"
-                                                 viewBox="0 0 24 24"
-                                                 stroke="currentColor"
-                                               >
-                                                 <path
-                                                   strokeLinecap="round"
-                                                   strokeLinejoin="round"
-                                                   strokeWidth="2"
-                                                   d="M5 13l4 4L19 7"
-                                                 />
-                                               </svg>
-                                             </button>
-           
-                                             <button
-                                               className="text-red-500 p-2 rounded-sm shadow-lg hover:text-red-700 hover:shadow-md hover:rounded-md"
-                                               onClick={() =>
-                                                 handle_Reject_Click(item.id)
-                                               }
-                                             >
-                                               <svg
-                                                 xmlns="http://www.w3.org/2000/svg"
-                                                 className="w-5 h-5"
-                                                 fill="none"
-                                                 viewBox="0 0 24 24"
-                                                 stroke="currentColor"
-                                               >
-                                                 <path
-                                                   strokeLinecap="round"
-                                                   strokeLinejoin="round"
-                                                   strokeWidth="2"
-                                                   d="M6 18L18 6M6 6l12 12"
-                                                 />
-                                               </svg>
-                                             </button>
-                                           </div>
-                                         )}
-                                       {item.action == "accepted" && (
-                                         <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white cursor-not-allowed bg-green-400">
-                                           Accepted
-                                         </div>
-                                       )}
-                                       {item.action == "rejected" && (
-                                         <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white bg-red-400">
-                                           Rejected
-                                         </div>
-                                       )}
-                                     </td>
-           
-                                     {/* <td className="py-3 px-5 border-b border-gray-200">
+                {searchQuery
+                  ? orders
+                      .filter(
+                        (ele) =>
+                          ele.unique_order_id.toLowerCase() ===
+                          searchQuery.toLowerCase()
+                      )
+
+                      .map((item, index) => (
+                        <tr key={item.id} className="bg-blue-200">
+                          <td className="py-3 px-5 border-b border-gray-200">
+                            {item.unique_order_id}
+                          </td>
+
+                          <td className="py-3 px-5 border-b border-gray-200">
+                            {item.order_receive_date}
+                          </td>
+
+                          <td className="py-3 px-5 border-b border-gray-200">
+                            <button
+                              className="text-blue-500 hover:text-blue-700"
+                              onClick={() => handleCustomerClick(item.Customer)}
+                            >
+                              <FaListAlt size={20} />
+                            </button>
+                          </td>
+                          {console.log(item)}
+
+                          <td className="py-3 px-5 border-b border-gray-200">
+                            <button
+                              className="text-blue-500 hover:text-blue-700"
+                              onClick={() =>
+                                handleOrderItemClick(
+                                  item.Items,
+                                  item.unique_order_id
+                                )
+                              }
+                            >
+                              <FaListAlt size={20} />
+                            </button>
+                          </td>
+
+                          <td className="py-3 px-5 border-b border-gray-200">
+                            <button
+                              className="text-blue-500 hover:text-blue-700"
+                              onClick={() =>
+                                handleScheduledClick(
+                                  item.id,
+                                  item.Expected_Delivery &&
+                                    item.Expected_Delivery
+                                )
+                              }
+                            >
+                              <VscCalendar size={20} />
+                            </button>
+                          </td>
+
+                          <td className="py-3 px-5 border-b border-gray-200">
+                            <div className="mb-2">
+                              {item.order_status.order_status}
+                            </div>
+                          </td>
+
+                          <td className="py-7 px-5 border-b border-gray-200 flex justify-center items-center">
+                            <FaUserPlus
+                              className="w-6 h-6 text-center"
+                              onClick={() =>
+                                handleClickDeliveryExecutive(
+                                  item.id,
+                                  item.unique_order_id,
+                                  item.order_status.delivery_status,
+                                  item.DeliveryExecutive
+                                    ? item.DeliveryExecutive
+                                    : null
+                                )
+                              }
+                            />
+                          </td>
+
+                          {/*  <FaUserPlus className="w-6 h-6" /> */}
+
+                          <td className="py-3 px-5 border-b border-gray-200">
+                            <button
+                              className="text-blue-500 hover:text-blue-700"
+                              onClick={() =>
+                                handlePaymentClick(
+                                  item.payment_type,
+                                  item.order_status.payment_status,
+                                  item.unique_order_id
+                                )
+                              }
+                            >
+                              <div className="">
+                                <FaListAlt size={20} />
+                              </div>
+                            </button>
+                          </td>
+
+                          <td className="py-3 px-5 border-b border-gray-200">
+                            {!item.Paid ? (
+                              <div className="flex space-x-10">
+                                <button
+                                  className="p-2 shadow-lg rounded-sm text-green-500 border hover:text-green-700 hover:shadow-md hover:rounded-md"
+                                  onClick={() => handleCollectClick(item.id)}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M5 13l4 4L19 7"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white cursor-not-allowed bg-green-400">
+                                  Collected
+                                </div>
+                              </div>
+                            )}
+                          </td>
+
+                          <td className="border-b border-gray-200">
+                            {console.log(item.action)}{" "}
+                            {/* Debugging to check the exact value */}
+                            {item.action != "accepted" &&
+                              item.action != "rejected" && (
+                                <div className="flex space-x-10">
+                                  <button
+                                    className="p-2 shadow-lg rounded-sm text-green-500 border hover:text-green-700 hover:shadow-md hover:rounded-md"
+                                    onClick={() => handleAcceptClick(item.id)}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M5 13l4 4L19 7"
+                                      />
+                                    </svg>
+                                  </button>
+
+                                  <button
+                                    className="text-red-500 p-2 rounded-sm shadow-lg hover:text-red-700 hover:shadow-md hover:rounded-md"
+                                    onClick={() => handle_Reject_Click(item.id)}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M6 18L18 6M6 6l12 12"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              )}
+                            {item.action == "accepted" && (
+                              <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white cursor-not-allowed bg-green-400">
+                                Accepted
+                              </div>
+                            )}
+                            {item.action == "rejected" && (
+                              <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white bg-red-400">
+                                Rejected
+                              </div>
+                            )}
+                          </td>
+
+                          {/* <td className="py-3 px-5 border-b border-gray-200">
                                <button
                                  className="text-blue-500 hover:text-blue-700"
                                  onClick={() => handleOrderDeliveryClick(item.order_id)}
@@ -758,171 +847,223 @@ const ManageOrder = () => {
                                  <FaListAlt size={20} />
                                </button>
                              </td> */}
-                                   </tr>
-                                 ))
-                             : displayedOrders.map((item) => (
-                                 <tr key={item.id} className={`${item.order_status.order_status === "received" && 'bg-orange-100'}`}>
-           
-                                   <td className="py-3 px-5 border-b border-gray-200">
-                                     {item.unique_order_id}
-                                   </td>
-           
-                                   <td className="py-3 px-5 border-b border-gray-200">
-                                     {item.order_receive_date}
-                                   </td>
-           
-                                   <td className="py-3 px-5 border-b border-gray-200">
-                                     <button
-                                       className="text-blue-500 hover:text-blue-700"
-                                       onClick={() => handleCustomerClick(item.Customer)}
-                                     >
-                                       <FaListAlt size={20} />
-                                     </button>
-                                   </td>
-           
-                                   <td className="py-3 px-5 border-b border-gray-200">
-                                     <button
-                                       className="text-blue-500 hover:text-blue-700"
-                                       onClick={() =>
-                                         handleOrderItemClick(
-                                           item.Items,
-                                           item.unique_order_id,
-                                           item.Total_Bill
-                                         )
-                                       }
-                                     >
-                                       <FaListAlt size={20} />
-                                     </button>
-                                   </td>
-           
-                                   <td className="py-3 px-5 border-b border-gray-200">
-                                     <button
-                                       className="text-blue-500 hover:text-blue-700"
-                                       onClick={() =>
-                                         handleScheduledClick(
-                                           item.id,
-                                           item.Expected_Delivery && item.Expected_Delivery
-                                         )
-                                       }
-                                     >
-                                       <VscCalendar size={20} />
-                                     </button>
-                                   </td>
-           
-                                   <td className="py-3 px-5 border-b border-gray-200">
-           
-                                   <select
-                                 id="Status"
-                         value={item.order_status.order_status}
-             onChange={(e)=>handleOrderStatusChangeByMerchant(e.target.value,item.id )}
-                                 className="border border-gray-300 p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               >
-                     <option value="">Select Status</option>
-                     <option key="received" value="received">received</option>
-<option key="processed" value="processed">processed</option>
-<option key="shipped" value="shipped">shipped</option>
-<option key="cancelled" value="cancelled">cancelled</option>
-<option key="completed" value="completed">completed</option>
-                               </select>
-                                   </td>
-           
-                                   <td className="py-7 px-5 border-b border-gray-200 flex justify-center items-center">
-                                     <FaUserPlus
-                                       className="w-6 h-6 text-center"
-                                       onClick={() =>
-                                         handleClickDeliveryExecutive(
-                                           item.id,
-                                           item.unique_order_id,
-                                           item.order_status.delivery_status,
-                                           item.DeliveryExecutive.length > 0
-                                             ? item.DeliveryExecutive 
-                                             : null
-                                         )
-                                       }
-                                     />
-                                   </td>
-           
-                                   {/*  <FaUserPlus className="w-6 h-6" /> */}
-           
-                                   <td className="py-3 px-5 border-b border-gray-200">
-                                     <button
-                                       className="text-blue-500 hover:text-blue-700"
-                                       onClick={() =>
-                                         handlePaymentClick(
-                                           item.payment_type,
-                                           item.order_status.payment_status,
-                                           item.unique_order_id
-                                         )
-                                       }
-                                     >
-                                       <div className="">
-                                         <FaListAlt size={20} />
-                                       </div>
-                                     </button>
-                                   </td>
-           
-                                   <td className="border-b border-gray-200">
-                                     {console.log(item.action)}{" "}
-                                     {/* Debugging to check the exact value */}
-                                     {item.action != "accepted" &&
-                                       item.action != "rejected" && (
-                                         <div className="flex space-x-10">
-                                           <button
-                                             className="p-2 shadow-lg rounded-sm text-green-500 border hover:text-green-700 hover:shadow-md hover:rounded-md"
-                                             onClick={() => handleAcceptClick(item.id)}
-                                           >
-                                             <svg
-                                               xmlns="http://www.w3.org/2000/svg"
-                                               className="w-5 h-5"
-                                               fill="none"
-                                               viewBox="0 0 24 24"
-                                               stroke="currentColor"
-                                             >
-                                               <path
-                                                 strokeLinecap="round"
-                                                 strokeLinejoin="round"
-                                                 strokeWidth="2"
-                                                 d="M5 13l4 4L19 7"
-                                               />
-                                             </svg>
-                                           </button>
-           
-                                           <button
-                                             className="text-red-500 p-2 rounded-sm shadow-lg hover:text-red-700 hover:shadow-md hover:rounded-md"
-                                             onClick={() =>
-                                               handle_Reject_Click(item.id)
-                                             }
-                                           >
-                                             <svg
-                                               xmlns="http://www.w3.org/2000/svg"
-                                               className="w-5 h-5"
-                                               fill="none"
-                                               viewBox="0 0 24 24"
-                                               stroke="currentColor"
-                                             >
-                                               <path
-                                                 strokeLinecap="round"
-                                                 strokeLinejoin="round"
-                                                 strokeWidth="2"
-                                                 d="M6 18L18 6M6 6l12 12"
-                                               />
-                                             </svg>
-                                           </button>
-                                         </div>
-                                       )}
-                                     {item.action == "accepted" && (
-                                       <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white cursor-not-allowed bg-green-400">
-                                         Accepted
-                                       </div>
-                                     )}
-                                     {item.action == "rejected" && (
-                                       <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white bg-red-400">
-                                         Rejected
-                                       </div>
-                                     )}
-                                   </td>
-           
-                                   {/* <td className="py-3 px-5 border-b border-gray-200">
+                        </tr>
+                      ))
+                  : displayedOrders.map((item) => (
+                      <tr
+                        key={item.id}
+                        className={`${
+                          item.order_status.order_status === "received" &&
+                          "bg-orange-100"
+                        }`}
+                      >
+                        {console.log(item)}
+                        <td className="py-3 px-5 border-b border-gray-200">
+                          {item.unique_order_id}
+                        </td>
+
+                        <td className="py-3 px-5 border-b border-gray-200">
+                          {item.order_receive_date}
+                        </td>
+
+                        <td className="py-3 px-5 border-b border-gray-200">
+                          <button
+                            className="text-blue-500 hover:text-blue-700"
+                            onClick={() => handleCustomerClick(item.Customer)}
+                          >
+                            <FaListAlt size={20} />
+                          </button>
+                        </td>
+
+                        <td className="py-3 px-5 border-b border-gray-200">
+                          <button
+                            className="text-blue-500 hover:text-blue-700"
+                            onClick={() =>
+                              handleOrderItemClick(
+                                item.Items,
+                                item.unique_order_id,
+                                item.Total_Bill
+                              )
+                            }
+                          >
+                            <FaListAlt size={20} />
+                          </button>
+                        </td>
+
+                        <td className="py-3 px-5 border-b border-gray-200">
+                          <button
+                            className="text-blue-500 hover:text-blue-700"
+                            onClick={() =>
+                              handleScheduledClick(
+                                item.id,
+                                item.Expected_Delivery && item.Expected_Delivery
+                              )
+                            }
+                          >
+                            <VscCalendar size={20} />
+                          </button>
+                        </td>
+
+                        <td className="py-3 px-5 border-b border-gray-200">
+                          <select
+                            id="Status"
+                            value={item.order_status.order_status}
+                            onChange={(e) =>
+                              handleOrderStatusChangeByMerchant(
+                                e.target.value,
+                                item.id
+                              )
+                            }
+                            className="border border-gray-300 p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">Select Status</option>
+                            <option key="received" value="received">
+                              received
+                            </option>
+                            <option key="processed" value="processed">
+                              processed
+                            </option>
+                            <option key="shipped" value="shipped">
+                              shipped
+                            </option>
+                            <option key="cancelled" value="cancelled">
+                              cancelled
+                            </option>
+                            <option key="completed" value="completed">
+                              completed
+                            </option>
+                          </select>
+                        </td>
+
+                        <td className="py-7 px-5 border-b border-gray-200 flex justify-center items-center">
+                          <FaUserPlus
+                            className="w-6 h-6 text-center"
+                            onClick={() =>
+                              handleClickDeliveryExecutive(
+                                item.id,
+                                item.unique_order_id,
+                                item.order_status.delivery_status,
+                                item.DeliveryExecutive.length > 0
+                                  ? item.DeliveryExecutive
+                                  : null
+                              )
+                            }
+                          />
+                        </td>
+
+                        {/*  <FaUserPlus className="w-6 h-6" /> */}
+
+                        <td className="py-3 px-5 border-b border-gray-200">
+                          <button
+                            className="text-blue-500 hover:text-blue-700"
+                            onClick={() =>
+                              handlePaymentClick(
+                                item.payment_type,
+                                item.order_status.payment_status,
+                                item.unique_order_id
+                              )
+                            }
+                          >
+                            <div className="">
+                              <FaListAlt size={20} />
+                            </div>
+                          </button>
+                        </td>
+
+                        {/* Collect or not!!!! */}
+
+                        <td className="py-3 px-5 border-b border-gray-200">
+                          {!item.Paid ? (
+                            <div className="flex space-x-10">
+                              <button
+                                className="p-2 shadow-lg rounded-sm text-green-500 border hover:text-green-700 hover:shadow-md hover:rounded-md"
+                                onClick={() => handleCollectClick(item.id)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 13l4 4L19 7"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white cursor-not-allowed bg-green-400">
+                                Collected
+                              </div>
+                            </div>
+                          )}
+                        </td>
+
+                        <td className="border-b border-gray-200">
+                          {console.log(item.action)}{" "}
+                          {/* Debugging to check the exact value */}
+                          {item.action != "accepted" &&
+                            item.action != "rejected" && (
+                              <div className="flex space-x-10">
+                                <button
+                                  className="p-2 shadow-lg rounded-sm text-green-500 border hover:text-green-700 hover:shadow-md hover:rounded-md"
+                                  onClick={() => handleAcceptClick(item.id)}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M5 13l4 4L19 7"
+                                    />
+                                  </svg>
+                                </button>
+
+                                <button
+                                  className="text-red-500 p-2 rounded-sm shadow-lg hover:text-red-700 hover:shadow-md hover:rounded-md"
+                                  onClick={() => handle_Reject_Click(item.id)}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M6 18L18 6M6 6l12 12"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            )}
+                          {item.action == "accepted" && (
+                            <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white cursor-not-allowed bg-green-400">
+                              Accepted
+                            </div>
+                          )}
+                          {item.action == "rejected" && (
+                            <div className="flex justify-center items-center text-center p-1 rounded-md shadow-md text-white bg-red-400">
+                              Rejected
+                            </div>
+                          )}
+                        </td>
+
+                        {/* <td className="py-3 px-5 border-b border-gray-200">
                              <button
                                className="text-blue-500 hover:text-blue-700"
                                onClick={() => handleOrderDeliveryClick(item.order_id)}
@@ -939,9 +1080,9 @@ const ManageOrder = () => {
                                <FaListAlt size={20} />
                              </button>
                            </td> */}
-                                 </tr>
-                               ))}
-                         </tbody>
+                      </tr>
+                    ))}
+              </tbody>
             </table>
           </div>
           <PaginationExample
@@ -950,7 +1091,6 @@ const ManageOrder = () => {
           />
         </div>
       )}
-
 
       {isCustomerModalOpen && (
         <CustomerModal close={handleCustomerClick} customer={customerDetails} />

@@ -36,14 +36,14 @@ const AllSmallProducts = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const reduxcartItems = useSelector((state) => state.cartReducer.cartItems);
   const Customer_userId = useSelector((state) => state.auth.Customer_userId);
-  console.log(Customer_userId);
+     (Customer_userId);
 
   // setIsOpenVariant
 
   const [isOpenVariant, setIsOpenVariant] = useState(false);
   const [ExistVariants, setexistVariants] = useState(null);
 
-  console.log(reduxcartItems);
+     (reduxcartItems);
 
   const dispatch = useDispatch();
 
@@ -88,7 +88,7 @@ const AllSmallProducts = () => {
     const fetchItems = async () => {
       // setLoading(true);
 
-      console.log("fdsdsfds");
+         ("fdsdsfds");
 
       setCategoryName("");
       setFilteredProducts([]);
@@ -97,14 +97,14 @@ const AllSmallProducts = () => {
       if (location.state) {
         const { id, type, bannerId, ImageId } = location.state || {};
 
-        console.log(location);
+           (location);
 
         if (id && type) {
           setLocationState(location.state);
 
           const response = await getAllItem({ id, type });
 
-          console.log(response);
+             (response);
 
           if (response && response.Items.length > 0) {
             setCategoryName(response.Category.name);
@@ -117,10 +117,10 @@ const AllSmallProducts = () => {
           }
         } else if (bannerId) {
           const response = await getMainBannerUptoOfferItems(bannerId);
-          console.log(response);
+             (response);
 
           if (response && response.data.MainBanner.Items.length > 0) {
-            console.log(response.data.MainBanner);
+               (response.data.MainBanner);
 
             // alert("Main Banner");
             // setCategoryName(response.Category.name);
@@ -132,10 +132,10 @@ const AllSmallProducts = () => {
           }
         } else if (ImageId) {
           const response = await getFeaturedBannerUptoOfferItems(ImageId);
-          console.log(response);
+             (response);
 
           if (response && response.data.FeaturedBanner.Items.length > 0) {
-            console.log(response.data.FeaturedBanner);
+               (response.data.FeaturedBanner);
 
             // alert("Main Banner");
             // setCategoryName(response.Category.name);
@@ -154,7 +154,7 @@ const AllSmallProducts = () => {
 
   const isInCart = (itemId) => {
     if (reduxcartItems && reduxcartItems.data.length > 0) {
-      console.log(
+         (
         reduxcartItems.data.some((ele) => ele.variant_sku_id === itemId)
       );
 

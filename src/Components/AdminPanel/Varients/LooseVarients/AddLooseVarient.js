@@ -6,6 +6,7 @@ import {
 } from "../../../CrudOperations/PostOperation";
 import { UpdateLooseVarientData } from "../../../CrudOperations/Update&Edit";
 import {
+  AllUseFullCategories,
   getAllBrand,
   GetAllCreatedItems,
   GetAllCreatedItemsForCreatingVarients,
@@ -117,13 +118,13 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
           getAllUnit(),
           getAllLooseStock(),
           GetwareHouses(),
-          Show_Users_MainCategory(),
+          AllUseFullCategories(),
           Show_users_SubCategory(),
           Show_Users_Sub_SubCategory(),
           getAllBrand(),
         ]);
 
-        console.log(Category, Sub_Category, Sub_subCategory);
+          (Category, Sub_Category, Sub_subCategory);
 
         if (
           purchaseResponse.data.message ===
@@ -144,26 +145,26 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
           brandResponse.data &&
           brandResponse.data.message == "All brands retrieved successfully!"
         ) {
-          console.log(brandResponse);
+            (brandResponse);
           setBrandList(brandResponse.data.data);
         }
 
         if (Category.data) {
-          console.log("Category Cahal");
+            ("Category Cahal");
 
-          setCategoryList(Category.data);
+          setCategoryList(Category?.data?.data || []);
         }
 
         if (itemResponse.data.message === "All Items retrieved successfully!") {
           setItemList(itemResponse.data.data);
         }
         if (Sub_Category.data) {
-          console.log("SubCategory Cahal");
+            ("SubCategory Cahal");
 
           setSubCategoryList(Sub_Category.data);
         }
         if (Sub_subCategory.data) {
-          console.log("SubSubCategory Cahal");
+            ("SubSubCategory Cahal");
 
           setSub_SubCategoryList(Sub_subCategory.data);
         }
@@ -172,7 +173,7 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
           setWareHouseList(warehouseResponse.data);
         }
       } catch (error) {
-        console.error("Error fetching data: ", error);
+          ("Error fetching data: ", error);
       }
     };
 
@@ -180,11 +181,11 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
   }, []);
 
   useEffect(() => {
-    console.log(updationData);
+      (updationData);
 
     const fun = async () => {
       if (updationData) {
-        console.log(updationData);
+          (updationData);
         const data = updationData;
         setItem_id(data.id);
         setLooseVarient(data.Variants);
@@ -203,10 +204,11 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
       LooseVarients,
     };
 
-    console.log(formData);
+console.log(formData);
+
 
     if (updationData) {
-      console.log(formData);
+        (formData);
 
       const response = await UpdateLooseVarientData({
         id: updationData.id,
@@ -224,7 +226,7 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
       }
     } else {
       if (formData.LooseVarients.length > 0) {
-        console.log(formData);
+          (formData);
 
         const response = await storeloose_Varient({ formData });
         if (response.data.message === "Loose variants saved successfully!") {
@@ -257,6 +259,8 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
       unit_id,
       quantity
     };
+
+    
 
 
 
@@ -294,7 +298,7 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
       const data = loose_stockList.find(
         (ele) => ele.id === Number(e.target.value)
       );
-      console.log(data);
+        (data);
 
       setLoose_stock_id(Number(e.target.value));
       setPurchases_id(data.purchase_id);
@@ -342,10 +346,10 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
   const deleteVariant = async (index, id = null) => {
     setLooseVarient((prev) => prev.filter((_, i) => i !== index));
 
-    console.log(id);
+      (id);
 
     if (id) {
-      console.log(id);
+        (id);
 
       const response = await DeleteLooseVarient(id);
       if (response.data.message === "loose_variant deleted successfully") {
@@ -358,11 +362,11 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
   };
 
   const handleUnitChange = (e) => {
-    console.log(e.target.value);
+      (e.target.value);
 
     const unitdata = UnitList.find((ele) => ele.id == e.target.value);
 
-    console.log(unitdata);
+      (unitdata);
 
     setQuantity_unit_value(unitdata.value);
 
@@ -568,14 +572,14 @@ const AddLooseVarient = ({ onSubmit, EditLooseVarients, onUpdate }) => {
 
 
 
-            <div class="flex items-center space-x-2  px-3">
+            <div className="flex items-center space-x-2  px-3">
   <input 
     type="checkbox"
     id="forPurchase"
     name="forPurchase"
     onChange={()=>setForPurchase(!forPurchase)}
     checked = {forPurchase}
-    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
   />
   <label htmlFor="forPurchase" className=" flex flex-col text-sm w-32">
 <span>
@@ -601,7 +605,6 @@ Only For PurchasedList
                     if (e.target.files && e.target.files[0]) {
                       const file = e.target.files[0];
 
-                      console.log(file);
 
                       setImage_Path(file); // Set image URL from file
 
@@ -649,7 +652,6 @@ Only For PurchasedList
               </tr>
             </thead>
             <tbody>
-              {console.log(LooseVarients)}
               {LooseVarients.map((variant, index) => (
                 <tr key={index} className="border-b">
                   <td className="p-2">{variant.variantName}</td>
@@ -711,7 +713,6 @@ Only For PurchasedList
               brandResponse.data &&
               brandResponse.data.message == "All brands retrieved successfully!"
             ) {
-              console.log(brandResponse);
               setBrandList(brandResponse.data.data);
               setIsOpenBrandModal(false);
             }

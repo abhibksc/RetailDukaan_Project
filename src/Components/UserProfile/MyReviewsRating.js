@@ -3,7 +3,7 @@ import Sidebar from "../Header&SideBar/Sidebar";
 const MyReviewsRating = () => {
   return (
     <div className="flex gap-4 mt-14 xl:mt-0 justify-center">
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       <div className="bg-white flex flex-col gap-4 border p-4 w-[1100px]">
         <h1 className="font-bold text-2xl font-roboto">MyReviewsRating</h1>

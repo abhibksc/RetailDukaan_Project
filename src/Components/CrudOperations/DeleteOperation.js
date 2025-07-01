@@ -1,54 +1,112 @@
 import axios from "axios";
 import baseurl from "./customURl";
+import { toast } from "react-toastify";
 
+const Merchant_token = localStorage.getItem("Merchanttoken") || null;
+const User_token = localStorage.getItem("token") || null;
 
-
-export const Delete_Particular_addresss = async ({id, token}) => {
-
-
-
+export const DeletePacketImage = async (id) => {
   try {
+    const token = localStorage.getItem("Merchanttoken");
+    if (!token) {
+      console.error("No Sanctum token found");
+      return;
+    }
+
     const response = await axios.delete(
-      `${baseurl}/api/addresses/${id}`,
+      `${baseurl}/api/admin/DeletePacketImage/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-    console.log(response);
+
+    return response;
+  } catch (error) {
+    console.log("Upload error:", error);
+    throw error;
+  }
+};
+
+// SingUpOffer_idCancellation_from_Cart
+
+export const SingUpOffer_idCancellation_from_Cart = async (
+  cartItem_id,
+  singUpOffer_id,
+  Latitude,
+  Longitude,
+  AreaPin
+) => {
+  cartItem_id;
+  singUpOffer_id;
+  Latitude;
+  Longitude;
+  AreaPin;
+  User_token;
+
+  if (!User_token) {
+    ("user token not exist");
+
+    toast.warn("Please Login Or SignUp");
+  }
+
+  console.log(User_token);
+
+  try {
+    const response = await axios.post(
+      `${baseurl}/api/SingUpOffer_idCancellation_from_Cart`,
+      {
+        grocery_cart_Item_id: cartItem_id,
+        singUpOffer_id,
+        Latitude,
+        Longitude,
+        AreaPin,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${User_token}`,
+        },
+      }
+    );
+    response;
 
     if (response) {
-      console.log("Address Deleted successfully:", response);
+      "Singup Offer Cancelled successfully:", response;
 
       return response;
     }
   } catch (error) {
-    // if (error.response && error.response.data && error.response.data.message) {
-    //   console.error("Error posting address:", error.response.data.message);
-    //   // Handle specific error message
-    // } else {
-    //   console.error("Error posting address:", error);
-    //   // Handle generic error
-    // }
-    throw error; // Re-throw the error for any higher-level error handling
+    return error.response;
   }
 };
 
+export const Delete_Particular_addresss = async ({ id, token }) => {
+  try {
+    const response = await axios.delete(`${baseurl}/api/addresses/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    response;
+
+    if (response) {
+      return response;
+    }
+  } catch (error) {
+    return error.response;
+  }
+};
 
 // DeleteDeliveryDate
 
 export const DeleteDeliveryDate = async (id) => {
-
-
-    // Retrieve token from localStorage
-    const token = localStorage.getItem("Merchanttoken");
-    if (!token) {
-      console.error("Authorization token is missing. Please log in.");
-      return;
-    }
-
-
+  // Retrieve token from localStorage
+  const token = localStorage.getItem("Merchanttoken");
+  if (!token) {
+    console.error("Authorization token is missing. Please log in.");
+    return;
+  }
 
   try {
     const response = await axios.delete(
@@ -59,10 +117,10 @@ export const DeleteDeliveryDate = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Delivery Dates Deleted Successfully!!:", response);
+      "Delivery Dates Deleted Successfully!!:", response;
 
       return response;
     }
@@ -78,23 +136,16 @@ export const DeleteDeliveryDate = async (id) => {
   }
 };
 
-
 // deleteMainCategory
 
+export const deleteMainCategory = async ({ id }) => {
+  id;
 
-
-export const deleteMainCategory = async ({id}) => {
-  console.log(id);
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -105,10 +156,10 @@ export const deleteMainCategory = async ({id}) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Address Deleted successfully:", response);
+      "Address Deleted successfully:", response;
 
       return response;
     }
@@ -125,19 +176,146 @@ export const deleteMainCategory = async ({id}) => {
   }
 };
 
+export const deleteGroup = async ({ id }) => {
+  id;
 
-export const deleteSubCategory = async ({id}) => {
-  console.log(id);
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
 
+  try {
+    const response = await axios.delete(
+      `${baseurl}/api/admin/deleteGroup/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    response;
 
+    if (response) {
+      "Address Deleted successfully:", response;
+
+      return response;
+    }
+  } catch (error) {
+    return error.response;
+    // if (error.response && error.response.data && error.response.data.message) {
+    //   console.error("Error posting address:", error.response.data.message);
+    //   // Handle specific error message
+    // } else {
+    //   console.error("Error posting address:", error);
+    //   // Handle generic error
+    // }
+    throw error; // Re-throw the error for any higher-level error handling
+  }
+};
+
+// Refferals *****************************************************************************************
+
+export const DeleteRefferal_Configuraion = async ({ id }) => {
+  id;
+
+  const token = localStorage.getItem("Merchanttoken");
+
+  if (!token) {
+    return console.error("No Sanctum token found");
+  }
+
+  try {
+    const response = await axios.delete(
+      `${baseurl}/api/admin/DeleteRefferalConfiguration/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    response;
+
+    return response;
+  } catch (error) {
+    return error.response;
+    // if (error.response && error.response.data && error.response.data.message) {
+    //   console.error("Error posting address:", error.response.data.message);
+    //   // Handle specific error message
+    // } else {
+    //   console.error("Error posting address:", error);
+    //   // Handle generic error
+    // }
+    throw error; // Re-throw the error for any higher-level error handling
+  }
+};
+
+// offeritem
+
+// Delete_particular_OfferItem
+
+export const Delete_particular_OfferItem = async ({ id }) => {
+  id;
+
+  const token = localStorage.getItem("Merchanttoken");
+
+  if (!token) {
+    return console.error("No Sanctum token found");
+  }
+
+  try {
+    const response = await axios.delete(
+      `${baseurl}/api/admin/Delete_particular_OfferItem/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    response;
+
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+export const handleDeleteParticular_SignUp_offer_FromDataBase = async ({
+  id,
+}) => {
+  id;
+
+  const token = localStorage.getItem("Merchanttoken");
+
+  if (!token) {
+    return console.error("No Sanctum token found");
+  }
+
+  try {
+    const response = await axios.delete(
+      `${baseurl}/api/admin/handleDeleteParticular_SignUp_offer_FromDataBase/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    response;
+
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+export const deleteSubCategory = async ({ id }) => {
+  id;
+
+  const token = localStorage.getItem("Merchanttoken");
+
+  if (!token) {
+    return console.error("No Sanctum token found");
+  }
 
   try {
     const response = await axios.delete(
@@ -148,10 +326,10 @@ export const deleteSubCategory = async ({id}) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Address Deleted successfully:", response);
+      "Address Deleted successfully:", response;
 
       return response;
     }
@@ -160,20 +338,14 @@ export const deleteSubCategory = async ({id}) => {
   }
 };
 
+export const DeleteSubSubCategory = async ({ id }) => {
+  id;
 
-
-export const DeleteSubSubCategory = async ({id}) => {
-  console.log(id);
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -184,10 +356,10 @@ export const DeleteSubSubCategory = async ({id}) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Address Deleted successfully:", response);
+      "Address Deleted successfully:", response;
 
       return response;
     }
@@ -196,20 +368,14 @@ export const DeleteSubSubCategory = async ({id}) => {
   }
 };
 
+export const DeleteItemImage = async ({ id }) => {
+  id;
 
-
-export const DeleteItemImage = async ({id}) => {
-  console.log(id);
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -220,35 +386,28 @@ export const DeleteItemImage = async ({id}) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Address Deleted successfully:", response);
+      "Address Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
 // DeleteSpecification
 
+export const DeleteSpecification = async ({ id }) => {
+  id;
 
-export const DeleteSpecification = async ({id}) => {
-  console.log(id);
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -259,34 +418,28 @@ export const DeleteSpecification = async ({id}) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Address Deleted successfully:", response);
+      "Address Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
 // deleteUser
 
-export const deleteUser = async ({id}) => {
-  console.log(id);
-  
+export const deleteUser = async ({ id }) => {
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -297,15 +450,14 @@ export const deleteUser = async ({id}) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("User Deleted successfully:", response);
+      "User Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
@@ -313,17 +465,13 @@ export const deleteUser = async ({id}) => {
 // DeleteStock
 
 export const DeleteStock = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -334,15 +482,14 @@ export const DeleteStock = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("User Deleted successfully:", response);
+      "User Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
@@ -350,17 +497,13 @@ export const DeleteStock = async (id) => {
 // deleteDeliveryConstraint
 
 export const DeleteDeliveryChargeOnDistance = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -371,32 +514,26 @@ export const DeleteDeliveryChargeOnDistance = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("User Deleted successfully:", response);
+      "User Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
 export const DeleteDeliveryChargeOnValue = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -407,34 +544,28 @@ export const DeleteDeliveryChargeOnValue = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("User Deleted successfully:", response);
+      "User Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
 // delterwarehouse
 
-
 export const delterwarehouse = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -445,34 +576,28 @@ export const delterwarehouse = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("User Deleted successfully:", response);
+      "User Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
 // Deletepincode
 
-
 export const Deletepincode = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -483,15 +608,14 @@ export const Deletepincode = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("User Deleted successfully:", response);
+      "User Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
@@ -499,17 +623,13 @@ export const Deletepincode = async (id) => {
 // DeleteSupplier
 
 export const DeleteSupplier = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -520,35 +640,28 @@ export const DeleteSupplier = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("User Deleted successfully:", response);
+      "User Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
-
 // DeleteBrand
 
 export const DeleteBrand = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -559,34 +672,28 @@ export const DeleteBrand = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("User Deleted successfully:", response);
+      "User Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
 // DeleteUnit
 
 export const Deleteunit = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -597,34 +704,28 @@ export const Deleteunit = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
 // DeletePurchase
 
 export const DeletePurchase = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -635,35 +736,28 @@ export const DeletePurchase = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
-
 // DeleteLooseStock
 
 export const DeleteLooseStock = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -674,35 +768,28 @@ export const DeleteLooseStock = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
-
 // DeletePacketStock
 
 export const DeletePacketStock = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -713,34 +800,28 @@ export const DeletePacketStock = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
 // DeleteLooseVarient
 
-
 export const DeleteLooseVarient = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -751,15 +832,14 @@ export const DeleteLooseVarient = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
@@ -767,17 +847,13 @@ export const DeleteLooseVarient = async (id) => {
 // DeleteLooseVarientwholeItem
 
 export const DeleteLooseVarientwholeItem = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -788,34 +864,26 @@ export const DeleteLooseVarientwholeItem = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-
       return response;
     }
   } catch (error) {
-   
     return error.response; // Re-throw the error for any higher-level error handling
   }
 };
 
-
-
 // DeletePacketVarientwholeItem
 
 export const DeletePacketVarientwholeItem = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -826,34 +894,26 @@ export const DeletePacketVarientwholeItem = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-
       return response;
     }
   } catch (error) {
-   
     return error.response; // Re-throw the error for any higher-level error handling
   }
 };
 
-
 // DeletePacketVarient
 
-
 export const DeletePacketVarient = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -864,35 +924,28 @@ export const DeletePacketVarient = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     return error.response;
   }
 };
 
 // DeleteCreatedOffer
 
-
-
 export const DeleteCreatedOffer = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -903,34 +956,26 @@ export const DeleteCreatedOffer = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
 // deltetePacketVarientImages
 
-
-
 export const deltetePacketVarientImages = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -941,32 +986,26 @@ export const deltetePacketVarientImages = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
 export const delteteGST = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -977,27 +1016,25 @@ export const delteteGST = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
 // deletePurchaseItem
 
-
-export const deletePurchaseItem = async ({id}) => {
-  console.log(id);
-  const token = localStorage.getItem('Merchanttoken');
+export const deletePurchaseItem = async ({ id }) => {
+  id;
+  const token = localStorage.getItem("Merchanttoken");
   if (!token) {
-      return console.error('No Sanctum token found');
+    return console.error("No Sanctum token found");
   }
 
   try {
@@ -1009,34 +1046,28 @@ export const deletePurchaseItem = async ({id}) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("unit Deleted successfully:", response);
+      "unit Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
 // deleteItem
 
+export const deleteStoredItem = async ({ id }) => {
+  id;
 
-export const deleteStoredItem = async ({id}) => {
-  console.log(id);
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -1047,36 +1078,21 @@ export const deleteStoredItem = async ({id}) => {
         },
       }
     );
-    console.log(response);
-
-    if (response) {
-      console.log("unit Deleted successfully:", response);
-
-      return response;
-    }
+    return response;
   } catch (error) {
-   
-    throw error; // Re-throw the error for any higher-level error handling
+    return error.response;
   }
 };
 
-
-
 // DeleteMainBanner
 export const DeleteBanner = async (bannerId) => {
+  bannerId;
 
-  console.log(bannerId);
-  
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -1087,34 +1103,27 @@ export const DeleteBanner = async (bannerId) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Banner Deleted successfully:", response);
+      "Banner Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
 // DeleteFeaturedBanner
 export const DeleteFeaturedBanner = async (bannerId) => {
+  bannerId;
 
-  console.log(bannerId);
-  
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -1125,35 +1134,27 @@ export const DeleteFeaturedBanner = async (bannerId) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Banner Deleted successfully:", response);
+      "Banner Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
 // DeleteFeaturedBannerOffer
 export const DeleteFeaturedBannerOffer = async (id) => {
+  id;
 
-  console.log(id);
-  
-  
-
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -1164,38 +1165,28 @@ export const DeleteFeaturedBannerOffer = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-      console.log("Banner Deleted successfully:", response);
+      "Banner Deleted successfully:", response;
 
       return response;
     }
   } catch (error) {
-   
     throw error; // Re-throw the error for any higher-level error handling
   }
 };
 
-
-
-
 // destroyDesktopHomeManagementCategory
 
-
-
 export const destroyDesktopHomeManagementCategory = async (id) => {
-  console.log(id);
-  
+  id;
 
-  const token = localStorage.getItem('Merchanttoken');
+  const token = localStorage.getItem("Merchanttoken");
 
   if (!token) {
-      return console.error('No Sanctum token found');
-      
+    return console.error("No Sanctum token found");
   }
-
-
 
   try {
     const response = await axios.delete(
@@ -1206,15 +1197,12 @@ export const destroyDesktopHomeManagementCategory = async (id) => {
         },
       }
     );
-    console.log(response);
+    response;
 
     if (response) {
-
       return response;
     }
   } catch (error) {
-   
-   
     return error.response;
   }
 };

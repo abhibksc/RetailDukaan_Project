@@ -1,723 +1,542 @@
 import React, { useEffect, useState } from "react";
-import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
+import { activePages, signIn, updateAreaPin } from "../ReduxStore/Slices/auth";
 import {
-  activePages,
-  registered,
-  signIn,
-  signup,
-} from "../ReduxStore/Slices/auth";
-import { json, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
-import { SenduserAuthenticationOTP, userLogin, userRegister } from "../CrudOperations/PostOperation";
-import { getAllCartItems, GetUserData } from "../CrudOperations/GetOperation";
-import { importCartItems } from "../ReduxStore/Slices/cartSlice";
-
-import retailLogo from "../../assets/Logo/retail_dukaan_images.png";
-
-import { toast } from "react-toastify";
+  SenduserAuthenticationOTP,
+  userLogin,
+} from "../CrudOperations/PostOperation";
 import { Update_LatLongInData_Base } from "../CrudOperations/Update&Edit";
+import { toast } from "react-toastify";
 import { logo } from "../CrudOperations/customURl";
-
-Modal.setAppElement("#root");
+import FormInput from "./FormInput";
+import { GetUserSingUpOffer } from "../CrudOperations/GetOperation";
+import { useNavigate } from "react-router-dom";
+import { fetchHomeData } from "../ReduxStore/Slices/homeSlice";
 
 const LoginModal = () => {
+  // const offersList = [
+  //   {
+  //     id: 1,
+  //     title: "10% Off on First Order",
+  //     description: "Enjoy 10% off on your first order.",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Free Delivery",
+  //     description: "Get free delivery for orders above ₹499.",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "20% Off on Electronics",
+  //     description: "Save 20% on select electronics.",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Flat ₹100 Cashback",
+  //     description: "Get ₹100 cashback on prepaid orders.",
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "Buy 1 Get 1 Free",
+  //     description: "Applicable on select grocery items only.",
+  //   },
+  //   {
+  //     id: 6,
+  //     title: "15% Off on Fashion",
+  //     description: "Upgrade your wardrobe with 15% off.",
+  //   },
+  //   {
+  //     id: 7,
+  //     title: "Weekend Special",
+  //     description: "Extra ₹200 off on orders above ₹999 during weekends.",
+  //   },
+  //   {
+  //     id: 8,
+  //     title: "Mobile Accessories Discount",
+  //     description: "Get up to 25% off on mobile accessories.",
+  //   },
+  //   {
+  //     id: 9,
+  //     title: "Festive Sale",
+  //     description: "Celebrate with massive discounts across all categories.",
+  //   },
+  //   {
+  //     id: 10,
+  //     title: "Midnight Flash Deal",
+  //     description: "Exclusive deals available from 12 AM to 2 AM.",
+  //   },
+  //   {
+  //     id: 11,
+  //     title: "Student Discount",
+  //     description: "Extra 5% off for verified students.",
+  //   },
+  //   {
+  //     id: 12,
+  //     title: "Refer & Earn",
+  //     description: "Refer friends and earn ₹50 for each signup.",
+  //   },
+  // ];
 
-  
-  const [input, setinput] = useState("");
-  const [Inputtype, setInputtype] = useState("text");
+  const [mode, setMode] = useState("Login");
+  const [referrer, setreferrer] = useState("");
 
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const [offersList, setOffersList] = useState([]);
 
-   const Location = useSelector((state) => state.auth.Location);
-   const Customer_userId = useSelector((state) => state.auth.Customer_userId);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [selectedOffers, setSelectedOffers] = useState([]);
 
-
-
-  
-  const [modalIsOpen, setModalIsOpen] = useState(true);
-  const [isSignup, setIsSignup] = useState(false);
-  const [otpDetails,setOTPDetails] = useState(null);
-  const [otpDone,setOtpDone] = useState(null);
-
-  const login = useSelector((ele) => ele.auth.loginpageActive);
-  console.log(login);
+  const [input, setInput] = useState("");
+  const [inputType, setInputType] = useState("text");
+  const [otpDetails, setOtpDetails] = useState(null);
+  const [otpDone, setOtpDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const Location = useSelector((state) => state.auth.Location);
+  const AreaPin = useSelector((state) => state.auth.AreaPin);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const closeModal = () => {
-    dispatch(activePages({ login: false }));
-    setModalIsOpen(!modalIsOpen);
-  };
-
-  const toggleSignup = () => setIsSignup(!isSignup);
-
+  const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const isPhone = (value) => /^[6-9]\d{9}$/.test(value);
 
   useEffect(() => {
-    document.body.classList.add("modal-open");
-    return () => {
-      document.body.classList.remove("modal-open");
+
+
+
+
+    const fun = async () => {
+      try {
+        const response = await GetUserSingUpOffer(AreaPin);
+        console.log(response);
+
+        if (
+          response?.data?.message ===
+          "All SignUp Offers retrieved successfully!"
+        ) {
+          console.log(response);
+          setOffersList(response?.data?.data?.offers);
+        } else {
+          toast.error(response?.data?.message);
+        }
+      } catch (error) {
+        toast.error(
+          error?.response?.data?.message || error?.response?.data?.error
+        );
+      }
     };
+    fun();
   }, []);
 
+  useEffect(()=>{
 
+          const code = localStorage.getItem("referralCode");
+  if (code) {
+    console.log(code);
+    
+    setreferrer(code);
+  }
 
-
-
-
+  },[mode])
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
-
-
-    console.log(input);
-
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[6-9]\d{9}$/; // Assumes a 10-digit Indian mobile number
-    let type = null;
-    let MyInput = null;
-  
-    if (emailRegex.test(input)) {
-      MyInput = emailRegex;
-      type = "email";
-    } else if (phoneRegex.test(input)) {
-      MyInput = phoneRegex;
-      type = "phone" ;
-    } else {
-      toast.warn("Invalid Input");
-    }
-
-    setInputtype(type)
-    
-
-
-
-
-
-      if (MyInput) {
-
-        console.log(otpDetails);
-        
-
-
-      if(otpDetails && otpDetails.otp && otpDetails.otp_id){
-
-
-          const response = await userLogin({ input : input , type : type , otp : otpDetails.otp , otp_id :  otpDetails.otp_id });
-
-          console.log(response);
-  
-  
-          if (response && response.message === "Login successful.") {
-
-
-
-
-
-
-          dispatch(
-            signIn({
-              token: response.token,
-              name: response.user.name,
-              phone: response.user.phone,
-              email : response.user.email,
-              Customer_userId: response.user.id,
-              Unique_UserID: response.user.Unique_userId,
-              userlogin: true,
-              registered : true,
-              login: false,
-              mobile_login_pageActive : false
-
-
-            })
-          );
-
-          console.log(Location);
-          console.log(response.user.id);
-
-          
-
-          if(Location.Latitude && Location.Longitude && response.user.id){
-            const updateInDataBase = await Update_LatLongInData_Base({latitude : Location.Latitude, longitude : Location.Longitude, id : response.user.id});
-            console.log(updateInDataBase);
-          }
-
-
-
-
-
-
-
-            toast.success(response.message)
-  
-            setOTPDetails(null)
-
-            setinput("")
-            setInputtype("")
-            setOtpDone(false);
-
-
-
-
-          }
-          else if (response && response.message === "Registration successful.") {
-            dispatch(
-              signIn({
-                token: response.token,
-                email : response.user.email,
-                name: response.user.name,
-                phone: response.user.phone,
-                Customer_userId: response.user.id,
-                Unique_UserID: response.user.Unique_userId,
-                userlogin: true,
-                registered : true,
-                login: false,
-                mobile_login_pageActive : false
-  
-              })
-            );
-  
-
-            if(Location.Latitude && Location.Longitude && response.user.id){
-              const updateInDataBase = await Update_LatLongInData_Base({latitude : Location.Latitude, longitude : Location.Longitude, id : response.user.id});
-              console.log(updateInDataBase);
-              
-              
-            }
-  
-  
-              toast.success(response.message)
-    
-              setOTPDetails(null)
-
-
-          }
-
-          else if (response && response.message === "Welcome back to Retail Dukaan!") {
-            dispatch(
-              signIn({
-                token: response.token,
-                name: response.user.name,
-                phone: response.user.phone,
-                email : response.user.email,
-                Customer_userId: response.user.id,
-                Unique_UserID: response.user.Unique_userId,
-                userlogin: true,
-                registered : true,
-                login: false,
-                mobile_login_pageActive : false
-  
-              })
-            );
-  
-
-            if(Location.Latitude && Location.Longitude && response.user.id){
-              const updateInDataBase = await Update_LatLongInData_Base({latitude : Location.Latitude, longitude : Location.Longitude, id : response.user.id});
-              console.log(updateInDataBase);
-              
-              
-            }
-  
-  
-              toast.success(response.message)
-    
-              setOTPDetails(null)
-
-
-          }
-
-          else if(response && response.error === "Invalid OTP."){
-            console.log(response);
-            
-
-            return toast.error("Invalid Otp");
-
-          }
-          else if(response && response.error && response.error.otp.length > 0 && response.error.otp[0] === "The selected otp is invalid."){
-
-            return toast.error("Invalid Otp");
-
-          }
-
-        
-
-
-
-
-
-
-          
-          else{
-            toast.error(response.message)
-            setOTPDetails(null)
-            setinput("")
-            setInputtype("")
-            setOtpDone(false);
-  
-          }
-
-
-
-
-
-      }
-
-      else if(!otpDone) {
-
-
-
-          // const response = await userLogin({ input : input , type : type });
-
-          const response = await SenduserAuthenticationOTP({ input : input , type : type });
-
-          console.log(response);
-  
-  
-          if (response && response.message === "OTP sent successfully.") {
-            toast.success(response.message)
-  
-            setOTPDetails({
-              otp_id : response.otp_id,
-            })
-            setOtpDone(true);
-          }
-          else{
-            toast.success(response.message)
-  
-          }
-  
-      }
-      else{
-        console.log("OTP Verification");
-      }
-
-
-
-
-
-
-        
-        // if (response) {
-
-        //   const token = localStorage.getItem("token");
-
-        //   console.log(token);
-
-        //   dispatch(
-        //     signIn({
-        //       token: token,
-        //       input: response.input,
-        //       name: response.name,
-        //       phone: response.phone,
-        //       userId: response.id,
-        //       userlogin: true,
-        //     })
-        //   );
-        //   dispatch(registered(true));
-        //   close();
-        // }
-
-
-
-
-
-
-      }
-    
-
-  };
-
-  // handleResendOTP
-
-
-  const handleResendOTP = async (e) => {
+    setLoading(true);
 
     try {
+      let type = isEmail(input) ? "email" : isPhone(input) ? "phone" : null;
+      if (!type) {
+        toast.warn("Invalid Input");
+        return;
+      }
+      setInputType(type);
 
-      console.log(otpDetails);
-      console.log();
-      console.log();
-      
-      if (otpDetails && otpDetails.otp_id && Inputtype) {
-        const response = await SenduserAuthenticationOTP({ input : input , type : Inputtype });
+      if (otpDetails?.otp && otpDetails?.otp_id) {
+        const res = await userLogin({
+          input,
+          type,
+          otp: otpDetails.otp,
+          otp_id: otpDetails.otp_id,
+          selectedOffers: selectedOffers,
+          referrer: referrer,
+          mode: mode,
+          Latitude: Location?.Latitude,
+          Longitude: Location?.Longitude,
+          AreaPin,
+        });
 
-        console.log(response);
-  
-  
-        if (response && response.message === "OTP sent successfully.") {
-          toast.success("Resend OTP sent successfully.")
-  
-          setOTPDetails({
-            otp_id : response.otp_id,
-          })
+        console.log(res);
+
+        if (
+          res?.message === "Login successful." ||
+          res?.message === "Registration successful."
+        ) {
+          if (res?.token && res?.user) {
+            dispatch(
+              signIn({
+                token: res.token,
+                ...res.user,
+                userlogin: true,
+                registered: true,
+                login: false,
+                mobile_login_pageActive: false,
+              })
+            );
+          }
+
+          if (Location?.Latitude && Location?.Longitude) {
+            await Update_LatLongInData_Base({
+              latitude: Location.Latitude,
+              longitude: Location.Longitude,
+              id: res.user.id,
+            });
+          }
+
+          if (res?.default_pincode) {
+            dispatch(updateAreaPin({ pincode: res?.default_pincode }));
+            dispatch(fetchHomeData(res?.default_pincode));
+          }
+
+          toast.success(res.message);
+          setOtpDetails(null);
+          setInput("");
+          setInputType("");
+          setOtpDone(false);
+
+          if (res?.SignUp_Offer?.length > 0) {
+            navigate("/viewCart");
+          } else {
+            navigate("/");
+
+            window.location.reload();
+          }
+        } else {
+          toast.error(res?.message || "Something went wrong");
+          setOtpDetails(null);
+          setInput("");
+          setInputType("");
+          setOtpDone(false);
         }
-        else{
-          toast.success(response.message)
-  
+      } else if (!otpDone) {
+        const response = await SenduserAuthenticationOTP({ input, type });
+        if (response?.message.includes("OTP sent")) {
+          toast.success(response.message);
+          setOtpDetails({ otp_id: response.otp_id });
+          setOtpDone(true);
+        } else {
+          toast.error(response?.message || "Failed to send OTP");
         }
+      } else {
+        toast.warn("Please verify OTP");
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      toast.error(
+        error?.response?.data?.message || error?.response?.data?.error
+      );
+    } finally {
+      setLoading(false);
     }
-
-
-
-  
-
   };
 
+  const handleResendOTP = async () => {
+    if (!otpDetails?.otp_id || !inputType) return;
+    setResendLoading(true);
+    try {
+      const res = await SenduserAuthenticationOTP({ input, type: inputType });
+      if (res?.message.includes("OTP sent")) {
+        toast.success("Resend OTP sent successfully.");
+        setOtpDetails({ otp_id: res.otp_id });
+      } else {
+        toast.error(res.message || "Resend failed");
+      }
+    } catch (error) {
+      toast.error("Something went wrong while resending OTP.");
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  const handleClickMode = () => {
+    setMode(mode === "Login" ? "SignUp" : "Login");
+    setSelectedOffers([]);
+    setOtpDetails(null);
+    setInput("");
+    setInputType("");
+    setOtpDone(false);
+    setreferrer("");
+  };
 
   return (
-    <>
-      {(
-        <div
-          className="fixed inset-0 flex items-center justify-center bg-white/5 backdrop-blur-md z-50 transition-opacity duration-300 ease-out opacity-100"
-        >
-          <div className="bg-black text-white rounded-xl shadow-xl w-full max-w-2xl  transform scale-95 animate-[fadeIn_0.7s_ease-out,scaleUp_0.7s_ease-out]">
-          <div className="flex  rounded-lg shadow-lg shadow-gray-900 w-full bg-black text-white items-stretch h-full">
-  <div className="border-r border-gray-600 px-6 flex items-center bg-gradient-to-b from-green-300 to-white ">
-    <img src={logo} alt="Retail Logo" className="w-40 mx-10" />
-  </div>
+    <div className="fixed inset-0 flex items-center justify-center bg-white/5 backdrop-blur-md z-50">
+      <div className="bg-black text-white rounded-xl shadow-xl w-full max-w-2xl animate-[fadeIn_0.7s_ease-out,scaleUp_0.7s_ease-out]">
+        <div className="flex rounded-lg shadow-lg bg-black text-white items-stretch">
+          {mode === "Login" ? (
+            <div className="border-r w-80 px-6 py-6 bg-gradient-to-br from-green-200 via-white to-green-50 shadow-xl text-gray-800 font-inter rounded-tr-3xl rounded-br-3xl">
+              {/* Logo Section */}
+              <div className="mb-6 flex justify-center">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="h-14 object-contain drop-shadow-md"
+                />
+              </div>
 
-              <div className="flex-1">
-                <form
-                  className="relative flex flex-col justify-center p-6"
-                  onSubmit={handleSendOTP}
+              {/* Message */}
+              <div className="text-center mt-8 text-lg leading-relaxed font-semibold animate-pulse">
+                🎉 Join the savings revolution!
+                <br />
+                <span className="text-green-600 text-2xl font-bold">
+                  Up to 70% OFF
+                </span>
+                <br />
+                on your first order.
+              </div>
+
+              <p className="text-center text-sm mt-4 text-gray-600 italic">
+                Everyday deals. Premium quality. No compromise.
+              </p>
+            </div>
+          ) : (
+            <div className="border-r w-80 px-6 py-6 bg-gradient-to-br from-green-200 via-white to-green-50 shadow-xl text-gray-800 font-inter rounded-tr-3xl rounded-br-3xl">
+              {/* Logo Section */}
+              <div className="mb-4 flex justify-center">
+                <img src={logo} alt="Logo" className="h-12 object-contain" />
+              </div>
+
+              {/* Offers Section */}
+              <div className="max-h-full">
+                {/* Offers Grid */}
+                <div
+                  className="
+  overflow-y-auto scrollbar-hide  p-2 max-h-[100px] pr-1 scrollbar-thin scrollbar-thumb-gray-400 grid grid-cols-2 "
                 >
-                  <button
-                    type="button"
-                    className="absolute top-3 right-4 text-white text-2xl hover:text-gray-400 transition-all"
-                    onClick={()=>     dispatch(activePages({ login: false }))}
-                  >
-                    &times;
-                  </button>
-                  <h1 className="text-2xl mb-4 text-center font-semibold">
-                    Login/Signup
-                    <br />
-                    <span className="text-sm border-b-2 border-yellow-400 pb-1">
-                      Using OTP
-                    </span>
-                  </h1>
-                  <div className="px-6 flex flex-col gap-6 text-center">
-                    <FormInput
-                      id="input"
-                      placeholder="Enter Phone Number/Email Id"
-                      type="text"
-                      value={input || ""}
-                      onChange={(e) => setinput(e.target.value)}
-                      className="w-full p-2 border border-gray-600 rounded-md bg-gray-800 focus:border-yellow-400 focus:ring focus:ring-yellow-300"
-                    />
-                    {
-                      otpDetails && otpDetails.otp_id && <div className="flex flex-row gap-3">
-
-                      <input type="number" 
-                        className="p-2 max-w- text-gray-300 rounded focus:outline-none bg-black border-b"
-                        value={otpDetails.otp}
-                        onChange={(e) => setOTPDetails({...otpDetails,otp : e.target.value})}
-                        />
-
-                        <button type="button" className="border p-2 rounded-md bg-yellow-600 text-black font-medium hover:bg-yellow-600 transition-all mx-auto" onClick={handleResendOTP}>
-                          resend
-                        </button>
-
-
-
-                      </div>
-                    }
-                    <button
-                      type="submit"
-                      className="border w-32 p-2 rounded-md bg-yellow-500 text-black font-medium hover:bg-yellow-600 transition-all mx-auto"
+                  {offersList.map((offer) => (
+                    <div
+                      key={offer.id}
+                      className={`cursor-pointer p-2 border rounded-md transition-all duration-200 ease-in-out ${
+                        selectedOffers.includes(offer.id)
+                          ? "bg-yellow-100 border-yellow-500 shadow-sm"
+                          : "bg-white hover:bg-gray-100"
+                      }`}
+                      onClick={() =>
+                        setSelectedOffers((prev) =>
+                          prev.includes(offer.id)
+                            ? prev.filter((id) => id !== offer.id)
+                            : [...prev, offer.id]
+                        )
+                      }
                     >
-                      { otpDetails && otpDetails.otp_id ?  "Continue" : "Verify Otp"}
-                    </button>
-                    <div className="text-xs text-gray-400 leading-tight">
-                      By continuing, I accept TCP - retaildukaan{" "}
-                      <span className="text-yellow-400">
-                        Terms and Conditions
-                      </span>{" "}
-                      & <span className="text-yellow-400">Privacy Policy</span>.{" "}
-                      <br />
-                      This site is protected by reCAPTCHA and the Google{" "}
-                      <span className="text-yellow-400">
-                        Privacy Policy
-                      </span> &{" "}
-                      <span className="text-yellow-400">Terms of Service</span>{" "}
-                      apply.
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium truncate">
+                          {offer.title}
+                        </span>
+                        {selectedOffers.includes(offer.id) && (
+                          <span className="text-[10px] bg-yellow-500 text-white px-2 py-0.5 rounded-full">
+                            #{selectedOffers.indexOf(offer.id) + 1}
+                          </span>
+                        )}
+                      </div>
                     </div>
+                  ))}
+                </div>
+
+                {/* Selected Offer Descriptions */}
+                {selectedOffers.length > 0 ? (
+                  <div className="mt-3 scrollbar-hide  pt-2 border-t border-gray-300  max-h-[100px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 space-y-2">
+                    <ul className="space-y-1 text-xs text-gray-700">
+                      {selectedOffers.map((id, index) => {
+                        const offer = offersList.find((o) => o.id === id);
+                        return (
+                          <li
+                            key={id}
+                            className="p-2 bg-white border border-gray-200 rounded shadow-sm"
+                          >
+                            <div className="font-semibold mb-2 text-gray-900">
+                              {index + 1}. {offer?.title}
+                            </div>
+                            <div className="text-gray-600">
+                              {offer?.offer_description}
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
-                </form>
+                ) : (
+                  <div className="mb-3 bg-yellow-100 border border-yellow-400 text-yellow-900 px-3 py-2 rounded-md shadow-sm text-sm font-medium">
+                    🎁 Welcome! Unlock handpicked offers just for you.
+                    <span className="block mt-1 text-xs text-yellow-800 font-normal">
+                      Select multiple deals, stack your savings & grab your
+                      reward surprises!
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
+          )}
+
+          <div className="flex-1">
+            <form
+              className="relative flex flex-col justify-center p-6"
+              onSubmit={handleSendOTP}
+            >
+              <button
+                type="button"
+                className="absolute top-3 right-4 text-white text-2xl hover:text-gray-400"
+                onClick={() => dispatch(activePages({ login: false }))}
+              >
+                &times;
+              </button>
+              <h1 className="text-2xl mb-4 text-center font-semibold">
+                {mode}
+                <br />
+                <span className="text-sm border-b-2 border-yellow-400 pb-1">
+                  Using OTP
+                </span>
+              </h1>
+              <div className="px-6 flex flex-col  text-center">
+                <FormInput
+                  disabled={otpDetails?.otp_id}
+                  id="input"
+                  placeholder="Enter Phone Number/Email Id"
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className="w-full p-2 border border-gray-600 rounded-md bg-gray-800 focus:border-yellow-400 focus:ring focus:ring-yellow-300"
+                />
+                {console.log(referrer)
+                }
+
+                {mode === "SignUp" && (
+                  
+                  <FormInput
+                    disabled={otpDetails?.otp_id}
+                    // label="Referral Code (Optional)"
+                    value={referrer}
+                    onChange={(e) => setreferrer(e.target.value)}
+                    placeholder="Enter referral code (Optional)"
+                    id="input"
+                    type="text"
+                    className="w-full p-2 border border-gray-600 rounded-md bg-gray-800 focus:border-yellow-400 focus:ring focus:ring-yellow-300"
+                  />
+                )}
+
+                {otpDetails?.otp_id && (
+                  <div className="flex gap-3">
+                    <input
+                      type="number"
+                      className="p-2 text-gray-300 rounded bg-black border-b"
+                      value={otpDetails.otp || ""}
+                      onChange={(e) =>
+                        setOtpDetails({ ...otpDetails, otp: e.target.value })
+                      }
+                    />
+
+                    <button
+                      type="button"
+                      className={`border p-2 rounded-md bg-yellow-600 text-black hover:bg-yellow-600 flex items-center gap-2 ${
+                        resendLoading ? "opacity-70 cursor-not-allowed" : ""
+                      }`}
+                      onClick={handleResendOTP}
+                      disabled={resendLoading}
+                    >
+                      {resendLoading ? (
+                        <>
+                          <svg
+                            className="animate-spin h-4 w-4 text-black"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 00-8 8z"
+                            />
+                          </svg>
+                          Sending...
+                        </>
+                      ) : (
+                        "Resend"
+                      )}
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex justify-between w-full mt-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`border w-32 p-2 rounded-md bg-yellow-500 text-black hover:bg-yellow-600 mx-auto flex justify-center items-center gap-2 ${
+                      loading ? "opacity-70 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    {loading ? (
+                      <>
+                        <svg
+                          className="animate-spin h-4 w-4 text-black"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 00-8 8z"
+                          />
+                        </svg>
+                        Sending...
+                      </>
+                    ) : otpDetails?.otp_id ? (
+                      "Continue"
+                    ) : (
+                      "Verify OTP"
+                    )}
+                  </button>
+
+                  <div
+                    className={`border  p-2 gap-4 rounded-md cursor-pointer  text-white hover:bg-green-500 hover:text-gray-900 flex justify-center `}
+                    onClick={() => handleClickMode()}
+                  >
+                    {mode === "Login" ? "SignUp" : "Login"}
+                  </div>
+                </div>
+
+                <div className="text-xs text-gray-400 mt-4 leading-tight">
+                  By continuing, I accept TCP - retaildukaan
+                  <span className="text-yellow-400">
+                    {" "}
+                    Terms and Conditions{" "}
+                  </span>
+                  & <span className="text-yellow-400">Privacy Policy</span>.
+                  <br />
+                  This site is protected by reCAPTCHA and the Google
+                  <span className="text-yellow-400"> Privacy Policy </span>&
+                  <span className="text-yellow-400"> Terms of Service </span>
+                  apply.
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      )}
-    </>
-  );
-};
-
-const LoginForm = ({ toggleSignup, close }) => {
-  const [input, setinput] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleForm = async (e) => {
-    e.preventDefault();
-    // try {
-    //   if (input && password) {
-    //     const response = await userLogin({ mail: input, pass: password });
-    //     if (response) {
-    //       console.log(response);
-
-    //       const token = localStorage.getItem("token");
-
-    //       console.log(token);
-
-    //       dispatch(
-    //         signIn({
-    //           token: token,
-    //           input: response.input,
-    //           name: response.name,
-    //           phone: response.phone,
-    //           userId: response.id,
-    //           userlogin: true,
-    //         })
-    //       );
-    //       dispatch(registered(true));
-    //       close();
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.error("Error logging in:", error);
-    // }
-
-    toast.warn("I appreciate your patience.");
-  };
-
-  useEffect(() => {
-    document.body.classList.add("modal-open");
-    return () => {
-      document.body.classList.remove("modal-open");
-    };
-  }, []);
-
-  return (
-    <div className="flex p-6 rounded-lg shadow-lg shadow-gray-900 w-full bg-black text-white items-center">
-      <div className="border-r border-gray-600 px-6 flex items-center">
-        <img src={logo} alt="Retail Logo" className="w-60" />
-      </div>
-
-      <div className="flex-1">
-        <form
-          className="relative flex flex-col justify-center p-6"
-          onSubmit={handleForm}
-        >
-          <button
-            type="button"
-            className="absolute top-3 right-4 text-white text-2xl hover:text-gray-400 transition-all"
-            onClick={close}
-          >
-            &times;
-          </button>
-          <h1 className="text-2xl mb-4 text-center font-semibold">
-            Login/Signup
-            <br />
-            <span className="text-sm border-b-2 border-yellow-400 pb-1">
-              Using OTP
-            </span>
-          </h1>
-          <div className="px-6 flex flex-col gap-6 text-center">
-            <FormInput
-              id="input"
-              placeholder="input"
-              type="input"
-              value={input}
-              onChange={(e) => setinput(e.target.value)}
-              className="w-full p-2 border border-gray-600 rounded-md bg-gray-800 focus:border-yellow-400 focus:ring focus:ring-yellow-300"
-            />
-            <button
-              type="submit"
-              className="border w-32 p-2 rounded-md bg-yellow-500 text-black font-medium hover:bg-yellow-600 transition-all mx-auto"
-            >
-              Continue
-            </button>
-            <div className="text-xs text-gray-400 leading-tight">
-              By continuing, I accept TCP - bigbasket’s{" "}
-              <span className="text-yellow-400">Terms and Conditions</span> &{" "}
-              <span className="text-yellow-400">Privacy Policy</span>. <br />
-              This site is protected by reCAPTCHA and the Google{" "}
-              <span className="text-yellow-400">Privacy Policy</span> &{" "}
-              <span className="text-yellow-400">Terms of Service</span> apply.
-            </div>
-          </div>
-        </form>
       </div>
     </div>
   );
 };
-
-const SignupForm = ({ toggleSignup, close }) => {
-  const [input, setinput] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (input && password && confirmPassword) {
-        if (password !== confirmPassword) {
-          alert("Confirm password not matching");
-        } else {
-          const response = await userRegister({ mail: input, pass: password });
-          console.log(response);
-
-          if (response) {
-            console.log(response);
-
-            const userData = await GetUserData();
-            console.log(userData);
-
-            const tokenData = localStorage.getItem("token");
-            console.log(typeof tokenData);
-
-            console.log(tokenData);
-
-            dispatch(
-              signup({
-                token: tokenData,
-                input: userData.data.input,
-                name: userData.data.name,
-                phone: userData.data.phone,
-                userId: userData.data.userId,
-              })
-            );
-            dispatch(registered(true));
-
-            const fetchCartItems = async () => {
-              const responsess = await getAllCartItems();
-              console.log(responsess);
-
-              if (responsess && responsess.data.data.length > 0) {
-                dispatch(importCartItems(responsess.data));
-              }
-            };
-
-            fetchCartItems();
-
-            navigate("/profile");
-            close();
-          }
-        }
-      } else {
-        alert("Please fill all fields!");
-      }
-    } catch (error) {
-      console.error("Error signing up:", error);
-    }
-  };
-
-  useEffect(() => {
-    document.body.classList.add("modal-open");
-    return () => {
-      document.body.classList.remove("modal-open");
-    };
-  }, []);
-
-  return (
-    <form
-      className="rounded-md shadow-lg font-roboto border w-80 bg-black text-white flex flex-col justify-around gap-7 relative"
-      onSubmit={handleSubmit}
-    >
-      <button
-        type="button"
-        className="absolute top-2 right-2 text-black"
-        onClick={close}
-      >
-        &times;
-      </button>
-      <h1 className="text-2xl p-2 bg-white text-center font-bold mb-5 text-black">
-        Create Account
-      </h1>
-      <div className="mx-auto flex flex-col gap-8 text-center">
-        <FormInput
-          id="input"
-          placeholder="input"
-          type="input"
-          value={input}
-          onChange={(e) => setinput(e.target.value.toLowerCase())}
-        />
-        <FormInput
-          id="password"
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <FormInput
-          id="confirmPassword"
-          placeholder="Confirm Password"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        <div className="flex justify-between flex-col gap-3">
-          <button
-            type="submit"
-            className="border w-28 p-1 rounded-md hover:text-blue-500 mx-auto"
-          >
-            Signup
-          </button>
-          <button
-            type="button"
-            className="p-4 mx-auto hover:text-blue-400"
-            onClick={toggleSignup}
-          >
-            Already have an account? Login here.
-          </button>
-        </div>
-      </div>
-    </form>
-  );
-};
-
-const FormInput = ({
-  id,
-  placeholder,
-  type,
-  value,
-  onChange,
-  toggleShowPassword,
-  showPassword,
-}) => (
-  <div className="flex flex-col gap-3 relative">
-    <input
-      id={id}
-      placeholder={placeholder}
-      className="p-2 max-w- text-gray-300 rounded focus:outline-none bg-black border-b"
-      type={type}
-      value={value}
-      onChange={onChange}
-      required
-    />
-
-    {toggleShowPassword && (
-      <button
-        type="button"
-        className="absolute right-2 top-2 text-gray-300"
-        onClick={toggleShowPassword}
-      >
-        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-      </button>
-    )}
-  </div>
-);
 
 export default LoginModal;

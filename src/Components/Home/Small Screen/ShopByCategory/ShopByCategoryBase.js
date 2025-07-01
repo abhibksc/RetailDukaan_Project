@@ -21,7 +21,7 @@ const ShopByCategoryBase = () => {
 
     if(pathnamee === "/Categoy"){
 
-        console.log(pathnamee);
+           (pathnamee);
         
 
       setPathName(pathnamee)

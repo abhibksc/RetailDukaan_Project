@@ -12,36 +12,19 @@ import LoadingModal from "../LoadingModal";
 import useTruncateSentance from "../UseFullHooks/useTruncateSentance";
 
 const HomeManagementCategory = () => {
-  const [categories, setCategories] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const reduxcartItems = useSelector((state) => state.cartReducer.cartItems);
-  const Customer_userId = useSelector((state) => state.auth.Customer_userId);
+  const Customer_userId = useSelector((state) => state.auth.Customer_userId); 
   const [loading, setLoading] = useState(false);
+
+
+      const categories = useSelector( (state) => state.homeSlice_reducer.desktop_homeManagement_category);
+     (categories);
 
   const {truncateText} =  useTruncateSentance()
 
-  useEffect(() => {
-    const fetchHomeManagementCategory = async () => {
-      try {
-        const response = await getDesktopHomeManagementCategoryInCustomerUI();
-
-        console.log(response);
-
-        if (
-          response?.data?.message ===
-          "Desktop Home Management Categories retrieved successfully."
-        ) {
-          setCategories(response.data.Home_Management || []);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchHomeManagementCategory();
-  }, []);
 
   const settings = {
     dots: true,
@@ -68,15 +51,11 @@ const HomeManagementCategory = () => {
     const login = localStorage.getItem("token");
 
     if (login) {
-      console.log(filteredProducts);
-      console.log(variantId);
 
       const filterItem = Items.find((ele) => ele.sku_id == variantId);
-      console.log(filterItem);
+         (filterItem);
 
       if (filterItem) {
-        console.log(Customer_userId);
-        console.log(variantId);
 
         const response = await StoreItemToCart(
           Customer_userId,
@@ -86,7 +65,6 @@ const HomeManagementCategory = () => {
           stock_type,
           stock_id
         );
-        console.log(response);
 
         if (
           response &&
@@ -97,12 +75,10 @@ const HomeManagementCategory = () => {
           toast.success("Item added to cart successfully.");
         } else if (response && response?.data?.message === "Address not found") {
           toast.warn("Please Set Address");
-          console.log(response);
 
           navigate("/profile/addresses");
         } else if (response && response.data.message == "Out Of Stock") {
           toast.warn("Out Of Stock");
-          console.log(response);
         } 
         
         else {
@@ -116,7 +92,7 @@ const HomeManagementCategory = () => {
       }
     } else if (!login) {
       toast.warn("please login");
-      console.log("not Login");
+         ("not Login");
     }
   };
 
@@ -138,14 +114,14 @@ const HomeManagementCategory = () => {
       (ele) => ele.variant_sku_id == variantId
     );
     if (!filterItem) {
-      console.log("Item not found");
+         ("Item not found");
       toast.warn("Item not found");
       return;
     }
 
-    console.log(filterItem);
+       (filterItem);
 
-    console.log(reduxcartItems);
+       (reduxcartItems);
 
     dispatch(increaseCart({ variant_sku_id: filterItem.variant_sku_id }));
 
@@ -163,7 +139,7 @@ const HomeManagementCategory = () => {
           Varient_type: Varient_type,
         });
 
-        console.log(response);
+           (response);
 
         if (response) {
           if (
@@ -184,8 +160,8 @@ const HomeManagementCategory = () => {
           } else if (
             response.data.error == "limit order is greater than newQuantity"
           ) {
-            console.log("out OF LIMIT ...... ");
-            console.log(response);
+               ("out OF LIMIT ...... ");
+               (response);
             setLoading(false);
 
             dispatch(
@@ -229,14 +205,14 @@ const HomeManagementCategory = () => {
     Varient_type,
     itemId
   ) => {
-    console.log(variantId);
-    console.log(purchase_item_id);
-    console.log(Varient_type);
+       (variantId);
+       (purchase_item_id);
+       (Varient_type);
 
     const login = localStorage.getItem("token");
 
     if (!login) {
-      console.log("User not logged in");
+         ("User not logged in");
       return;
     }
 
@@ -244,10 +220,10 @@ const HomeManagementCategory = () => {
       (ele) => ele.variant_sku_id == variantId
     );
     if (!filterItem) {
-      console.log("Item not found");
+         ("Item not found");
       return;
     }
-    console.log(filterItem);
+       (filterItem);
 
     dispatch(decreaseCart({ variant_sku_id: filterItem.variant_sku_id }));
 
@@ -259,7 +235,7 @@ const HomeManagementCategory = () => {
         purchase_item_id: purchase_item_id,
         Varient_type: Varient_type,
       });
-      console.log(response);
+         (response);
 
       if (response && response.data.groceryItems) {
         dispatch(importCartItems(response.data.groceryItems));
@@ -404,13 +380,13 @@ const HomeManagementCategory = () => {
 
   return (
     <div className="p-5 bg-gray-100">
-      {categories.length > 0 ? (
-        categories.map((category, index) => (
+      {categories?.length > 0 ? (
+        categories?.map((category, index) => (
           <div key={index} className="mb-8  p-3">
-            <h2 className="text-xl font-bold mb-4">{category.CategoryTitle}</h2>
+            <h2 className="text-xl font-bold mb-4">{category?.CategoryTitle}</h2>
             <Slider {...settings}>
-              {category.Items.map((item, itemIndex) => (
-                <div key={itemIndex}>{itemTemplate(item,category.Items)}</div>
+              {category?.Items?.map((item, itemIndex) => (
+                <div key={itemIndex}>{itemTemplate(item,category?.Items)}</div>
               ))}
             </Slider>
           </div>

@@ -46,6 +46,19 @@ const DesktopHomeManagement = () => {
         >
           Categories
         </button>
+
+        <button
+          onClick={() => setActiveSection("Store")}
+          className={`px-4 py-2 rounded ${
+            activeSection === "Store"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-800"
+          }`}
+        >
+          Store
+        </button>
+
+
       </div>
 
       {/* Section Content */}
@@ -58,6 +71,10 @@ const DesktopHomeManagement = () => {
           <FeaturedBanner/>
         )}
         {activeSection === "Categories" && (
+          <CategoryManagement/>
+        )}
+
+{activeSection === "Store" && (
           <CategoryManagement/>
         )}
       </div>

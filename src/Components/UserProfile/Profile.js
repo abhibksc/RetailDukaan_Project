@@ -42,6 +42,8 @@ const Profile = () => {
   // Modal
   const [mailModal, setMailModal] = useState(false);
   const [numberModal, setNumberModal] = useState(false);
+  const [otpId, setOtpId] = useState("");
+
 
   const [firstName, setFirstName] = useState(name.split(" ")[0] || "");
   const [lastName, setLastName] = useState(name.split(" ").slice(1).join(" ") || "");
@@ -60,6 +62,9 @@ const Profile = () => {
 
  const handleProfileName = async () => {
     setLoading(true)
+
+    console.log("Chala");
+    
     
     if (firstName && lastName) {
       const response = await UpdateName({
@@ -142,7 +147,9 @@ const Profile = () => {
         });
 
         if (response?.data?.message   ===  'OTP sent successfully.') {
-          toast.success(response.data.message);
+          toast.success(response?.data?.message);
+          setOtpId(response?.data?.otp_id)
+
           setNumberModal(true);
         }
         else{
@@ -201,17 +208,26 @@ const Profile = () => {
   
     };
 
-    if(loading) return <div className="min-h-screen"> <LoadingModal/> </div>
+    // if(loading) return <div className="min-h-screen min-w-full"> <LoadingModal/> </div>
   
 
   return (
     <div className="flex gap-4 mt-14 xl:mt-0 justify-center">
-      <Sidebar />
+      {/* <Sidebar /> */}
       {numberModal && (
-        <Number_Varification_Modal close={() => setNumberModal(false)} phone={phone}  editNumber ={()=>setEditNumber(false)}/>
+        <Number_Varification_Modal otpId={otpId} close={() => setNumberModal(false)} phone={phone}  editNumber ={()=>setEditNumber(false)}/>
       )}
 
       <div className="bg-white flex flex-col gap-4 border p-4 w-[1100px]">
+
+        { loading &&
+
+           <div className="fixed inset-0 flex items-center justify-center  bg-opacity-30 z-50">
+      <div className=" p-6 rounded-lg shadow-lg flex items-center justify-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+      </div>
+    </div>
+        }
         {/* Personal Information */}
         <div className="flex flex-col gap-5 mb-10">
           <div className="flex gap-4">
@@ -225,45 +241,39 @@ const Profile = () => {
           </div>
 
           <div className="flex flex-row gap-4">
-            {editName ? (
-              <div className="flex flex-row gap-4">
+            
+
+               <div className="flex flex-row gap-4">
                 <input
-                  onChange={(e) => setFirstName(e.target.value)}
+                    onChange={(e) => setFirstName(e.target.value)}
+                disabled={!editName}
                   value={firstName}
-                  placeholder="First Name"
-                  className="bg-gray-200 rounded-sm w-48 px-3 py-2"
+                  className={`${editName ? "bg-gray-200 text-black"  : "bg-gray-200 text-gray-500 cursor-not-allowed"}        rounded-sm w-48 px-3 py-2 `}
                   type="text"
                 />
                 <input
                   onChange={(e) => setLastName(e.target.value)}
+                          disabled={!editName}
                   value={lastName}
-                  placeholder="Last Name"
-                  className="bg-gray-200 rounded-sm w-48 px-3 py-2"
+  className={`${editName ? "bg-gray-200 text-black"  : "bg-gray-200 text-gray-500 cursor-not-allowed"}        rounded-sm w-48 px-3 py-2 `}
                   type="text"
                 />
-                <button
+              </div>
+
+              {editName &&
+
+                  <button
                   className="border w-28 p-2 bg-blue-400 hover:bg-blue-600"
                   onClick={handleProfileName}
                 >
                   ADD
                 </button>
-              </div>
-            ) : (
-              <div className="flex flex-row gap-4">
-                <input
-                  placeholder={firstName}
-                  className="bg-gray-200 text-gray-400 rounded-sm w-48 px-3 py-2 cursor-not-allowed"
-                  readOnly
-                  type="text"
-                />
-                <input
-                  placeholder={lastName}
-                  className="bg-gray-200 text-gray-400 rounded-sm w-48 px-3 py-2 cursor-not-allowed"
-                  readOnly
-                  type="text"
-                />
-              </div>
-            )}
+
+              }
+
+
+            
+            
           </div>
         </div>
 
@@ -334,7 +344,7 @@ const Profile = () => {
             {editNumber ? (
               <div className="flex gap-4">
                 <input
-                  value={phone}
+                  value={phone || ""}
                   onChange={(e) => setPhone(e.target.value)}
                   className="bg-gray-200 rounded-sm w-48 px-3 py-2"
                   type="text"

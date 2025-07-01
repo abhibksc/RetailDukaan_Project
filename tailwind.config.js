@@ -29,8 +29,30 @@ module.exports = {
           "100%": { transform: "translate(0, 0)" },
         },
       },
+
+
+         keyframes: {
+        burst: {
+          '0%': {
+            transform: 'scale(0.8) rotate(0deg)',
+            opacity: '0.2',
+          },
+          '50%': {
+            transform: 'scale(1.3) rotate(20deg)',
+            opacity: '1',
+          },
+          '100%': {
+            transform: 'scale(1) rotate(0deg)',
+            opacity: '0',
+          },
+        },
+      },
+
+      
       animation: {
         vibrate: "vibrate 0.1s linear infinite",
+
+              burst: 'burst 0.6s ease-out',
       },
 
     },

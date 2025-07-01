@@ -37,6 +37,8 @@ const useImportUserDetails = () => {
 
 
                 Customer_userId : response.data.id,
+
+                   referral_code : response.data.referral_code,
           
                 Unique_UserID : response.data.Unique_userId,
           

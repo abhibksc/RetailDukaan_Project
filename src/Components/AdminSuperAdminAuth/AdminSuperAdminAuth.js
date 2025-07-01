@@ -23,7 +23,6 @@ const AdminSuperAdminAuth = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [userRoles, setUserRoles] = useState([]);
 
@@ -34,10 +33,9 @@ const AdminSuperAdminAuth = () => {
         const response = await axios.get(`${baseurl}/api/roles`);
         if (response.data) {
           setUserRoles(response.data); // Store all roles
-          // setUserType(response); // Optionally set the first role as default
         }
       } catch (error) {
-        console.error("Error fetching user roles:", error);
+        toast.error("Error fetching user roles" ,error);
       }
 
       setLoading(false);
@@ -45,15 +43,6 @@ const AdminSuperAdminAuth = () => {
     fetchUserRoles();
   }, []);
 
-  // useEffect(() => {
-  //   // Redirect to /admin/login if the path is not /admin/login or /superadmin/login
-  //   if (
-  //     location.pathname !== "/admin/login" &&
-  //     location.pathname !== "/superadmin/login"
-  //   ) {
-  //     navigate("/admin/login", { replace: true });
-  //   }
-  // }, [location.pathname, navigate]);
 
   const handleAuthMethodChange = (e) => {
     setAuthMethod(e.target.value);
@@ -67,7 +56,7 @@ const AdminSuperAdminAuth = () => {
   };
 
   const handleSubmit = async (e) => {
-    setLoading(true);
+    // setLoading(true);
     console.log("Chalaaa");
     e.preventDefault();
     if (otpSent && otp) {
@@ -98,9 +87,14 @@ const AdminSuperAdminAuth = () => {
 
         // dispatch(updateToken("superadmintoken"));
         navigate(`/superadmin/${superadmintoken}`);
-      } else if (response === undefined) {
+      } else if (response == undefined) {
+    setLoading(false);
+
         console.log("locha hai response undefined bata raha...");
       }
+
+    setLoading(false);
+
     } else {
       const response = await superAdminLogin({
         authMethod,
@@ -114,6 +108,8 @@ const AdminSuperAdminAuth = () => {
       }
       else{
         toast.error(response.message);
+    setLoading(false);
+
       }
     }
 
@@ -151,7 +147,7 @@ const AdminSuperAdminAuth = () => {
               User Type:
             </label>
             <select
-              value={userType}
+              value={userType || ""}
               onChange={handleUserTypeChange}
               className="w-full p-3 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -172,7 +168,7 @@ const AdminSuperAdminAuth = () => {
               </label>
               <input
                 type={authMethod === "email" ? "email" : "tel"}
-                value={inputValue}
+                value={inputValue || ""}
                 onChange={(e) => setInputValue(e.target.value)}
                 className="w-full p-3 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
@@ -183,7 +179,7 @@ const AdminSuperAdminAuth = () => {
                 <label className="block text-gray-700 font-medium">OTP:</label>
                 <input
                   type="number"
-                  value={otp}
+                  value={otp || ""}
                   onChange={(e) => setOtp(e.target.value)}
                   className="w-full p-3 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -198,16 +194,22 @@ const AdminSuperAdminAuth = () => {
             </button>
           </form>
           <div className="mt-6 text-center">
-            <button
-              onClick={() => {
-                toast.warn(
-                  "This Functionality is not available yet!!1  Please Login with Email or Number"
-                );
-              }}
-              className="w-full p-3 bg-red-600 text-white rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <i className="fab fa-google"></i> Sign In with Google
-            </button>
+            <p className="text-gray-600">
+              {otpSent
+                ? "Enter the OTP sent to your email/phone"
+                : "OTP will be sent to your email/phone"}
+            </p>
+            <p className="text-gray-600 mt-2">
+              By signing in, you agree to our{" "}
+              <a href="#" className="text-blue-600 hover:underline">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="#" className="text-blue-600 hover:underline">
+                Privacy Policy
+              </a>
+            </p>
+           
           </div>
         </div>
       </div>

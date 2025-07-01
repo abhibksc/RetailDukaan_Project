@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const AdminProfile = () => {
+
   const [profile, setProfile] = useState({
     profilePicture: null,
     name: 'John Doe',
@@ -32,8 +33,6 @@ const AdminProfile = () => {
 
   const handleSave = () => {
     // setProfile(newProfile);
-
-
     console.log(newProfile);
     // setIsEditing(false);
   };
@@ -46,7 +45,6 @@ const AdminProfile = () => {
   };
 
   const handleCancel = () => {
-    console.log(newProfile);
 
     setIsEditing(false);
     setNewProfile(profile);
@@ -128,6 +126,9 @@ const AdminProfile = () => {
           {profile.role}
         </p>
       </div>
+
+
+      
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700">Address</label>
         {isEditing ? (
@@ -143,6 +144,8 @@ const AdminProfile = () => {
           </p>
         )}
       </div>
+
+
       <div className="flex justify-end">
         {isEditing ? (
           <>

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
-import { BiAlignRight, BiFilter } from "react-icons/bi";
+import { BiAlignRight } from "react-icons/bi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { updatePacketVarientStatus } from "../../../../CrudOperations/Update&Edit";
 import { DeletePacketVarient } from "../../../../CrudOperations/DeleteOperation";
@@ -12,12 +12,8 @@ import ViewSpecification from "./ViewSpecification";
 
 const ViewPacketVarient = () => {
   const locationData = useLocation();
-  console.log(locationData);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [Status, setStatus] = useState("");
 
-  const [item_id, setItem_id] = useState("");
   const [viewSpecificationModal, setviewSpecificationModal] = useState(false);
   const [viewImageModal, setViewImageModal] = useState(false);
 
@@ -30,25 +26,15 @@ const ViewPacketVarient = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLooseVarientList, setFilteredLooseVarientList] = useState([]);
   const [LooseVarientList, setLooseVarientList] = useState([]);
-  const [isWarehouseModalOpen, setisWarehouseModalOpen] = useState(false);
-  const [warehouse, setWareHouse] = useState("");
 
   const navigate = useNavigate();
 
-  const [isCategoryModalOpen, setisCategoryModalOpen] = useState(false);
-  const [Category, setCategory] = useState({
-    category_name: "",
-    subcategory_name: "",
-    sub_subcategory_name: "",
-  });
 
-  const [edit, setEdit] = useState(null);
 
   useEffect(() => {
     if (locationData) {
-      console.log(locationData);
 
-      setItem_id(locationData.state.id);
+      // setItem_id(locationData.state.id);
 
       setLooseVarientList(locationData.state.Variants);
       setFilteredLooseVarientList(locationData.state.Variants);
@@ -56,14 +42,15 @@ const ViewPacketVarient = () => {
   }, [location, location.state]);
 
   const handleSearchInput = (e) => {
-    console.log(LooseVarientList);
+     (LooseVarientList);
     
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
+
+    
     const filteredList = LooseVarientList.filter(
       (p) => p.variantName.toLowerCase().includes(query) || p.sku_id.toLowerCase().includes(query)
     );
-    console.log(filteredList);
     setFilteredLooseVarientList(filteredList);
   };
 
@@ -96,16 +83,13 @@ const ViewPacketVarient = () => {
 
 
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
 
 
   const handlestatus = async (p, e) => {
-    console.log(p);
+     (p);
 
-    console.log(e.target.value);
+     (e.target.value);
 
     const response = await updatePacketVarientStatus({
       id: p,
@@ -113,7 +97,7 @@ const ViewPacketVarient = () => {
     });
 
     if (response.data.message === "packet_variantStatus updated successfully!") {
-      console.log(response);
+       (response);
 
     
 
@@ -222,7 +206,7 @@ const ViewPacketVarient = () => {
             ) : (
               <tr>
                 <td colSpan="7" className="py-3 text-center">
-                  No Brands found.
+                  No view found.
                 </td>
               </tr>
             )}

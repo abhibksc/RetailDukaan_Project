@@ -21,6 +21,7 @@ const initialState = {
   registered: false,
   Merchant_registered: false,
   loginpageActive: false,
+    referral_code: "",
   mobile_login_pageActive: false,
   address: [],
   pan : {
@@ -38,7 +39,7 @@ const LoginSignUpSlice = createSlice({
   initialState,
   reducers: {
     signup(state, action) {
-      console.log(action.payload);
+         (action.payload);
       state.token = action.payload.token;
       state.Customer_userId = action.payload.userId;
       state.email = action.payload.email;
@@ -50,6 +51,8 @@ const LoginSignUpSlice = createSlice({
     ImportUserDeatils(state, action) {
       state.Customer_userId = action.payload.Customer_userId;
       state.loginpageActive = action.payload.login;
+
+            state.referral_code = action.payload.referral_code;
 
       state.Unique_UserID = action.payload.Unique_UserID;
       state.registered = action.payload.registered;
@@ -64,7 +67,7 @@ const LoginSignUpSlice = createSlice({
 
 
     signIn(state, action) {
-      console.log(action.payload);
+         (action.payload);
       state.token = action.payload.token;
       state.Customer_userId = action.payload.Customer_userId;
       state.loginpageActive = action.payload.login;
@@ -92,24 +95,24 @@ const LoginSignUpSlice = createSlice({
       state.signupPageActive = false;
     },
     updateName(state, action) {
-      console.log(action);
+         (action);
       state.name = action.payload;
     },
     updateNumber(state, action) {
-      console.log(action);
+         (action);
       state.phone = action.payload;
     },
     updateEmail(state, action) {
-      console.log(action);
+         (action);
       state.email = action.payload;
     },
     updateToken(state, action) {
-      console.log(action);
+         (action);
 
       if(action.payload === "marchanttoken"){
 
-        console.log(action.payload.role);
-        console.log(action.payload.id);
+           (action.payload.role);
+           (action.payload.id);
 
         
 
@@ -153,7 +156,7 @@ const LoginSignUpSlice = createSlice({
   
     },
     updateAdministrator(state, action) {
-      console.log(action);
+         (action);
 
    
         
@@ -187,12 +190,12 @@ const LoginSignUpSlice = createSlice({
   
     },
     activePages(state, action) {
-      console.log(action);
+         (action);
       state.loginpageActive = action.payload.login;
     },
 
     activeMobileLoginPages(state, action) {
-      console.log(action);
+         (action);
       state.mobile_login_pageActive = action.payload.login;
     },
 
@@ -212,7 +215,7 @@ const LoginSignUpSlice = createSlice({
       state.address.unshift(action.payload);
     },
     modifyAddress(state, action) {
-      console.log(action);
+         (action);
       const index = state.address.findIndex(
         (addr) => addr.id === action.payload.id
       );
@@ -227,15 +230,15 @@ const LoginSignUpSlice = createSlice({
     },
 
     updatePan(state, action) {
-      console.log(action);
+         (action);
       state.pan = action.payload;
     },
     updateAreaPin(state, action) {
-      console.log(action);
+         (action);
       state.AreaPin = action.payload.pincode;
     },
     role(state, action){
-      console.log(action);
+         (action);
 
       if(action.payload === "Marchant"){
         state.marchantlogin = true
@@ -244,7 +247,7 @@ const LoginSignUpSlice = createSlice({
         state.superadminlogin = true
       }
       else{
-        console.log("role problem");
+           ("role problem");
         
       }
 

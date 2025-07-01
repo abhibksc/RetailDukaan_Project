@@ -6,7 +6,12 @@ const baseurl = "https://retaildukan.wipenex.com/public";
 // const baseurl = "http://127.0.0.1:8000";
 
 
-export const baseUIurl = "http://localhost:1234";
+export const baseUIurl = "https://retaildukaan.com";
+
+
+// export const baseUIurl = "http://localhost:1234";
+export const LocalbaseUIurl = "http://localhost:1234";
+
 export default baseurl;
 
 

@@ -3,7 +3,7 @@ import {  getOnDeliveryExecutive } from "../../CrudOperations/GetOperation";
 
 import { useNavigate } from "react-router-dom";
 import { FaListAlt } from "react-icons/fa";
-import PaginationExample from "../Stocks/Purchase/PaginationExample";
+import PaginationExample from "../../PaginationExample";
 import { DeliveryStatus } from "./OrderModals";
 import { toast } from "react-toastify";
 
@@ -199,8 +199,8 @@ const OnDelivery = () => {
           type="text"
           placeholder="Search by Order ID"
           className="border px-4 py-2 rounded-md w-full sm:w-1/2"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          // value={searchQuery}
+          // onChange={(e) => setSearchQuery(e.target.value)}
         />
 
         {/* Filter Dropdown */}

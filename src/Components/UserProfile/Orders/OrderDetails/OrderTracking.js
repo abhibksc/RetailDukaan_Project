@@ -5,9 +5,40 @@ import { useNavigate } from "react-router-dom";
 
 const OrderTracking = ({ order_track_data, orderId, order_status }) => {
   const { trackDetail, itemDetail, BillDetail } = order_track_data;
+  console.log(itemDetail);
+  
   const navigate = useNavigate();
 
-  const images = itemDetail.length > 0 ? itemDetail.map((element) => element.image) : [];
+  const images = itemDetail?.offer_items?.length > 0 ? itemDetail?.offer_items?.find((element) => element?.offer_image_path) : itemDetail?.selected_items?.length > 0 ? itemDetail?.selected_items?.find((element) => element?.image) : null;
+  let Item_Length = 0;   
+  
+  if(itemDetail?.offer_items?.length  ||  itemDetail?.selected_items?.length){
+
+    let offer_items_length = 0;
+    let items_length = 0;
+
+
+
+    if(itemDetail?.offer_items?.length){
+
+offer_items_length = itemDetail?.offer_items.filter((ele) => ele.Status != "returned")?.length
+console.log(offer_items_length);
+
+
+
+    }
+
+    if(itemDetail?.selected_items?.length){
+
+      items_length = itemDetail?.selected_items.filter((ele) => ele.Status !== "returned")?.length
+    }
+
+
+    Item_Length = offer_items_length + items_length;
+    
+
+  }
+
 
   const steps = [
     { label: "Order Placed", date: trackDetail.order_recived_date, message: trackDetail.order_recived_message, status: trackDetail.order_recived },
@@ -42,10 +73,10 @@ const OrderTracking = ({ order_track_data, orderId, order_status }) => {
     <div className="mt-3 bg-white px-5 py-3 rounded-md shadow-md flex gap-10">
       {/* Image Display */}
       <div className="flex gap-3">
-        <img src={itemDetail[0]?.image} alt="Order Thumbnail" />
+        <img src={images?.image || images?.offer_image_path} className="w-28 h-28" alt="Order Thumbnail" />
         <div className="flex flex-col gap-2">
-          <span>{completedSteps === steps.length ? "Completed" : steps[completedSteps]?.label} ({itemDetail.length} items)</span>
-          <span>{itemDetail.length} Approved</span>
+          <span>{completedSteps === steps.length ? "Completed" : steps[completedSteps]?.label} ({Item_Length} items)</span>
+          <span>{Item_Length} Approved</span>
           <span>₹ {Math.round(BillDetail.total_amount)}</span>
         </div>
       </div>

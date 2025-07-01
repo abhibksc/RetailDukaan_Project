@@ -52,9 +52,14 @@ console.log(Brand);
         response = await UpdateBrandData({id: Brand.id, formData});
         console.log(response);
         
-        if (response.data.message === "brand updated successfully") {
+        if (response?.data?.message === "brand updated successfully") {
           onUpdate(formData); // Handle updated data
           toast.success(response.data.message)
+        }
+             else{
+               toast.error(response?.data?.message)
+                toast.error(response?.data?.error)
+
         }
       } else {
         // Add new Brand
@@ -67,7 +72,8 @@ console.log(Brand);
           onSubmit(); // Handle new data
         }
         else{
-          toast.error(response.data.message); 
+               toast.error(response?.data?.message)
+                toast.error(response?.data?.error)
 
         }
       }

@@ -7,7 +7,7 @@ import {
 } from "../../CrudOperations/GetOperation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTimes } from "@fortawesome/free-solid-svg-icons";
-import PaginationExample from "./Purchase/PaginationExample";
+import PaginationExample from "./././../../PaginationExample";
 
 const Stocks = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -163,7 +163,7 @@ const Stocks = () => {
 };
 
   return (
-    <div className="container mx-auto p-8 bg-white rounded-lg shadow-lg shadow-gray-300">
+    <div className="h-full mx-auto p-8 bg-white rounded-lg shadow-lg shadow-gray-300">
       <h1 className="text-xl font-inter font-bold mb-6 border-b-4 border-blue-600 pb-2 text-gray-800">
         Stock
       </h1>
@@ -184,6 +184,7 @@ const Stocks = () => {
             <tr>
               {[
                 "Item Name",
+                       "purchase Item Id",
                 "Date",
                 "Type",
                 "SKU ID",
@@ -195,6 +196,8 @@ const Stocks = () => {
                 "mrp",
                 "Mfg Date",
                 "Expiry Date",
+                "Purchased On",
+                  "Edited On",
                 "Status"
               ].map((heading) => (
                 <th key={heading} className="py-3 px-4 text-center font-semibold text-[14px] text-gray-700">
@@ -216,7 +219,12 @@ const Stocks = () => {
           key={p.id}
           className="border-b transition-colors duration-200 hover:bg-gray-50"
         >
+          {console.log(p)
+          }
           <td className="py-3 px-4 text-center text-[13px] ">{p.loosevariantName || p.packetvariantName }</td>
+
+                   <td className="py-3 px-4 text-center text-[13px] ">{            p.id }</td>
+
           <td className="py-3 px-4 text-center text-[13px] ">{ formatDate(p.purchaseDate) }</td>
 
           <td className="py-3 px-4 text-center text-[13px] ">{p.varient_type ? p.varient_type  : "loose"}</td>
@@ -230,6 +238,8 @@ const Stocks = () => {
           <td className="py-3 px-4 text-center text-[13px]">{p.mrp || "null"}</td>
           <td className="py-3 px-4 text-center text-[13px]">{p.mfgDate || 0}</td>
           <td className="py-3 px-4 text-center text-[13px]">{p.expiryDate || "null"}</td>
+            <td className="py-3 px-4 text-center text-[13px] ">{ formatDate(p.purchase_created_at) }</td>
+                     <td className="py-3 px-4 text-center text-[13px] ">{ formatDate(p.purchase_updated_at) }</td>
           <td className="py-3 px-4 text-center text-[13px]">{p.packetVarientStatus || p.looseVarientStatus }</td>
         </tr>
       );

@@ -3,7 +3,7 @@ import Sidebar from "../Header&SideBar/Sidebar";
 const AllNotifications = () => {
   return (
     <div className="flex gap-4 justify-center mt-14 xl:mt-0">
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       <div className="bg-white flex flex-col gap-4 border p-4 w-[1100px]">
         <h1 className="font-bold text-2xl font-roboto">All Notifications</h1>

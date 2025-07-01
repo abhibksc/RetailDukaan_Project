@@ -1,27 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { GetAllCreatedDeliveryExecutive, GetAllCreatedItems } from "../../CrudOperations/GetOperation";
 import { CreteDeliveryExecutive } from "../../CrudOperations/PostOperation";
 import { ChangeDeliveryExecutiveStatus } from "../../CrudOperations/Update&Edit";
 import { deleteStoredItem } from "../../CrudOperations/DeleteOperation";
-import PaginationExample from "../Stocks/Purchase/PaginationExample";
+import PaginationExample from "../../PaginationExample";
 
 const ViewAllExecutives = () => {
   const [currentPage, setCurrentPage] = useState(0); // Initial page is 0
   const itemsPerPage = 7; // Items per page
 
-  const [passwordd, setPasswordd] = useState("");
-  const [errors, setErrors] = useState([]);
-
-  const location = useLocation();
-  const [filteredLooseVarientList, setFilteredLooseVarientList] = useState([]);
-
-  const [category_id, setCategoryId] = useState("");
-
-  const [Status, setStatus] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const [name, setName] = useState("");
@@ -31,8 +20,6 @@ const ViewAllExecutives = () => {
   const [address, setAddress] = useState("");
 
   //   const [category_id, setCategoryId] = useState("");
-  const [subCategory_id, setSubCategoryId] = useState("");
-  const [sub_subCategory_id, setSub_SubCategoryId] = useState("");
   const [CategoryList, setCategoryList] = useState([]);
   const [SubCategoryList, setSubCategoryList] = useState([]);
   const [Sub_SubCategoryList, setSub_SubCategoryList] = useState([]);

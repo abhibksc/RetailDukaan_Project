@@ -1,6 +1,8 @@
 import React from "react";
 
 const ViewImages = ({ onclose, ImageView }) => {
+  console.log(ImageView);
+  
   return (
     <div className="mb-2">
       <div
@@ -34,7 +36,7 @@ const ViewImages = ({ onclose, ImageView }) => {
                 >
                   {/* Image */}
                   <img
-                    src={image}
+                    src={image.url}
                     alt={`Uploaded ${index + 1}`}
                     className="w-full h-40 object-cover"
                   />

@@ -43,7 +43,7 @@ const NavLogin = () => {
 
 
   return (
-    <li className="relative   group mt-1  py-4 hidden xl:block">
+    <li className="relative text-[12px]  group mt-1  py-4 hidden xl:block">
       <div
         className="flex gap-1  hover:text-blue-700 cursor-pointer py-1"
         onClick={() => !email && !name && handleLogin}

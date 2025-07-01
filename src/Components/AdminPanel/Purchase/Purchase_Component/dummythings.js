@@ -1,0 +1,1 @@
+const InvoiceDetailsForm = ({ invoiceDetails, handleInvoiceDetailsChange, supplierList, Edit }) => {

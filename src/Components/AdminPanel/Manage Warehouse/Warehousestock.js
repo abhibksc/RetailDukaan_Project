@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaListAlt } from "react-icons/fa";
-import { GetAllCreatedDeliveryExecutive, GetAllCreatedItems, GetExecutivesOrderHistory } from "../../CrudOperations/GetOperation";
-import PaginationExample from "../Stocks/Purchase/PaginationExample";
+import {  GetExecutivesOrderHistory } from "../../CrudOperations/GetOperation";
+import PaginationExample from "../../PaginationExample";
 import ExecutiveSearchBar from "../DeliveryExecutive/ExecutiveSearchBar";
 import ExeOrders from "../DeliveryExecutive/ExecutiveOrderHistory/ExeOrders";
 
@@ -16,16 +16,8 @@ const Warehousestock = () => {
 
   const [orderModal, setOrderModal] = useState(false);
   const [orders, setOrders] = useState();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [address, setAddress] = useState("");
 
   //   const [category_id, setCategoryId] = useState("");
-  const [subCategory_id, setSubCategoryId] = useState("");
-  const [sub_subCategory_id, setSub_SubCategoryId] = useState("");
-  const [CategoryList, setCategoryList] = useState([]);
-  const [SubCategoryList, setSubCategoryList] = useState([]);
-  const [Sub_SubCategoryList, setSub_SubCategoryList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [ExecutiveList, setExecutiveList] = useState([]);
 

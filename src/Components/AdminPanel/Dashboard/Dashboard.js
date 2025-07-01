@@ -98,7 +98,7 @@ const [customersData, setCustomersData] = React.useState({
 
     const fun = async () => {
         const response = await MerchantDetails();
-        console.log(response);
+          (response);
 
         
         
@@ -114,16 +114,16 @@ const [customersData, setCustomersData] = React.useState({
 
 
           
-            console.log('User Details:', response.id);
+              ('User Details:', response.id);
         } else {
-            console.log('No response or error occurred.');
+              ('No response or error occurred.');
         }
 
 
 
 
         const GetTotalSales = await getTotalSales();
-        console.log(GetTotalSales);
+          (GetTotalSales);
 
 
         setSalesData({
@@ -147,7 +147,7 @@ const [customersData, setCustomersData] = React.useState({
 
 
         const GetnewOrderResponse = await GetNewCustomer_graph();
-        console.log(GetnewOrderResponse);
+          (GetnewOrderResponse);
 
 
         setCustomersData({

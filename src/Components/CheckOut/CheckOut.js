@@ -3,7 +3,7 @@ import CheckOutLogin from "./CheckOutLogin";
 import CheckOutDeliveryAddress from "./CheckOutDeliveryAddress";
 import CheckOutOrderSummary from "./CheckOutOrderSummary";
 import CheckOutPaymentOrder from "./CheckOutPaymentOrder";
-import BillingSection from "../ViewCart/BillingSection";
+import BillingSection from "../ViewCart/BillingSection/BillingSection";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getAllAddress, getAllCartItems } from "../CrudOperations/GetOperation";
@@ -87,14 +87,14 @@ const CheckOut = () => {
       };
 
   return (
-    <div className="absolute z-40  w-full">
+    <div className="w-full mt-20">
 
 
-    {width < 1024 ?         < UiMobileHeader/> :    <nav className="bg-green-600 p-3 pl-40 w-full">
+    {/* {width < 1024 ?         < UiMobileHeader/> :    <nav className="bg-green-600 p-3 pl-40 w-full">
         <h1 onClick={()=> navigate("/")} className="font-roboto cursor-pointer font-semibold text-2xl text-white">
           Grocery
         </h1>
-      </nav>}
+      </nav>} */}
 
       <div className="flex   justify-center mt-20 xl:mt-5  ">
         <div className="flex flex-col xl:flex-row justify-center border w-full mx-20 gap-3  ">

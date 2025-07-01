@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { storeSubCategory } from "../../CrudOperations/PostOperation";
 import {
+  ShowGroupCategories,
   ShowMainCategory,
   ShowSubCategory,
 } from "../../CrudOperations/GetOperation";
@@ -10,18 +11,24 @@ import { Update_Sub_Category } from "../../CrudOperations/Update&Edit";
 import { deleteSubCategory } from "../../CrudOperations/DeleteOperation";
 import { Atom } from "react-loading-indicators";
 import { toast } from "react-toastify";
-import PaginationExample from "../Stocks/Purchase/PaginationExample";
-
+import PaginationExample from "../../PaginationExample";
 
 const SubCategorySection = () => {
-       const [currentPage, setCurrentPage] = useState(0); // Initial page is 0
-        const itemsPerPage = 9; // Items per page
+  const [currentPage, setCurrentPage] = useState(0); // Initial page is 0
+  const itemsPerPage = 9; // Items per page
   const [subCategories, setSubCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-
   const [categories, setCategory] = useState([
     // Add more categories here
+  ]);
+
+  const [filterCategory, setFilterCategory] = useState([
+    // Add more filterCategory here
+  ]);
+
+  const [GroupList, setGroupList] = useState([
+    // Add more GroupList here
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,47 +47,86 @@ const SubCategorySection = () => {
     mobile_imageUrl: "",
   });
 
-
-
-
-
-
-
   const [errors, setErrors] = useState({ mobile_image: "" });
-  const [desktopImage, setDesktopImage] = useState(selectedSubCategory ? selectedSubCategory.category_desktop_Image : null);
-  const [mobileImage, setMobileImage] = useState(selectedSubCategory ? selectedSubCategory.category_mobile_Image_url : null);
+  const [desktopImage, setDesktopImage] = useState(
+    selectedSubCategory ? selectedSubCategory.category_desktop_Image : null
+  );
+  const [mobileImage, setMobileImage] = useState(
+    selectedSubCategory ? selectedSubCategory.category_mobile_Image_url : null
+  );
   const [mobile_imageUrl, setMobile_imageUrl] = useState(null);
 
-  const [name, setName] = useState(selectedSubCategory ? selectedSubCategory.name : "");
+  const [name, setName] = useState(
+    selectedSubCategory ? selectedSubCategory.name : ""
+  );
   const [categoryId, setCategoryId] = useState();
-  const [status , setStatus] = useState("Active");
-  const [EditingId , setEditingId] = useState("");
+  const [status, setStatus] = useState("Active");
+  const [EditingId, setEditingId] = useState("");
 
+  const [groupId, setGroupId] = useState("");
 
-  // mobile_imageUrl: URL.createObjectURL(file),
-  
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await ShowSubCategory();
+        console.log(response);
+
+        setSubCategories(response.data);
+
+        const categories = await ShowMainCategory();
+        console.log(categories);
+        let arr = [];
+        const names = categories.data.map((item) =>
+          arr.push({ id: item.id, name: item.name, groupId: item.GroupId })
+        );
+
+        console.log(arr);
+        setCategory(arr);
+        setFilterCategory(arr);
+
+        const ShowGroupCategoriesresponse = await ShowGroupCategories();
+        console.log(ShowGroupCategoriesresponse);
+
+        if (ShowGroupCategoriesresponse?.data) {
+          setGroupList(ShowGroupCategoriesresponse.data);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load categories. Please try again.");
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const validateImage = (file) => {
     return new Promise((resolve, reject) => {
       if (!file) return reject("No file selected");
 
-      const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif", "image/webp"];
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/gif",
+        "image/webp",
+      ];
       if (!allowedTypes.includes(file.type)) {
         return reject("Only jpeg, png, jpg, gif, webp images are allowed");
       }
 
-      if (file.size > 100 * 1024) {
-        return reject("Image must be ≤ 100KB");
+    if (file.size > 2 * 1024 * 1024) {
+              return reject(`${file.name} is larger than 2MB.`);
       }
 
       const img = new Image();
       img.src = URL.createObjectURL(file);
 
       img.onload = () => {
-        if (img.width === 188 && img.height === 250) {
+         if (img.width === 1000 && img.height === 1000) {
           resolve();
         } else {
-          reject("Image must be exactly 188x250 pixels");
+          reject("Image must be exactly 1000 x 1000 pixels");
         }
       };
 
@@ -93,134 +139,89 @@ const SubCategorySection = () => {
 
     validateImage(file)
       .then(() => {
-      if (type === "mobile_image") {
-          
-          setMobileImage(file)
+        if (type === "mobile_image") {
+          setMobileImage(file);
 
-          setMobile_imageUrl(URL.createObjectURL(file))
-        
-        
-        };
+          setMobile_imageUrl(URL.createObjectURL(file));
+        }
         setErrors((prev) => ({ ...prev, [type]: "" }));
       })
       .catch((err) => {
         setErrors((prev) => ({ ...prev, [type]: err }));
         if (type === "mobile_image") {
-          
-          setMobileImage(null)
-          setMobile_imageUrl("")
-        };
+          setMobileImage(null);
+          setMobile_imageUrl("");
+        }
       });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(modalType);
-    
-   
 
     try {
       setLoading(true);
       if (modalType === "add") {
-        const response = await StoreCategory(name, desktopImage, mobileImage, status);
+        const response = await StoreCategory(
+          name,
+          desktopImage,
+          mobileImage,
+          status
+        );
         if (response.data.message === "Category created successfully") {
-         console.log(response.data.message);
-          
-          onSubmit(response)
+          console.log(response.data.message);
+
+          onSubmit(response);
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            desktop_image: response.data.message,
+          }));
         }
-        else{
-          setErrors((prev) => ({ ...prev, desktop_image: response.data.message}));
-        }
-      }
-      else if (modalType === "edit") {
+      } else if (modalType === "edit") {
         const Category_id = selectedCategory.id;
         console.log(selectedCategory);
         console.log(Category_id);
 
-        
-
-        const res = await Update_Main_Category(name, desktopImage, status , Category_id );
+        const res = await Update_Main_Category(
+          name,
+          desktopImage,
+          status,
+          Category_id
+        );
         if (res) {
-           
-           onSubmit(res)
-         }
-         else{
-           setErrors((prev) => ({ ...prev, desktop_image: response.data.message}));
-         }
-        
-
-
-
+          onSubmit(res);
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            desktop_image: response.data.message,
+          }));
+        }
       }
     } catch (error) {
-      setErrors((prev) => ({ ...prev, desktop_image: error}));
+      setErrors((prev) => ({ ...prev, desktop_image: error }));
     } finally {
       setLoading(false);
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // const location = useLocation();
-  // const queryParams = new URLSearchParams(location.search);
-  // const categoryId = queryParams.get('sub_category_id ');
-  // console.log(sub_category_id );
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoading(true)
-        const response = await ShowSubCategory();
-        console.log(response);
-
-        setSubCategories(response.data);
-
-        const categories = await ShowMainCategory();
-        console.log(categories);
-        let arr = [];
-        const names = categories.data.map((item) =>
-          arr.push({ id: item.id, name: item.name })
-        );
-
-        console.log(arr);
-
-        setCategory(arr);
-        setLoading(false)
-
-      } catch (err) {
-        setError("Failed to load categories. Please try again.");
-      }
-    };
-    fetchCategories();
-  }, []);
-
   const handleActionClick = (ele) => {
-
     console.log(ele);
 
-    setMobileImage(ele.mobile_image)
-    setMobile_imageUrl(ele.mobile_image_url)
-    setStatus(ele.status)
-    setCategoryId(ele.category_id)
-    setName(ele.name)
-    setEditingId(ele.id)
 
-    
+
+
+
+
+
+    setMobileImage(ele.image_url);
+    setMobile_imageUrl(ele.image_url);
+    setStatus(ele.Status);
+    setCategoryId(ele.CategoryId);
+    setName(ele.name);
+    setEditingId(ele.id);
+    setGroupId(ele.GroupId)
+
     // setSelectedSubCategory(ele);
     setIsEdit(true);
     // setNewSubCategory(ele);
@@ -228,7 +229,7 @@ const SubCategorySection = () => {
   };
 
   const handleDelete = async (id) => {
-    setLoading(true)
+    setLoading(true);
 
     setSubCategories(
       subCategories.filter((subCategory) => subCategory.id !== id)
@@ -238,8 +239,7 @@ const SubCategorySection = () => {
 
     toast.error(response.data.message);
 
-    setLoading(false)
-
+    setLoading(false);
   };
 
   const handleAddSubCategory = () => {
@@ -256,57 +256,53 @@ const SubCategorySection = () => {
 
   const handleSave = async () => {
     if (isEdit && EditingId) {
-      setLoading(true)
+      setLoading(true);
 
-
-    
-      const response = await Update_Sub_Category(      name,
+      const response = await Update_Sub_Category(
+        groupId,
+        name,
         status,
         categoryId,
         mobileImage,
-        EditingId,
-  );
+        EditingId
+      );
       console.log(response);
-    
+
       // Check if the response is valid and contains the updated subcategory data
       if (response?.status === 200) {
-
-
         const response = await ShowSubCategory();
         console.log(response);
 
         setSubCategories(response.data);
 
-        setLoading(false)
+        setLoading(false);
         setIsEdit(false);
 
-
-        
         setIsModalOpen(false);
-        setName("")
-        setCategoryId(""),
-        setStatus("Active"),
-        setMobileImage(null)
-        setMobile_imageUrl("")
-        toast.success('Updated successfully!');
-
-
-
-       
+        setName("");
+        setCategoryId(""), setStatus("Active"), setMobileImage(null);
+        setMobile_imageUrl("");
+        toast.success("Updated successfully!");
       }
-    }
-    else {
-
+      else{
+            toast.error(response?.data?.message)
+      toast.error(response?.data?.error)
+      }
+    } else {
       setLoading(true);
 
+      console.log(name, categoryId, groupId, status, mobileImage);
 
-      const response = await storeSubCategory(name,categoryId,status,mobileImage);
+      const response = await storeSubCategory(
+        name,
+        categoryId,
+        groupId,
+        status,
+        mobileImage
+      );
       console.log(response);
 
-      if (response.data.message == "Subcategory created successfully") {
-
-
-
+      if (response?.data?.message == "Subcategory created successfully") {
         const response = await ShowSubCategory();
         console.log(response);
 
@@ -319,65 +315,26 @@ const SubCategorySection = () => {
           arr.push({ id: item.id, name: item.name })
         );
 
-
         setCategory(arr);
 
-
-
-   
-        
-
-
-
-
-
-
-
-
-
-
-
         setIsModalOpen(false);
-        setName("")
-        setCategoryId(""),
-        setStatus("Active"),
-        setMobileImage(null)
-        setMobile_imageUrl("")
-        toast.success('added successfully!');
+        setName("");
+        setCategoryId(""), setStatus("Active"), setMobileImage(null);
+        setMobile_imageUrl("");
+        toast.success("added successfully!");
 
-
-
-
-
-
-
-
-
-
-    
-    
-        setLoading(false)
+        setLoading(false);
+      } else {
+            toast.error(response?.data?.message)
+      toast.error(response?.data?.error)
       }
-      else{
-        toast.error(response.data.message);
-      }
-      
     }
-
-
-
-
-    
   };
 
-
   const closeModal = () => {
-
     setName("");
-    setCategoryId(""),
-    setStatus("Active"),
-    setMobileImage(null)
-    setMobile_imageUrl("")
+    setCategoryId(""), setStatus("Active"), setMobileImage(null);
+    setMobile_imageUrl("");
     setErrors({ mobile_image: "" });
     setIsEdit(false);
     setSelectedSubCategory(null);
@@ -386,19 +343,42 @@ const SubCategorySection = () => {
     setIsModalOpen(false);
   };
 
+  // Calculate the page count (total items divided by items per page)
+  const pageCount = Math.ceil(subCategories.length / itemsPerPage);
 
+  // Slice the items array to only show items for the current page
+  const currentItems = subCategories.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
 
-    // Calculate the page count (total items divided by items per page)
-    const pageCount = Math.ceil(subCategories.length / itemsPerPage);
+  // Handle page change
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage.selected);
+  };
 
-    // Slice the items array to only show items for the current page
-    const currentItems = subCategories.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+  const handleGroupSelect = (e) => {
+    const data = e.target.value;
+    console.log(e);
 
-    // Handle page change
-    const handlePageChange = (selectedPage) => {
-        setCurrentPage(selectedPage.selected);
-    };
+    setGroupId(data);
 
+    console.log(data);
+    console.log(categories);
+
+    const filterCategory = categories.filter((ele) => ele.groupId == data);
+    console.log(filterCategory);
+    setFilterCategory(filterCategory);
+
+    //    let arr = [];
+    //     const names = filterCategory.data.map((item) =>
+    //       arr.push({ id: item.id, name: item.name , groupId: item.GroupId })
+    //     );
+
+    //     console.log(arr);
+
+    // setCategory(arr );
+  };
 
   return (
     <div className="xl:container mx-auto shadow-lg rounded-md bg-white p-4">
@@ -412,9 +392,7 @@ const SubCategorySection = () => {
         </button>
       </div>
 
-
-
-{loading && (
+      {loading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
           <div className=" flex flex-col gap-4 p-6 bg-white rounded-md shadow-lg">
             <Atom color="#32cd32" size="medium" text="" textColor="" />
@@ -424,21 +402,24 @@ const SubCategorySection = () => {
 
       {currentItems.length > 0 && (
         <div className="overflow-x-auto">
-           <div className="text-end mb-2">total : {subCategories.length}</div>
+          <div className="text-end mb-2">total : {subCategories.length}</div>
           <table className="min-w-full bg-white rounded-lg shadow-sm">
             <thead>
               <tr>
-                {/* <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
-                  S.No
-                </th> */}
                 <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
-              Image
+                  S.No
+                </th>
+                <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
+                  Image
                 </th>
                 <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
                   Name
                 </th>
                 <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
-               Category Id
+                  Group Name
+                </th>
+                <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
+                  Category Name
                 </th>
                 <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
                   Status
@@ -453,31 +434,37 @@ const SubCategorySection = () => {
               {currentItems.length > 0 &&
                 currentItems.map((ele, index) => (
                   <tr key={ele.id} className="border-b last:border-0">
-                    {/* <td className="py-3 px-5">{index + 1}</td> */}
+                    <td className="py-3 px-5">{index + 1}</td>
                     <td className="py-3 px-5">
                       <img
-                        src={ele.mobile_image_url}
-                        alt={ele.name}
+                        src={ele?.image_url}
+                        alt={ele?.name}
                         className="w-10 h-10 rounded-full"
                       />
                     </td>
                     <td className="py-3 px-5">{ele.name}</td>
-                    <Link
-                      to={`/admin/${localStorage.getItem("Merchanttoken")}/maincategory?category_id=${ele.category_id}`}
-                    >
-                      <td className="py-3 px-5 text-blue-600">
-                        {ele.category_id}
-                      </td>
-                    </Link>
+                    <td className="py-3 px-5 ">{ele?.GroupName}</td>
+
+                    <td className="py-3 px-5 text-blue-600">
+                      <Link
+                        to={`/admin/${localStorage.getItem(
+                          "Merchanttoken"
+                        )}/maincategory?category_id=${ele?.category_id}`}
+                        className="hover:underline"
+                      >
+                        {ele?.CategoryName}
+                      </Link>
+                    </td>
+
                     <td className="py-3 px-5">
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                          ele.status === "Active"
+                          ele?.Status === "Active"
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {ele.status}
+                        {ele.Status}
                       </span>
                     </td>
                     <td className="py-3 px-5 flex space-x-2">
@@ -527,7 +514,10 @@ const SubCategorySection = () => {
         </div>
       )}
 
-<PaginationExample pageCount={pageCount} onPageChange={handlePageChange} />
+      <PaginationExample
+        pageCount={pageCount}
+        onPageChange={handlePageChange}
+      />
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
@@ -536,18 +526,37 @@ const SubCategorySection = () => {
               {isEdit ? "Edit SubCategory" : "Add SubCategory"}
             </h2>
             <form>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Name: *
+                </label>
+                <input
+                  type="text"
+                  className="mt-1 border p-2 w-full rounded"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
 
-
-            <div>
-            <label className="block text-sm font-medium text-gray-700">Name: *</label>
-            <input
-              type="text"
-              className="mt-1 border p-2 w-full rounded"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-            </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Group
+                </label>
+                <select
+                  value={groupId}
+                  onChange={(e) => handleGroupSelect(e)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                >
+                  <option value="">Select Group</option>
+                 {GroupList.map((gro, index) => (
+                <option key={gro.group_id} value={gro.group_id}>
+                  {gro.group_name}
+                </option>
+              ))}
+                </select>
+              </div>
 
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -555,34 +564,37 @@ const SubCategorySection = () => {
                 </label>
                 <select
                   value={categoryId}
-                  onChange={(e) =>
-                    setCategoryId(e.target.value)
-                  }
+                  onChange={(e) => setCategoryId(e.target.value)}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   required
                 >
                   <option value="">Select Category</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
+                  {console.log(groupId)}
+                  {console.log(categories)}
+
+                  {groupId &&
+                    filterCategory.length > 0 &&
+                    filterCategory.map((category, index) => (
+                      <option key={category.id + index} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                 </select>
               </div>
 
               <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Status: *
-            </label>
-            <select
-              className="mt-1 border p-2 w-full rounded"
-              value={status || "Active"}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-             </div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Status: *
+                </label>
+                <select
+                  className="mt-1 border p-2 w-full rounded"
+                  value={status || "Active"}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
 
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -590,13 +602,17 @@ const SubCategorySection = () => {
                 </label>
                 <input
                   type="file"
-                  onChange={(e) => handleImageChange("mobile_image", e.target.files[0])}
+                  onChange={(e) =>
+                    handleImageChange("mobile_image", e.target.files[0])
+                  }
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   required
                 />
-                      {errors.mobile_image && (
-              <p className="text-red-500 text-sm mt-1">{errors.mobile_image}</p>
-            )}
+                {errors.mobile_image && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.mobile_image}
+                  </p>
+                )}
                 {mobile_imageUrl && (
                   <img
                     src={mobile_imageUrl}
@@ -605,8 +621,6 @@ const SubCategorySection = () => {
                   />
                 )}
               </div>
-
-           
 
               <div className="flex justify-end">
                 <button

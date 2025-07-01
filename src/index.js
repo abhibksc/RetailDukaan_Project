@@ -36,7 +36,7 @@ const root = createRoot(rootElement);
 
 // Render the App inside the Provider with the Redux store and BrowserRouter
 root.render(
-  <StrictMode>
+  // <StrictMode>
   <ThemeProvider theme={theme}>
     <CssBaseline />
   <Provider store={Store}>
@@ -45,5 +45,5 @@ root.render(
     </BrowserRouter>
   </Provider>
   </ThemeProvider>
-  </StrictMode>
+  // </StrictMode>
 );
