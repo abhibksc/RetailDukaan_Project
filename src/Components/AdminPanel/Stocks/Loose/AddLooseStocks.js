@@ -476,6 +476,8 @@ const AddLooseStocks = ({ closeModal, onSubmit, Brand, onUpdate }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
       <div className="bg-white rounded-lg p-4 w-1/3 shadow-lg">
         <h2 className="text-lg font-bold mb-3">
+          {console.log(Brand)
+          }
           {Brand ? "Edit Loose Stock" : "Add Loose Stock"}
         </h2>
         <form onSubmit={handleFormSubmit}>

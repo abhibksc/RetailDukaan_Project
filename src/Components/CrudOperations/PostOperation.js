@@ -3005,12 +3005,11 @@ export const placeOrder = async () => {
       },
     });
 
-      (response);
 
     // Log the response and return the data
     return response;
   } catch (error) {
-    return error.response;
+    throw error;
   }
 };
 
@@ -3113,7 +3112,7 @@ export const DecreaseOrderItemQuantity = async (
     // Log the response and return the data
     return response;
   } catch (error) {
-    return error.response;
+    throw error
   }
 };
 

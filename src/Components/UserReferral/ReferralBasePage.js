@@ -8,7 +8,6 @@ const ReferralBasePage = () => {
       <div className="min-h-screen mt-24 mx-20">
         <Routes>
           <Route path="/" element={<Referral/>} />
-
         </Routes>
       </div>
     </div>

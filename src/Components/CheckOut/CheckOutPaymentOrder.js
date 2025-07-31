@@ -12,8 +12,10 @@ import {
 } from "../CrudOperations/PostOperation";
 import LoadingModal from "../LoadingModal";
 import baseurl, { baseUIurl } from "../CrudOperations/customURl";
+import useImportUserDetails from "../useImportUserDetails";
 
 const CheckOutPaymentOrder = ({ isPaymentChanged, handlePaymentChange }) => {
+  const { importDetails } = useImportUserDetails();
   const [selectedPayment, setSelectedPayment] = useState("");
   const [upiMethod, setUpiMethod] = useState("");
   const [upiId, setUpiId] = useState("");
@@ -24,6 +26,8 @@ const CheckOutPaymentOrder = ({ isPaymentChanged, handlePaymentChange }) => {
   const billAmount = useSelector((state) => state.cartReducer.cartItems.bill);
 
 const Auth_userID = useSelector((state) => state.auth.Customer_userId);
+console.log(Auth_userID);
+
 
 const Auth_name = useSelector((state) => state.auth.name);
 const Auth_number = useSelector((state) => state.auth.phone);
@@ -45,7 +49,13 @@ const Auth_emailID = useSelector((state) => state.auth.email);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const callDetails = async()=>{
+    await importDetails();
+  }
+
   useEffect(() => {
+
+    callDetails()
 
     console.log(Auth_name);
     console.log(Auth_number);
@@ -84,7 +94,7 @@ const Auth_emailID = useSelector((state) => state.auth.email);
         
         if(response && response.status == "Success"){
 
-          navigate(`/Order/successfullyOrder/userId-${userId}/amount-${amount}/orderId-${response?.data?.order_Id}`);
+          navigate(`/Order/successfullyOrder/userId-${userId}/amount-${amount}/orderId-${response?.orderId}`);
 
           dispatch(emptyCart());
 
@@ -137,11 +147,16 @@ const Auth_emailID = useSelector((state) => state.auth.email);
     SetLoading(true);
 
 
+
     if (selectedPayment === "COD") {
-      const placeOrderResponse = await placeOrder();
+
+          try{
+
+
+                const placeOrderResponse = await placeOrder();
       console.log(placeOrderResponse);
 
-      if (placeOrderResponse.data.message === "Order Placed") {
+      if (placeOrderResponse?.data?.message === "Order Placed") {
         toast.success("Order Successfully Placed!");
         navigate(`/Order/successfullyOrder/userId-${placeOrderResponse.data.userId}/amount-${Math.round(placeOrderResponse.data.amount)}/orderId-${placeOrderResponse.data.order_Id}`);
 
@@ -150,15 +165,32 @@ const Auth_emailID = useSelector((state) => state.auth.email);
         // );
         
         dispatch(emptyCart());
-      } else if (placeOrderResponse.data.message === "Out Of Stock") {
+      } 
+      else if (placeOrderResponse?.data?.message === "Out Of Stock") {
         console.log(placeOrderResponse);
         toast.warning(
           "This item is out of stock. If payment was deducted, the refund will be processed within 2-3 working days."
         );
       }
+      else{
+        toast.error(placeOrderResponse?.data?.message || placeOrderResponse?.data?.error || "Error")
+      }
 
-      SetLoading(false);
+    }
+    catch(error){
+
+              toast.error(error?.response?.data?.message || error?.response?.data?.error || "Error")
+
+
+    }finally{
+
+            SetLoading(false);
       return;
+
+    }
+
+
+
     }
 
 
@@ -184,9 +216,11 @@ const Auth_emailID = useSelector((state) => state.auth.email);
 
     const res = await InitiatePayment({ amount: billAmount.total_amount });
   console.log(res);
+console.log(Auth_userID);
+
   
-    if (res && res.Message) {
-      toast.error(res.Message);
+    if (res && !res?.success) {
+      toast.error(res?.message);
       SetLoading(false);
       return;
     }
@@ -198,7 +232,7 @@ const Auth_emailID = useSelector((state) => state.auth.email);
     form.action = "https://api.razorpay.com/v1/checkout/embedded";
   
     const fields = {
-      key_id: "rzp_live_Gf5E5XNbMy7RBo", // Replace with your Razorpay Key ID
+      key_id: "rzp_test_84Uc9wmEElIAhZ", // Replace with your Razorpay Key ID
       amount: billAmount.total_amount * 100, // Convert to paisa
       currency: "INR",
       order_id: res.order_id, // Get from your InitiatePayment response

@@ -372,42 +372,50 @@ const Referral = () => {
       </div>
 
       {/* 💳 Wallet Transactions */}
-      <div className="bg-white border shadow mb-4 rounded-lg p-4 max-w-full mx-auto">
-        <h2 className="font-bold text-xl mb-4">Wallet Transactions</h2>
-        {transactions?.length === 0 ? (
-          <p className="text-gray-500">No transactions available.</p>
-        ) : (
-          <table className="min-w-full text-left border-collapse text-sm">
-            <thead>
-              <tr className="border-b text-gray-600">
-                <th className="py-2 px-4">Type</th>
-                <th className="py-2 px-4">Amount</th>
-                <th className="py-2 px-4">Date</th>
-                <th className="py-2 px-4">Remarks</th>
-                <th className="py-2 px-4">status</th>
+     <div className="bg-white border shadow mb-4 rounded-lg p-4 max-w-full mx-auto">
+      <h2 className="font-bold text-xl mb-4">Wallet Transactions</h2>
+      {transactions?.length === 0 ? (
+        <p className="text-gray-500">No transactions available.</p>
+      ) : (
+        <table className="min-w-full text-left border-collapse text-sm">
+          <thead>
+            <tr className="border-b text-gray-600">
+              <th className="py-2 px-4">Type</th>
+              <th className="py-2 px-4">Amount</th>
+              {/* <th className="py-2 px-4">New Balance</th> */}
+              <th className="py-2 px-4">Date</th>
+              <th className="py-2 px-4">Remarks</th>
+              <th className="py-2 px-4">Status</th>
+              <th className="py-2 px-4">Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.map((txn) => (
+              <tr key={txn.id} className="border-b hover:bg-gray-50">
+                <td className="py-2 px-4 capitalize text-blue-600">
+                  {txn?.transaction_type}
+                </td>
+              <td className={`py-2 px-4 font-semibold ${
+  txn.transaction_type === "credit" ? "text-green-600" : "text-red-600"
+}`}>
+  {txn.transaction_type === "credit" ? `+ ₹${txn.amount}` : `-₹${txn.amount}`}
+</td>
 
-
+                {/* <td className="py-2 px-4 text-gray-800">
+                  ₹{txn?.New_balance}
+                </td> */}
+                <td className="py-2 px-4 text-gray-600">
+                  {txn?.transaction_date}
+                </td>
+                <td className="py-2 px-4">{txn?.remarks || "—"}</td>
+                <td className="py-2 px-4 capitalize">{txn?.status}</td>
+                <td className="py-2 px-4 capitalize">{txn?.source}</td>
               </tr>
-            </thead>
-            <tbody>
-              {transactions.map((txn) => (
-                <tr key={txn.id} className="border-b hover:bg-gray-50">
-                  <td className="py-2 px-4 capitalize text-blue-600">
-                    {txn.type}
-                  </td>
-                  <td className="py-2 px-4">₹{txn.transaction_type}</td>
-                  <td className="py-2 px-4">{txn.amount}</td>
-                  <td className="py-2 px-4">{txn.transaction_date}</td>
-                  <td className="py-2 px-4">{txn.remarks}</td>
-                  <td className="py-2 px-4">{txn.status}</td>
-
-
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">

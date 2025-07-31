@@ -3,34 +3,33 @@ import { Box, Typography, Tooltip } from "@mui/material";
 import { styled } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 
-const OrderTracking = ({ order_track_data, orderId, order_status }) => {
+const OrderTracking = ({OrderItems_data, order_track_data, orderId, order_status }) => {
   const { trackDetail, itemDetail, BillDetail } = order_track_data;
-  console.log(itemDetail);
+  console.log(order_track_data);
   
   const navigate = useNavigate();
 
-  const images = itemDetail?.offer_items?.length > 0 ? itemDetail?.offer_items?.find((element) => element?.offer_image_path) : itemDetail?.selected_items?.length > 0 ? itemDetail?.selected_items?.find((element) => element?.image) : null;
+  const images = order_track_data?.orderImage || null;
   let Item_Length = 0;   
   
-  if(itemDetail?.offer_items?.length  ||  itemDetail?.selected_items?.length){
+  if(itemDetail?.normalItems?.length  ||  itemDetail?.signupItems?.length){
 
     let offer_items_length = 0;
     let items_length = 0;
 
 
 
-    if(itemDetail?.offer_items?.length){
+    if(itemDetail?.normalItems?.length){
 
-offer_items_length = itemDetail?.offer_items.filter((ele) => ele.Status != "returned")?.length
+offer_items_length = itemDetail?.normalItems.filter((ele) => ele.Status != "returned")?.length
 console.log(offer_items_length);
 
 
 
     }
 
-    if(itemDetail?.selected_items?.length){
-
-      items_length = itemDetail?.selected_items.filter((ele) => ele.Status !== "returned")?.length
+    if(itemDetail?.signupItems?.length){
+      items_length = itemDetail?.signupItems.filter((ele) => ele.Status !== "returned")?.length
     }
 
 
@@ -73,7 +72,7 @@ console.log(offer_items_length);
     <div className="mt-3 bg-white px-5 py-3 rounded-md shadow-md flex gap-10">
       {/* Image Display */}
       <div className="flex gap-3">
-        <img src={images?.image || images?.offer_image_path} className="w-28 h-28" alt="Order Thumbnail" />
+        <img src={images} className="w-28 h-28" alt="Order Thumbnail" />
         <div className="flex flex-col gap-2">
           <span>{completedSteps === steps.length ? "Completed" : steps[completedSteps]?.label} ({Item_Length} items)</span>
           <span>{Item_Length} Approved</span>

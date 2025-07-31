@@ -37,7 +37,6 @@ import {
   FaListAlt,
 } from "react-icons/fa";
 
-
 import {
   FaHome,
   FaTags,
@@ -61,8 +60,6 @@ import {
   FaWarehouse,
 } from "react-icons/fa";
 
-
-
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { admin, MerchantLogout, updateToken } from "../ReduxStore/Slices/auth";
@@ -73,15 +70,19 @@ const Sidebar = ({ onLinkClick }) => {
   const Merchanttoken = localStorage.getItem("Merchanttoken");
   const userName = "Merchant";
   const adminLogo = "https://via.placeholder.com/150"; // Replace with actual logo URL
+const [openAccordions, setOpenAccordions] = useState({});
 
-  const [openAccordion, setOpenAccordion] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const toggleAccordion = (index) => {
-    setOpenAccordion(openAccordion === index ? null : index);
-  };
+const toggleAccordion = (level, index) => {
+  setOpenAccordions((prev) => ({
+    ...prev,
+    [level]: prev[level] === index ? null : index,
+  }));
+};
+
 
   const handleLogout = () => {
     console.log("Chala logout");
@@ -101,7 +102,7 @@ const Sidebar = ({ onLinkClick }) => {
       icon: <FaHome />,
     },
 
-     {
+    {
       label: "Manage Warehouse",
       icon: <FaUserCog />,
       subLinks: [
@@ -137,96 +138,82 @@ const Sidebar = ({ onLinkClick }) => {
     //   icon: <FaUserCog />,
     // },
 
-
-
-
-      {
+    {
       label: "Wallet & Txn",
       icon: <FaThLarge />,
       subLinks: [
-          {
+        {
           to: `/admin/${Merchanttoken}/manage-customer`,
           label: "User's Wallet",
           textClass: "text-[11px]",
           textcolour: "text-gray-300",
         },
 
-              {
+        {
           to: `/admin/${Merchanttoken}/ManageRefferals/all-refferals`,
           label: "User's Refferals Wallet",
           textClass: "text-[11px]",
           textcolour: "text-gray-300",
         },
-
-
-     
       ],
     },
 
-
-
-
-
-
-  {
-      label: "Users & Refferals",
-      icon: <FaThLarge />,
+ {
+  label: "Users & Refferals",
+  icon: <FaThLarge />,
+  subLinks: [
+    {
+      to: `/admin/${Merchanttoken}/manage-customer`,
+      label: "Users",
+      textClass: "text-[11px]",
+      textcolour: "text-gray-300",
+    },
+    {
+      to: `/admin/${Merchanttoken}/ManageRefferals/all-refferals-singUp-offers`,
+      label: "User's Refferals",
+      textClass: "text-[11px]",
+      textcolour: "text-gray-300",
+    },
+    {
+      to: `/admin/${Merchanttoken}/ManageRefferals/all-refferals-milestone`,
+      label: "User's MileStone",
+      textClass: "text-[11px]",
+      textcolour: "text-gray-300",
+    },
+    {
+      label: "User's Request",
+      textClass: "text-[11px]",
+      textcolour: "text-gray-300",
       subLinks: [
-          {
-          to: `/admin/${Merchanttoken}/manage-customer`,
-          label: "Users",
-          textClass: "text-[11px]",
-          textcolour: "text-gray-300",
-        },
-
-              {
-          to: `/admin/${Merchanttoken}/ManageRefferals/all-refferals`,
-          label: "User's Refferals",
-          textClass: "text-[11px]",
-          textcolour: "text-gray-300",
-        },
-
-
-                    {
-          to: `/admin/${Merchanttoken}/ManageRefferals/all-refferals`,
-          label: "User's MileStone",
-          textClass: "text-[11px]",
-          textcolour: "text-gray-300",
-        },
-
-
-                          
-
-
         {
-          to: `/admin/${Merchanttoken}/ManageRefferals`,
-          label: "Refferal Configuration",
+          to: `/admin/${Merchanttoken}/ManageRefferals/milestone-request`,
+          label: "Milestone Request",
           textClass: "text-[11px]",
           textcolour: "text-gray-300",
-          // icon: <FaUserCog />,
+        },
+        {
+          to: `/admin/${Merchanttoken}/ManageRefferals/signup-offer-request`,
+          label: "Signup Offer Request",
+          textClass: "text-[11px]",
+          textcolour: "text-gray-300",
+        },
+        {
+          to: `/admin/${Merchanttoken}/ManageRefferals/withdrawal-request`,
+          label: "Withdrawal Request",
+          textClass: "text-[11px]",
+          textcolour: "text-gray-300",
         },
       ],
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    {
+      to: `/admin/${Merchanttoken}/ManageRefferals`,
+      label: "Refferal Configuration",
+      textClass: "text-[11px]",
+      textcolour: "text-gray-300",
+    },
+  ],
+}
+,
 
     {
       label: "Manage Offers",
@@ -298,8 +285,6 @@ const Sidebar = ({ onLinkClick }) => {
       ],
     },
 
-
-
     {
       label: "Assign Delivery Executive",
       icon: <FaTruck />, // Icon for "Assign Delivery Executive" (Delivery Truck)
@@ -320,7 +305,6 @@ const Sidebar = ({ onLinkClick }) => {
         // }
       ],
     },
-
 
     {
       label: "Manage Payment",
@@ -555,7 +539,6 @@ const Sidebar = ({ onLinkClick }) => {
       ],
     },
 
-
     {
       to: `/admin/${Merchanttoken}/deliverymanagement`,
       label: "Delivery Management",
@@ -575,64 +558,61 @@ const Sidebar = ({ onLinkClick }) => {
     },
   ];
 
-  const renderLinks = (links, depth = 0) => {
-    return (
-      <ul className={`pl-${depth * 4}   `}>
-        {links.map((link, index) => (
-          <li key={index} className="mt-5">
-            {link.subLinks ? (
-              <>
-                <button
-                  onClick={() => toggleAccordion(index)}
-                  className="hover:text-gray-400 w-full text-left flex items-center justify-between"
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="flex items-center"
-                  >
-                    {link.icon}
-                    <span className="ml-2">{link.label}</span>
-                  </motion.div>
-                  {openAccordion === index ? (
-                    <FaChevronUp className="size-3" />
-                  ) : (
-                    <FaChevronDown className="size-3" />
-                  )}
-                </button>
-                <AnimatePresence initial={false}>
-                  {openAccordion === index && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {renderLinks(link.subLinks, depth + 1)}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </>
-            ) : (
-              <Link
-                to={link.to}
-                className={`hover:text-gray-400 flex items-center ${
-                  link.textClass || ""
-                } ${link.textcolour}`}
-                onClick={onLinkClick} // Close sidebar on link click
+const renderLinks = (links, depth = 0) => {
+  return (
+    <ul className={`pl-${depth * 4}`}>
+      {links.map((link, index) => (
+        <li key={index} className="mt-5">
+          {link.subLinks ? (
+            <>
+              <button
+                onClick={() => toggleAccordion(depth, index)}
+                className="hover:text-gray-400 w-full text-left flex items-center justify-between"
               >
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="flex items-center"
-                >
-                  {link.icon} <span className="ml-2">{link.label}</span>
+                <motion.div whileHover={{ scale: 1.05 }} className="flex items-center">
+                  {link.icon}
+                  <span className="ml-2">{link.label}</span>
                 </motion.div>
-              </Link>
-            )}
-          </li>
-        ))}
-      </ul>
-    );
-  };
+                {openAccordions[depth] === index ? (
+                  <FaChevronUp className="size-3" />
+                ) : (
+                  <FaChevronDown className="size-3" />
+                )}
+              </button>
+
+              <AnimatePresence initial={false}>
+                {openAccordions[depth] === index && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {renderLinks(link.subLinks, depth + 1)}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          ) : (
+            <Link
+              to={link.to}
+              className={`hover:text-gray-400 flex items-center ${
+                link.textClass || ""
+              } ${link.textcolour}`}
+              onClick={onLinkClick}
+            >
+              <motion.div whileHover={{ scale: 1.05 }} className="flex items-center">
+                {link.icon}
+                <span className="ml-2">{link.label}</span>
+              </motion.div>
+            </Link>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 
   const handleprofileClick = () => {
     navigate(`/admin/${Merchanttoken}/profile`);

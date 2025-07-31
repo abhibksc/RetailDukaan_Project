@@ -10,8 +10,18 @@ import {
 } from "../../CrudOperations/GetOperation";
 import { DeletePacketStock } from "../../CrudOperations/DeleteOperation";
 import AddPacketStock from "./Packet/AddPacketStock";
+import AddLooseStocks from "./Loose/AddLooseStocks";
 
 const ViewStock = () => {
+  const pathSegments = window.location.pathname.split("/"); // splits the URL into array
+  const stockType = pathSegments.includes("packetStock")
+    ? "packetStock"
+    : pathSegments.includes("looseStock")
+    ? "looseStock"
+    : null;
+
+  console.log(stockType); // Output: "packetStock", "looseStock", or null
+
   const [selectedDate, setSelectedDate] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,23 +48,35 @@ const ViewStock = () => {
 
   useEffect(() => {
     if (warehouse_unique_id) {
-      const fetchBrands = async () => {
-        const response = await get_Warehouse_Stock(
-          "packet_stock",
-          warehouse_unique_id
-        );
+      const stockTypee =
+        stockType === "packetStock"
+          ? "packet_stock"
+          : stockType === "looseStock"
+          ? "loose_stock"
+          : "";
 
-        console.log(response);
+    const fetchBrands = async () => {
+  try {
+    const response = await get_Warehouse_Stock(stockTypee, warehouse_unique_id);
 
-        if (
-          response.data.message === "All packet_stock retrieved successfully!"
-        ) {
-          setStockList(response.data.data);
-          setFilteredStockList(response.data.data);
-          setWarehouse_Details(response.data.warehouse);
-        }
-      };
-      fetchBrands();
+    console.log(response);
+
+    if (
+      response.data.message === "All packet_stock retrieved successfully!" ||
+      response.data.message === "All loose_stock retrieved successfully!"
+    ) {
+      setStockList(response.data.data);
+      setFilteredStockList(response.data.data);
+      setWarehouse_Details(response.data.warehouse);
+    }
+  } catch (error) {
+    toast.error(   error?.response?.data?.message || error?.response?.data?.error)
+    // Optionally, show a toast or alert here
+  }
+};
+
+fetchBrands();
+
     } else {
       toast.warn("Warehouse not availabel yet!!");
     }
@@ -132,7 +154,11 @@ const ViewStock = () => {
     }
   };
 
-  const handleEditpacketStockformClick = (p = null) => {
+  const handleEditpacketStockformClick = (q,p = null) => {
+    console.log(q);
+    console.log(p);
+
+    
     setIsModalOpen(true);
 
     if (p) {
@@ -214,11 +240,13 @@ const ViewStock = () => {
       hour12: true,
     });
   };
+    // const stockType = pathSegments.includes("packetStock")
+
 
   return (
     <div className=" mx-auto p-8 bg-white h-full rounded-lg shadow-lg shadow-gray-300">
       <h1 className="text-2xl font-bold text-gray-800 font-inter pb-3  flex items-center gap-4">
-        <span className="text-blue-700">📦 Packet Stocks</span>
+        <span className="text-blue-700">📦  {stockType === "packetStock" ? "Packet Stocks" : "Loose Stock"}</span>
         {warehouseDetails?.warehouse_name && (
           <span className="text-sm font-medium text-blue-600 bg-blue-100 px-4 py-1 rounded-full shadow-sm">
             {warehouseDetails.warehouse_name}
@@ -280,7 +308,13 @@ const ViewStock = () => {
 
         <div className="flex items-center gap-4">
           <button
-            onClick={handleEditpacketStockformClick}
+            onClick={()=>  {
+              
+
+                    setEdit(null);
+              setIsModalOpen(true)
+            
+            }}
             className="bg-blue-600 text-white px-6 py-2 rounded-md flex items-center gap-2 transition-transform duration-200 hover:bg-blue-700 hover:scale-105 shadow-md shadow-blue-500 hover:shadow-lg"
           >
             <FontAwesomeIcon icon={faPlus} />
@@ -288,6 +322,8 @@ const ViewStock = () => {
           </button>
         </div>
       </div>
+
+      
 
       {/* Responsive table wrapper */}
       <div className="overflow-x-auto">
@@ -299,7 +335,7 @@ const ViewStock = () => {
                 "purchase item id",
                 "Name",
                 "Stock Type",
-                "Quantity",
+                "Avl. Quantity",
                 "Purchase_Date",
                 "Entry date",
                 //   "History",
@@ -323,29 +359,39 @@ const ViewStock = () => {
                   key={p.stock_id}
                   className="border-b transition-colors duration-200 hover:bg-gray-50"
                 >
+                      {console.log(p)}
                   <td className="py-3 px-4 text-center">{index + 1}</td>
                   <td className="py-3 px-4 text-center">
                     {p.purchase_item_id}
                   </td>
                   <td className="py-3 px-4 text-center">
-                    {p.packetvariantName}
+                    {p.ItemName} {p.packetvariantName}
                   </td>
+
+                  {/* // const stockType = pathSegments.includes("packetStock") */}
+
                   <td className="py-3 px-4 text-center">{p.stock_type}</td>
+
                   <td className="py-3 px-4 text-center">
-                    {p.quantity} {p.unit}
+                    {p.quantity} { stockType === "packetStock" ?   p.unit : "Packets"}
                   </td>
+
+
                   <td className="py-3 px-4 text-center">
                     {formatDate(p.purchaseDate)}{" "}
                   </td>
+
                   <td className="py-3 px-4 text-center">
                     {formatDate(p.Entry_date)}{" "}
                   </td>
 
                   {/* <td className="py-3 px-4 text-center cursor-pointer text-blue-500">click</td> */}
 
+
+
                   <td className="py-3 px-4 text-center">
                     <button
-                      onClick={() => handleEditpacketStockformClick(p)}
+                      onClick={(q) => handleEditpacketStockformClick(q , p)}
                       className="text-red-500 transition-colors duration-200 hover:text-red-700"
                     >
                       <FontAwesomeIcon icon={faPen} />
@@ -375,14 +421,25 @@ const ViewStock = () => {
 
       {/* Add Brand Modal */}
       {isModalOpen && (
-        <AddPacketStock
+       stockType === "packetStock" ? <AddPacketStock
           closeModal={closeModal}
           onSubmit={handleSubmit}
           StockList={StockList}
           EditPacket_Stock={edit}
           onUpdate={handleUpdate}
+        /> 
+        
+        :
+
+         <AddLooseStocks
+          closeModal={closeModal}
+          onSubmit={handleSubmit}
+          Brand={edit}
+          onUpdate={handleUpdate}
         />
       )}
+
+      {console.log(edit)}
 
       {/* Confirmation Modal */}
       {isConfirmModalOpen && (

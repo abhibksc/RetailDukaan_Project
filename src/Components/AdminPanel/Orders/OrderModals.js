@@ -1,5 +1,9 @@
 import { log } from "tone/build/esm/core/util/Debug";
-import { AssignDelivery_Executive__, MakeFreeDeliveryExecutive, Schedule_timeDate } from "../../CrudOperations/PostOperation";
+import {
+  AssignDelivery_Executive__,
+  MakeFreeDeliveryExecutive,
+  Schedule_timeDate,
+} from "../../CrudOperations/PostOperation";
 import ExpandableText from "./ExpandableText";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -308,29 +312,31 @@ import { useNavigate } from "react-router-dom";
 export const ItemModal = ({ close, ItemsData, submission }) => {
   const { item: Itemslist, orderId, Total_Bill } = ItemsData || {};
   console.log(Itemslist);
-  
+  console.log(orderId);
+  console.log(Total_Bill);
 
   // State to track editable quantities
   const [editableItems, setEditableItems] = useState(
-    Itemslist?.selected_items.map((item) => ({ ...item, isEditing: false })) ||  []
+    Itemslist?.normalItems.map((item) => ({ ...item, isEditing: false })) || []
   );
 
-
-    const [editableOfferItems, setEditableOfferItems] = useState(
-    Itemslist?.offer_items.map((item) => ({ ...item, isOfferEditing: false })) ||  []
+  const [editableOfferItems, setEditableOfferItems] = useState(
+    Itemslist?.signupItems.map((item) => ({
+      ...item,
+      isOfferEditing: false,
+    })) || []
   );
 
-  // Handle edit mode toggle
-  const toggleEditMode = (item) => {
-    // const updatedItems = [...editableItems];
-    // updatedItems[index].isEditing = !updatedItems[index].isEditing;
-    // setEditableItems(updatedItems);
+  // // Handle edit mode toggle
+  // const toggleEditMode = (item) => {
+  //   // const updatedItems = [...editableItems];
+  //   // updatedItems[index].isEditing = !updatedItems[index].isEditing;
+  //   // setEditableItems(updatedItems);
 
-    console.log(item);
-    
+  //   console.log(item);
 
-    toast.warn("Functionality Comming Soon....")
-  };
+  //   toast.warn("Functionality Comming Soon....")
+  // };
 
   // Handle quantity change
   const handleQuantityChange = (index, value) => {
@@ -345,25 +351,24 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
     submission();
   };
 
-
-
-
- return (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    onClick={close}
-  >
+  return (
     <div
-      className="bg-gradient-to-br from-green-50 to-white p-6 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto mx-4"
-      onClick={(e) => e.stopPropagation()}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={close}
     >
-      {/* Title */}
-      <h2 className="text-3xl font-bold mb-6 text-center text-green-700 border-b pb-3">
-        🛒 Order Summary
-      </h2>
+      <div
+        className="bg-gradient-to-br from-green-50 to-white p-6 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Title */}
+        <h2 className="text-3xl font-bold mb-6 text-center text-green-700 border-b pb-3">
+          🛒 Order Summary
+        </h2>
+        {console.log(editableItems)
+        }
 
-      {/* Items Table */}
-      {editableItems?.selected_items?.length > 0 ? (
+        {/* Items Table */}
+        {editableItems?.length > 0 ? (
         <div className="mb-10">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
             🧾 Cart Items
@@ -379,11 +384,11 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
                   <th className="px-4 py-3 text-right">Quantity</th>
                   <th className="px-4 py-3 text-right">Approved Q.</th>
                   <th className="px-4 py-3 text-center">Status</th>
-                  <th className="px-4 py-3 text-center">Action</th>
+                  {/* <th className="px-4 py-3 text-center">Action</th> */}
                 </tr>
               </thead>
               <tbody>
-                {editableItems.selected_items.map((item, index) => (
+                {editableItems.map((item, index) => (
                   <tr
                     key={index}
                     className={`${
@@ -428,14 +433,14 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
                         <span className="text-orange-600">{item.Status}</span>
                       )}
                     </td>
-                    <td className="px-4 py-2 text-center">
+                    {/* <td className="px-4 py-2 text-center">
                       <button
                         onClick={() => toggleEditMode(item)}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md text-sm"
                       >
                         {item.isEditing ? "Save" : "Edit"}
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -444,10 +449,10 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
         </div>
       ) : (
         <p className="text-center text-gray-500 mb-6">No cart items found.</p>
-      )}
+      )} 
 
-      {/* Offer Items Table */}
-      {editableOfferItems?.length > 0 ? (
+        {/* Offer Items Table */}
+         {editableOfferItems?.length > 0 ? (
         <div className="mb-10">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
             🎁 Offer Items
@@ -463,7 +468,7 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
                   <th className="px-4 py-3 text-right">Quantity</th>
                   <th className="px-4 py-3 text-right">Approved Q.</th>
                   <th className="px-4 py-3 text-center">Status</th>
-                  <th className="px-4 py-3 text-center">Action</th>
+                  {/* <th className="px-4 py-3 text-center">Action</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -514,14 +519,14 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
                         <span className="text-orange-600">{item.Status}</span>
                       )}
                     </td>
-                    <td className="px-4 py-2 text-center">
+                    {/* <td className="px-4 py-2 text-center">
                       <button
                         onClick={() => toggleEditMode(item)}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md text-sm"
                       >
                         {item.isOfferEditing ? "Save" : "Edit"}
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -530,10 +535,10 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
         </div>
       ) : (
         <p className="text-center text-gray-500 mb-6">No offers found.</p>
-      )}
+      )} 
 
-      {/* Billing Section */}
-      {Total_Bill && (
+        {/* Billing Section */}
+        {/* {Total_Bill && (
         <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-md">
           <h3 className="text-2xl font-bold text-green-700 mb-4">
             💳 Billing Summary
@@ -559,21 +564,11 @@ export const ItemModal = ({ close, ItemsData, submission }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
+      </div>
     </div>
-  </div>
-);
-
-
-
-
-
-
-
+  );
 };
-
-
-
 
 export const PaymentModal = ({ close, setPaymentDetails }) => {
   const {
@@ -592,8 +587,10 @@ export const PaymentModal = ({ close, setPaymentDetails }) => {
   const navigate = useNavigate();
 
   const handleOpenInNewTab = () => {
-    const url = `/admin/${localStorage.getItem("Merchanttoken")}/UserPaymentDetails/${unique_order_id}`;
-    window.open(url, '_blank');
+    const url = `/admin/${localStorage.getItem(
+      "Merchanttoken"
+    )}/UserPaymentDetails/${unique_order_id}`;
+    window.open(url, "_blank");
   };
 
   return (
@@ -676,104 +673,75 @@ export const PaymentModal = ({ close, setPaymentDetails }) => {
                     : "text-red-600"
                 }`}
               >
-                {(payment_status === "Prepaid"  ||  payment_status === "COD Paid") ? "Paid" :  payment_status } 
+                {payment_status === "Prepaid" || payment_status === "COD Paid"
+                  ? "Paid"
+                  : payment_status}
               </p>
-
             </div>
           )}
 
-
-            {   <div className="flex items-center">
+          {
+            <div className="flex items-center">
               <h3 className="text-sm font-medium text-blue-800 w-40">
                 More Details :
               </h3>
               <p
                 className={`cursor-pointer font-semibold text-sm ${"text-gray-900"}`}
-onClick={handleOpenInNewTab}
-
-
-
+                onClick={handleOpenInNewTab}
               >
-                {"Click Here"} 
+                {"Click Here"}
               </p>
-
-            </div>}
-          
+            </div>
+          }
         </div>
       </div>
     </div>
   );
 };
 
-
 export const MakeDeliveryBoyFreeModal = ({ close, makeDeliveryBoyData }) => {
   const [DeliveryExecutiveList, setDeliveryExecutiveList] = React.useState([]);
 
   const [selectedExecutive, setSelectedExecutive] = React.useState("");
 
-  useEffect(()=>{
+  useEffect(() => {
+    const fun = async () => {
+      const response = await AllDeliveryExecutive_retrive();
 
-const fun = async () => {   
-
-
-     const response = await AllDeliveryExecutive_retrive()
-  
       console.log(response);
-  
-  
-  
-         if(response.data.message === 'All executive retrieved successfully!'){
-  
-          setDeliveryExecutiveList(response.data.data)
 
-  
-         }
-      
-  
-  
-  
+      if (response.data.message === "All executive retrieved successfully!") {
+        setDeliveryExecutiveList(response.data.data);
+      }
+    };
 
+    fun();
+  }, []);
 
-
-}
-
-fun();
-
-  },[])
-
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     if (selectedExecutive) {
+      const response = await MakeFreeDeliveryExecutive(selectedExecutive);
 
+      console.log(response);
 
-        
-
-        const response = await MakeFreeDeliveryExecutive(selectedExecutive);
-
-        console.log(response);
-
-        if(response){
-            toast.success("done");
-            close(); 
-          
-          }else{  
-            toast.error("Not Done");
-
-
-          }
-        
-
-
+      if (response) {
+        toast.success("done");
+        close();
+      } else {
+        toast.error("Not Done");
+      }
     } else {
       alert("Please select a delivery executive and at least one order.");
     }
   };
 
-
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-lg font-semibold mb-4">Make Free DeliveyExecutive</h2>
-        
+        <h2 className="text-lg font-semibold mb-4">
+          Make Free DeliveyExecutive
+        </h2>
+
         <div className="mb-4">
           {/* <label className="block text-sm font-medium mb-2">Select Delivery Executive (Order : {selectedOrderIds.length})</label> */}
           <select
@@ -782,11 +750,12 @@ fun();
             onChange={(e) => setSelectedExecutive(e.target.value)}
           >
             <option value="">-- Select Executive --</option>
-            {DeliveryExecutiveList.length > 0 && DeliveryExecutiveList.map((exec) => (
-              <option key={exec.id} value={exec.id}>
-                {exec.name}
-              </option>
-            ))}
+            {DeliveryExecutiveList.length > 0 &&
+              DeliveryExecutiveList.map((exec) => (
+                <option key={exec.id} value={exec.id}>
+                  {exec.name}
+                </option>
+              ))}
           </select>
         </div>
 
@@ -808,7 +777,6 @@ fun();
     </div>
   );
 };
-
 
 // CancellationStatusModal
 

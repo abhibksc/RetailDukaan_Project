@@ -176,8 +176,10 @@ const ManageOrder = () => {
 
   const handleOrderItemClick = async (item, orderId, Total_Bill) => {
     console.log(item);
+    console.log(orderId);
+    console.log(Total_Bill);
 
-    // console.log(Expected_Delivery);
+
 
     if (item == null) {
       return toast.error("item is null"); // Toggling the modal visibility
@@ -517,7 +519,7 @@ const ManageOrder = () => {
   return loading ? (
     <LoadingModal />
   ) : (
-    <div className="container mx-auto p-6 bg-white rounded-md shadow-lg shadow-gray-500">
+    <div className=" p-6 bg-white rounded-md shadow-lg shadow-gray-500">
       <div className="flex flex-row  justify-between  w-full ">
         {loading && <LoadingModal />}
         <div className="flex flex-row  justify-between  w-full mb-7">
@@ -675,7 +677,8 @@ const ManageOrder = () => {
                               onClick={() =>
                                 handleOrderItemClick(
                                   item.Items,
-                                  item.unique_order_id
+                                  item.unique_order_id,
+                                  null
                                 )
                               }
                             >
@@ -1085,6 +1088,9 @@ const ManageOrder = () => {
               </tbody>
             </table>
           </div>
+
+          {console.log(displayedOrders)
+          }
           <PaginationExample
             pageCount={pageCount}
             onPageChange={handlePageChange}

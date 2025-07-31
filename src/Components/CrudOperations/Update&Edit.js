@@ -2934,6 +2934,38 @@ log(currentDate);
 };
 
 
+export const Accept_Users_Milestone_Request_IN_DATABASE = async (request_id, perform , status) => {
+
+  
+
+
+  const token = localStorage.getItem("Merchanttoken");
+  if (!token) {
+    console.error("Authorization token is missing. Please log in.");
+    return;
+  }
+
+
+
+
+  try {
+    const response = await axios.put(
+      `${baseurl}/api/admin/perform-user-milestone-request-action-accept/${request_id}` ,{ perform , status},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error
+   
+  }
+};
+
+
 
 
 export const performCollectOrderAction = async ({message,orderStatus,orderId,currentDate}) => {

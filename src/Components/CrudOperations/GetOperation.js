@@ -1088,6 +1088,83 @@ export const Admin_all_referrals = async () => {
 
 
 
+export const Admin_ReferrerMilestoneSummary = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+
+      ("chala");
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/Admin_ReferrerMilestoneSummary`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+       return response;
+
+    } catch (error) {
+        throw error
+    }
+};
+
+
+export const Admin_ReferrerMilestoneTracking = async (referrer_id) => {
+    const token = localStorage.getItem('Merchanttoken');
+
+      ("chala");
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/Admin_ReferrerMilestoneTracking/${referrer_id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+       return response;
+
+    } catch (error) {
+        throw error
+    }
+};
+
+
+export const getPendingMilestoneRequests = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+
+      ("chala");
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/getPendingMilestoneRequests`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+       return response;
+
+    } catch (error) {
+        throw error
+    }
+};
+
+
+
+
 
 // GetAllConfirmPayments
 
@@ -1739,13 +1816,11 @@ export const getAllLooseStock = async () => {
             }
         });
 
-        if(response){
-            return response;
-        }
+                 return response;
+
 
     } catch (error) {
-        console.error('Error fetching tables', error);
-        return error.response;
+        throw error;
     }
 };
 
@@ -2775,6 +2850,33 @@ export const getOrderDetail = async (orderId) => {
 
     } catch (error) {
             return error.response;
+
+    }
+};
+
+// getOrderBillFromDataBase
+
+export const getOrderBillFromDataBase = async (orderId) => {
+    const token = localStorage.getItem('token');
+
+      ("chala");
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+        
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/getOrderBill/${orderId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+       return response;
+
+    } catch (error) {
+            throw error;
 
     }
 };

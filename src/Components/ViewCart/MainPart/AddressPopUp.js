@@ -141,7 +141,6 @@ const handleSelect = async (address) => {
               isPaymentChanged && isPaymentChanged() 
             
                   // Reload page to update BillingSection.js
-      window.location.reload();
             }}
           >
             Deliver Here

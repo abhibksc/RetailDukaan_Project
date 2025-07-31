@@ -148,6 +148,9 @@ const AdminPanel = () => {
                           <Route path={`${Merchanttoken}/packetStock/view/:warehouse_unique_id`} element={<ViewStock />} />
 
 
+                            <Route path={`${Merchanttoken}/looseStock/view/:warehouse_unique_id`} element={<ViewStock />} />
+
+
 
 
 

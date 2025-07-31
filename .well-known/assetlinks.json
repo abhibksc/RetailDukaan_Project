@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.wipenex.retail_dukaan",
+      "sha256_cert_fingerprints": [
+"AE:EC:03:57:6D:D3:9A:55:0C:47:5F:15:15:7E:9B:47:AF:F9:E8:F3:B2:D4:AD:95:B9:63:02:9D:F9:EA:F4:A5"
+         ]
+    }
+  }
+]

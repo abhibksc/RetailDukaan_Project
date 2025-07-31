@@ -125,6 +125,7 @@ const ProductDetails = () => {
           <div>
             <h1 className="text-3xl font-semibold text-gray-800">
               {data.item_name}
+              {/* variatn name dalna hai/ */}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               {data.description || "No description available"}

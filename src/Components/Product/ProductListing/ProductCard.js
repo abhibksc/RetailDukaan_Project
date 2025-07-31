@@ -73,9 +73,7 @@ const ProductCard = ({ item, variant, showAllVariants }) => {
             />
             <h3 className="text-md font-medium mt-2">
               {item.ItemName} {bestVariant.variantName}{" "}
-              <span className="text-bold">
-                {bestVariant.subSubCategoryName} {bestVariant.brand_name}
-              </span>
+            
             </h3>
             <h4 className="text-sm font-medium text-gray-500 mt-2">
               {bestVariant.variant_type}

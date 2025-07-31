@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import LoadingModal from "../../../LoadingModal";
 import { FaListAlt } from "react-icons/fa";
-
-import { Admin_all_referrals } from "../../../CrudOperations/GetOperation";
-import PaginationExample from "../../../PaginationExample";
+import ReferredUserSignupOffer from "../RefferalList/Referred_User_singUp_offer";
+import Referred_user_Modal from "../RefferalList/Referred_user_Modal";
 import BackButton from "../../../BackButton";
-import Referred_user_Modal from "./Referred_user_Modal";
-import ReferredUserSignupOffer from "./Referred_User_singUp_offer";
+import PaginationExample from "../../../PaginationExample";
+import {
+  Admin_all_referrals,
+  Admin_ReferrerMilestoneSummary,
+} from "../../../CrudOperations/GetOperation";
+import LoadingModal from "../../../LoadingModal";
+import { useNavigate } from "react-router-dom";
 
-const Rf_Listing = () => {
+const Rf_Milestone_Listing = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 9; // Number of items per page
 
@@ -28,16 +32,16 @@ const Rf_Listing = () => {
     setIsLoad(true);
     const fun = async () => {
       try {
-        const response = await Admin_all_referrals();
+        const response = await Admin_ReferrerMilestoneSummary();
         console.log(response);
 
         if (
-          response?.data?.message ==
-          "All referral details with signup offer rewards fetched successfully."
+          response?.data?.message ===
+"Referrer milestone reward summary fetched successfully."
         ) {
           console.log(response);
 
-          setReferrals(response.data.data);
+          setReferrals(response?.data?.data);
         }
       } catch (error) {
         toast.error(
@@ -82,6 +86,19 @@ const Rf_Listing = () => {
     setCurrentPage(selected);
   };
 
+
+  const handleMileStone = (referrer_id)=>{
+
+
+const token = localStorage.getItem('Merchanttoken');
+const url = `/admin/${token}/ManageRefferals/all-refferals-milestone/milstone/${referrer_id}`;
+
+window.open(url, '_blank');
+
+
+
+  }
+
   return loading ? (
     <LoadingModal />
   ) : (
@@ -92,7 +109,7 @@ const Rf_Listing = () => {
           <div className="flex gap-3">
             <BackButton />
             <h1 className="text-2xl font-bold text-gray-800 mt-2">
-              Manage Referrals
+              Manage Referral MileStone
             </h1>
           </div>
 
@@ -138,6 +155,9 @@ const Rf_Listing = () => {
         </select>
       </div>
 
+      {console.log(Referrals)
+      }
+
       {!displayedOrders.length > 0 ? (
         <div className="mt-10 ">
           <div className="text-red-500">NO Any Refferal!!</div>
@@ -169,16 +189,10 @@ const Rf_Listing = () => {
                   </th>
 
                   <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
-                    Referred to
+                    MileStone
                   </th>
 
-                  <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
-                    Offers
-                  </th>
 
-                  <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
-                    Date
-                  </th>
 
                   <th className="py-3 px-5 bg-gray-100 text-left text-gray-600 font-semibold">
                     Total Reward
@@ -210,7 +224,7 @@ const Rf_Listing = () => {
                         </td>
 
                         <td className="py-3 px-5 border-b border-gray-200">
-                          {item?.referrer?.email}
+                          {item?.referrer?.phone}
                         </td>
 
                         <td
@@ -248,45 +262,34 @@ const Rf_Listing = () => {
                         </td>
 
                         <td className="py-3 px-5 border-b border-gray-200">
-                          {item?.referrer?.unique_id}
+                          {item?.referrer_id}
                         </td>
 
                         <td className="py-3 px-5 border-b border-gray-200">
-                          {item?.referrer?.name}
+                          {item?.name}
                         </td>
 
                         <td className="py-3 px-5 border-b border-gray-200">
-                          {item?.referrer?.email}
+                          {item?.email}
                         </td>
 
-                        <td className="py-3 px-5 border-b border-gray-200">
-                          {item?.referrer?.email}
+                                <td className="py-3 px-5 border-b border-gray-200">
+                          {item?.phone}
                         </td>
+
 
                         <td
                           className="py-3 px-5 border-b cursor-pointer border-gray-200"
-                          onClick={() => setReferred_user(item?.referred_user)}
+                          onClick={() => handleMileStone(item?.referrer_database_id)}
                         >
                           <FaListAlt size={20} />
                         </td>
 
-                        <td
-                          className="py-3 px-5 border-b cursor-pointer border-gray-200"
-                          onClick={() =>
-                            setReferred_User_singUp_offer(item?.selected_offer)
-                          }
-                        >
-                          <FaListAlt size={20} />
-                        </td>
-                        <td className="py-3 px-5 border-b border-gray-200">
-                          {" "}
-                          {dayjs(item?.referrer?.referral_created_at).format(
-                            "DD/MM/YYYY"
-                          )}{" "}
-                        </td>
+          
+                      
 
                         <td className="py-3 px-5 border-b border-gray-200">
-                          {item?.referral_reward_from_this_user}
+                          {item?.total_reward_earned_by_milestone}
                         </td>
                       </tr>
                     ))}
@@ -303,4 +306,4 @@ const Rf_Listing = () => {
   );
 };
 
-export default Rf_Listing;
+export default Rf_Milestone_Listing;
