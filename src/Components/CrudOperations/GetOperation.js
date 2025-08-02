@@ -1141,15 +1141,36 @@ export const Admin_ReferrerMilestoneTracking = async (referrer_id) => {
 export const getPendingMilestoneRequests = async () => {
     const token = localStorage.getItem('Merchanttoken');
 
-      ("chala");
 
     if (!token) {
         return console.error('No Sanctum token found');
-        
     }
 
     try {
         const response = await axios.get(`${baseurl}/api/admin/getPendingMilestoneRequests`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+       return response;
+
+    } catch (error) {
+        throw error
+    }
+};
+
+
+export const getPendingSinupOfferReward_Requests = async () => {
+    const token = localStorage.getItem('Merchanttoken');
+
+
+    if (!token) {
+        return console.error('No Sanctum token found');
+    }
+
+    try {
+        const response = await axios.get(`${baseurl}/api/admin/getPendingSinupOfferReward_Requests`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

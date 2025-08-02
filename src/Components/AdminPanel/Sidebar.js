@@ -143,14 +143,14 @@ const toggleAccordion = (level, index) => {
       icon: <FaThLarge />,
       subLinks: [
         {
-          to: `/admin/${Merchanttoken}/manage-customer`,
+          to: `/admin/${Merchanttoken}/user-wallet`,
           label: "User's Wallet",
           textClass: "text-[11px]",
           textcolour: "text-gray-300",
         },
 
         {
-          to: `/admin/${Merchanttoken}/ManageRefferals/all-refferals`,
+          to: `/admin/${Merchanttoken}/user-ref-wallet`,
           label: "User's Refferals Wallet",
           textClass: "text-[11px]",
           textcolour: "text-gray-300",

@@ -747,7 +747,7 @@ console.log(status);
 
 
 
-export const UpdateRefferal_Configuraion = async (RefferalConfiguration_id,  reward_amount, referrals_required, status) => {
+export const UpdateRefferal_Configuraion = async (RefferalConfiguration_id,  reward_amount, referrals_required, status , MileStoneName) => {
 
 
 
@@ -759,6 +759,8 @@ export const UpdateRefferal_Configuraion = async (RefferalConfiguration_id,  rew
   formData.append("reward_amount", reward_amount);
   formData.append("referrals_required", referrals_required);
   formData.append("status", status);
+  formData.append("MileStoneName", MileStoneName);
+
 
 
 
@@ -2960,6 +2962,44 @@ export const Accept_Users_Milestone_Request_IN_DATABASE = async (request_id, per
 
     return response;
   } catch (error) {
+    throw error
+   
+  }
+};
+
+
+export const claimSignupOfferReward = async (id) => {
+
+
+  const token = localStorage.getItem("Merchanttoken");
+  console.log(token);
+  
+  if (!token) {
+    console.error("Authorization token is missing. Please log in.");
+    return;
+  }
+
+
+
+
+  try {
+  const response = await axios.put(
+  `${baseurl}/api/admin/claimsignupoffer/${id}`,
+  {}, // empty body if no data needs to be sent
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
+    console.log(response);
+    
+
+    return response;
+  } catch (error) {
+    console.log(error);
+    
     throw error
    
   }

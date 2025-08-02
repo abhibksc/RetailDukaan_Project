@@ -9,6 +9,8 @@ import AddMainGroupModal from "./MainGroup/AddMainGroupModal";
 import ViewStock from "./Stocks/ViewStock";
 import WarehouseList from "./WareHousePincode/WarehouseList";
 import WarehousePincodeForm from "./WareHousePincode/WarehouseForm";
+import UserReferralWallet from "./UserWallet/UserReferralWallet";
+import UserWallet from "./UserWallet/UserWallet";
 
 // Lazy load components
 const Dashboard = React.lazy(() => import("./Dashboard/Dashboard"));
@@ -263,6 +265,8 @@ const AdminPanel = () => {
             path={`${Merchanttoken}/product/:id`}
             element={<Single_Product_page />}
           />
+
+
           <Route
             path={`${Merchanttoken}/SalesDetails/:id`}
             element={<SalesDetails />}
@@ -424,6 +428,24 @@ const AdminPanel = () => {
             path={`${Merchanttoken}/Add-singupOffers`}
             element={<AddSignUpOffers />}
           />
+
+
+
+                 <Route
+            path={`${Merchanttoken}/user-wallet`}
+            element={<UserWallet />}
+          />
+
+
+  <Route
+            path={`${Merchanttoken}/user-ref-wallet`}
+            element={<UserReferralWallet />}
+          />
+
+          
+
+
+
         </Routes>
         </Suspense>
       </div>

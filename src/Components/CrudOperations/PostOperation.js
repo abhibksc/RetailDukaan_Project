@@ -691,7 +691,7 @@ export const StoreMainGroup = async (name, desktopImage, status, selectedWarehou
 
 
 export const CreateRefferalConfiguration = async (
- reward_amount, referrals_required, status
+ reward_amount, referrals_required, status , MileStoneName
 ) => {
     (reward_amount);
     (referrals_required);
@@ -703,6 +703,8 @@ export const CreateRefferalConfiguration = async (
   formData.append("reward_amount", reward_amount);
   formData.append("referrals_required", referrals_required);
   formData.append("status", status);
+  formData.append("MileStoneName", MileStoneName);
+
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("Merchanttoken");

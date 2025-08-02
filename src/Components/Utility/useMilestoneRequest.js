@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { getPendingMilestoneRequests } from "../CrudOperations/GetOperation";
+import { getPendingMilestoneRequests, getPendingSinupOfferReward_Requests } from "../CrudOperations/GetOperation";
 import baseurl from "../CrudOperations/customURl";
-import { Accept_Users_Milestone_Request_IN_DATABASE } from "../CrudOperations/Update&Edit";
+import { Accept_Users_Milestone_Request_IN_DATABASE, claimSignupOfferReward } from "../CrudOperations/Update&Edit";
 import { toast } from "react-toastify";
 
 const apiBase = baseurl;
 
 const useMilestoneRequest = () => {
   const [MilestoneRequests, setMilestoneRequests] = useState([]);
+  const [sinupOfferReward_Requests, setSinupOfferReward_Requests] = useState([]);
+
   const [formData, setFormData] = useState({
     DeputyCheckpointName: "",
     DistrictId: "",
@@ -41,8 +43,27 @@ const useMilestoneRequest = () => {
     }
   };
 
+
+    const fetchUserSinUpOfferReward_Request = async () => {
+    try {
+      setLoading(true);
+      const res = await getPendingSinupOfferReward_Requests();
+      console.log(res);
+
+      setSinupOfferReward_Requests(res?.data?.data || []);
+    } catch (err) {
+      console.error("Fetch  Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
   useEffect(() => {
     fetchUserMileStoneRequest();
+    fetchUserSinUpOfferReward_Request();
+
   }, []);
 
   const submitForm = async () => {
@@ -99,6 +120,29 @@ const useMilestoneRequest = () => {
     }
   };
 
+
+const singupOfferReward_claim = async (id, playSuccessTone) => {
+  try {
+    const response = await claimSignupOfferReward(id);
+    console.log(response);
+
+    const message = response?.data?.message;
+    const errorMsg = response?.data?.error || response?.data?.message || "Something went wrong.";
+
+    if (message === "Reward successfully claimed and credited to wallet.") {
+      playSuccessTone();
+      fetchUserSinUpOfferReward_Request();
+    } else {
+      toast.error(errorMsg);
+    }
+  } catch (err) {
+    console.error("Caught error:", err);
+    const backendError = err?.response?.data?.error || err?.response?.data?.message;
+    toast.error(backendError || "An unexpected error occurred.");
+  }
+};
+
+
   const handleEdit = (checkpoint) => {
     setFormData({
       DeputyCheckpointName: checkpoint.DeputyCheckpointName || "",
@@ -140,6 +184,10 @@ const useMilestoneRequest = () => {
   };
 
   return {
+    sinupOfferReward_Requests,
+fetchUserSinUpOfferReward_Request,
+singupOfferReward_claim,
+
     MilestoneRequests,
     Accept_Users_Milestone_Request,
 

@@ -136,6 +136,8 @@ const ManageRefferal_Configuration = () => {
           <thead>
             <tr>
               <th className="py-3 px-6 bg-blue-500 text-left text-gray-800 font-semibold">S.no</th>
+              <th className="py-3 px-6 bg-blue-500 text-left text-gray-800 font-semibold">Name</th>
+
               <th className="py-3 px-6 bg-blue-500 text-left text-gray-800 font-semibold">Required Customer</th>
               <th className="py-3 px-6 bg-blue-500 text-left text-gray-800 font-semibold">Reward Amount</th>
               <th className="py-3 px-6 bg-blue-500 text-left text-gray-800 font-semibold">Status</th>
@@ -149,6 +151,8 @@ const ManageRefferal_Configuration = () => {
                 className={`border-b last:border-0 ${highlightId == config.id ? "bg-yellow-100" : ""}`}
               >
                 <td className="py-3 px-6">{currentPage * itemsPerPage + idx + 1}</td>
+                <td className="py-3 px-6">{config.MileStoneName}</td>
+                
                 <td className="py-3 px-6">{config.referrals_required}</td>
                 <td className="py-3 px-6">{config.reward_amount}</td>
                 <td className="py-3 px-6">{config.status}</td>

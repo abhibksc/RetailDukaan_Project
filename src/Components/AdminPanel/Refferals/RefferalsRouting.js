@@ -4,6 +4,7 @@ import ManageRefferal_Configuration from "./ManageRefferal_Configuration";
 import RefferalListBase from "./RefferalList/RefferalListBase";
 import RefferalMileStoneListBase from "./ReferralMilstoneList/RefferalMileStoneListBase";
 import MileStoneRequestBasePage from "./UserRequest/MilestoneRequest/MileStoneRequestBasePage";
+import SingupRequestBasePage from "./UserRequest/SingUpOfferRequest/SingupRequestBasePage";
 
 const RefferalsRouting = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -21,7 +22,7 @@ const RefferalsRouting = () => {
          <Route path={`/all-refferals-milestone/*`} element={<RefferalMileStoneListBase />} />
 
         <Route path={`/milestone-request`} element={<MileStoneRequestBasePage />} />
-           <Route path={`/signup-offer-request`} element={<ManageRefferal_Configuration />} />
+           <Route path={`/signup-offer-request`} element={<SingupRequestBasePage />} />
             <Route path={`/withdrawal-request`} element={<ManageRefferal_Configuration />} />
         </Routes>
 

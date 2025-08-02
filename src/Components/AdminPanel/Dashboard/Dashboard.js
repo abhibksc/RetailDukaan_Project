@@ -203,15 +203,23 @@ const [customersData, setCustomersData] = React.useState({
           <h2 className="text-xl font-bold mb-2">New Orders</h2>
           <p className="text-2xl">{newOrder}</p>
         </div>
-        <div onClick={()=>navigate(`/admin/${Merchanttoken}/manageusers`)}  
+        <div onClick={()=>navigate(`/admin/${Merchanttoken}/manage-customer`)}  
         className="bg-gradient-to-r from-pink-500 to-red-500 p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg text-white">
           <h2 className="text-xl font-bold mb-2">Customers</h2>
           <p className="text-2xl">{customers}</p>
         </div>
-        <div onClick={()=>navigate(`/admin/${Merchanttoken}/orders`)} className="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg text-white">
+
+
+                <div onClick={()=>navigate(`/admin/${Merchanttoken}/ManageRefferals/all-refferals-singUp-offers`)} className="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg text-white">
+          <h2 className="text-xl font-bold mb-2">All Referrals</h2>
+          <p className="text-2xl">{3}</p>
+        </div>
+
+        
+        {/* <div onClick={()=>navigate(`/admin/${Merchanttoken}/orders`)} className="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg text-white">
           <h2 className="text-xl font-bold mb-2">Pending Orders</h2>
           <p className="text-2xl">{pendingOrder}</p>
-        </div>
+        </div> */}
         {/* <div
           className="bg-gradient-to-r from-indigo-500 to-blue-500 p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg text-white cursor-pointer"
           onClick={() => navigate("/admin/customermail")}
@@ -219,21 +227,21 @@ const [customersData, setCustomersData] = React.useState({
           <h2 className="text-xl font-bold mb-2">Customers Mail</h2>
           <p className="text-2xl">75</p>
         </div> */}
-        <div
+        {/* <div
           className="bg-gradient-to-r from-indigo-500 to-blue-500 p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg text-white cursor-pointer"
           onClick={() => navigate("/admin/customermail")}
         >
           <h2 className="text-xl font-bold mb-2">Refund Report</h2>
           <p className="text-[14px]">Overview of refund transactions.</p>
-        </div>
+        </div> */}
 
-        <div
+        {/* <div
           className="bg-gradient-to-r from-indigo-500 to-blue-500 p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg text-white cursor-pointer"
           onClick={() => navigate("/admin/customermail")}
         >
           <h2 className="text-xl font-bold mb-2">Stock Report</h2>
           <p className="text-[14px]">reports on current stock levels, out-of-stock products, and low stock items.</p>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col gap-3 mb-5"> 

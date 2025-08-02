@@ -19,6 +19,8 @@ const AddRefferal_Configuration = ({ RefferalConfiguration, onSubmit, modalType,
   const [referrals_required , setreferrals_required] = useState(selectedRefferalConfiguration ? selectedRefferalConfiguration.referrals_required : "");
   const [reward_amount, setreward_amount] = useState(selectedRefferalConfiguration ? selectedRefferalConfiguration.reward_amount : "");
   const [status, setStatus] = useState(selectedRefferalConfiguration ? selectedRefferalConfiguration.status : "active");
+  const [MileStoneName, setMileStoneName] = useState(selectedRefferalConfiguration ? selectedRefferalConfiguration.MileStoneName : "");
+
 
 
   
@@ -76,7 +78,7 @@ console.log(status);
 
 
       if (modalType === "add") {
-        const response = await CreateRefferalConfiguration(reward_amount, referrals_required, status);
+        const response = await CreateRefferalConfiguration(reward_amount, referrals_required, status , MileStoneName);
         console.log(response);
         
 
@@ -104,7 +106,7 @@ console.log(status);
 
         
 
-        const res = await UpdateRefferal_Configuraion(  RefferalConfiguration_id,reward_amount, referrals_required, status);
+        const res = await UpdateRefferal_Configuraion(  RefferalConfiguration_id,reward_amount, referrals_required, status , MileStoneName);
 
 console.log(res);
 
@@ -161,6 +163,20 @@ console.log(res);
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
+
+             <div>
+            <label className="block text-sm font-medium text-gray-700">MileStone Name*</label>
+            <input
+              type="text"
+              className="mt-1 border p-2 w-full rounded"
+              value={MileStoneName}
+              onChange={(e) => setMileStoneName(e.target.value)}
+              required
+            />
+          </div>
+
+
 
 
                <div>
